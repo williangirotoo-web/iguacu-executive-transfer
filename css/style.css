@@ -136,8 +136,7 @@ button { cursor: pointer; border: none; background: none; font-family: var(--san
 .faq-list { max-width: 780px; margin: 0 auto; }
 .faq-item { border-bottom: 1px solid rgba(201,168,76,0.1); }
 .faq-btn { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 26px 0; gap: 20px; text-align: left; }
-.faq-btn h3 { font-family: var(--serif); font-size: 1.08rem; font-weight: 400; transition: color var(--tr); }
-.faq-btn:hover h3 { color: var(--gold); }
+.faq-btn h3 { font-family: var(--serif); font-size: 1.08rem; font-weight: 400; transition: color var(--tr); color: var(--white); }
 .faq-ico { font-size: 1.4rem; color: var(--gold); flex-shrink: 0; transition: transform var(--tr); }
 .faq-item.open .faq-ico { transform: rotate(45deg); }
 .faq-ans { display: none; padding-bottom: 26px; }
