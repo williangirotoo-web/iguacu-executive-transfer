@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sobre Nós | Iguaçu Executive Transfer — Foz do Iguaçu</title>
+  <meta name="description" content="Conheça a Iguaçu Executive Transfer: empresa local especializada em transfer executivo em Foz do Iguaçu. Motorista bilíngue, frota premium e compromisso com excelência.">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .manifesto{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;padding:100px 0}
+    .mtext h2{font-family:var(--serif);font-size:clamp(2rem,3.5vw,2.8rem);font-weight:300;line-height:1.2;margin-bottom:28px}
+    .mtext h2 em{font-style:italic;color:var(--gold)}
+    .mtext p{font-size:0.86rem;color:var(--gray-l);line-height:1.95;margin-bottom:18px}
+    .mtext p strong{color:var(--white);font-weight:500}
+    .mvals{display:flex;flex-direction:column;gap:2px}
+    .mval{background:var(--dark2);padding:28px 32px;border-left:2px solid var(--gold);transition:background var(--tr)}
+    .mval:hover{background:var(--dark3)}
+    .mval h3{font-family:var(--serif);font-size:1.15rem;font-weight:400;margin-bottom:8px}
+    .mval p{font-size:0.77rem;color:var(--gray-l);line-height:1.75}
+    .tl{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+    .tlitem{background:var(--dark2);padding:40px 28px;text-align:center}
+    .tlyear{font-family:var(--serif);font-size:2.6rem;font-weight:300;color:var(--gold);margin-bottom:10px;line-height:1}
+    .tlitem h3{font-family:var(--serif);font-size:1rem;font-weight:400;margin-bottom:8px}
+    .tlitem p{font-size:0.73rem;color:var(--gray);line-height:1.7}
+    .frota-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+    .fcard{background:var(--dark2);padding:40px 36px;border:1px solid transparent;transition:border-color var(--tr),background var(--tr)}
+    .fcard:hover{background:var(--dark3);border-color:rgba(201,168,76,0.12)}
+    .ftag{display:inline-block;font-size:0.56rem;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,0.28);padding:4px 12px;margin-bottom:16px}
+    .fico{width:44px;height:44px;color:var(--gold);margin-bottom:16px}
+    .fico svg{width:100%;height:100%}
+    .fcard h3{font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:10px}
+    .fcard p{font-size:0.77rem;color:var(--gray-l);line-height:1.8}
+    .equipe{display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:center;padding:100px 0}
+    .eqstats{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:32px}
+    .estat{background:var(--dark2);padding:22px 26px;border-left:2px solid var(--gold)}
+    .estat-n{font-family:var(--serif);font-size:2.2rem;font-weight:300;color:var(--gold)}
+    .estat-l{font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gray-l);margin-top:4px}
+    .idcard{background:var(--dark2);padding:44px;border-top:2px solid var(--gold)}
+    .idcard h3{font-family:var(--serif);font-size:1.4rem;font-weight:400;margin-bottom:22px}
+    .idioma{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(201,168,76,0.07)}
+    .idioma:last-child{border-bottom:none}
+    .iflag{font-size:1.3rem;width:30px}
+    .iname{font-size:0.8rem;font-weight:500;color:var(--white)}
+    .ilvl{font-size:0.66rem;color:var(--gray-l);flex:1}
+    .ibar{width:80px;height:3px;background:rgba(201,168,76,0.12);border-radius:2px;overflow:hidden}
+    .ifill{height:100%;background:var(--gold);border-radius:2px}
+    .sec-pad{padding:100px 0}
+    @media(max-width:768px){.manifesto,.equipe{grid-template-columns:1fr;gap:48px}.tl,.frota-grid{grid-template-columns:1fr 1fr}.eqstats{grid-template-columns:1fr 1fr}}
+    @media(max-width:480px){.tl{grid-template-columns:1fr}.frota-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="../index.html" class="logo"><span class="logo-m">IGUAÇU</span><span class="logo-s">Executive Transfer</span></a>
+    <div class="nav-links">
+      <a href="../index.html">Início</a><a href="transfer-aeroporto.html">Aeroporto</a>
+      <a href="passeios.html">Passeios</a><a href="transfer-internacional.html">Internacional</a>
+      <a href="sobre.html" class="active">Sobre</a>
+      <a href="https://wa.me/5545991185798" class="nav-cta" target="_blank">Reservar</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="../index.html">Início</a><a href="transfer-aeroporto.html">Transfer Aeroporto</a>
+    <a href="passeios.html">Passeios</a><a href="transfer-internacional.html">Transfer Internacional</a>
+    <a href="sobre.html">Sobre Nós</a><a href="https://wa.me/5545991185798" target="_blank">Reservar Agora</a>
+  </div>
+</nav>
+
+<section class="page-hero">
+  <div class="page-hero-bg"></div><div class="page-hero-grid"></div><div class="page-hero-vline"></div>
+  <div class="page-hero-content">
+    <p class="eye-line">Nossa história</p>
+    <h1>Nascemos em Foz<br>para <em>Servir Foz.</em></h1>
+    <p>Uma empresa local, criada por quem conhece cada rua, cada fronteira e cada detalhe desta cidade extraordinária.</p>
+  </div>
+</section>
+<div class="divider-gold"></div>
+
+<section style="background:var(--black)">
+  <div class="container">
+    <div class="manifesto">
+      <div class="mtext">
+        <h2>Por Que a <em>Iguaçu Executive</em> Transfer Existe</h2>
+        <p>Foz do Iguaçu — cidade que recebe milhares de visitantes de todo o mundo a cada mês — merecia um serviço de transfer à altura da grandiosidade das suas Cataratas. <strong>Não encontramos esse serviço. Então decidimos criá-lo.</strong></p>
+        <p>A Iguaçu Executive Transfer nasceu da convicção de que executivos, turistas internacionais e viajantes exigentes merecem mais do que uma van compartilhada ou um aplicativo impessoal. Merecem um serviço que começa muito antes da partida e termina muito depois da chegada.</p>
+        <p>Somos locais. <strong>Não chegamos de fora para atender aqui</strong> — vivemos Foz do Iguaçu todos os dias. E é exatamente isso que faz toda a diferença.</p>
+      </div>
+      <div class="mvals">
+        <div class="mval"><h3>Luxo Acessível</h3><p>Premium não significa inacessível. Nossos preços são competitivos e transparentes — sem surpresas na hora do pagamento.</p></div>
+        <div class="mval"><h3>Local, Não Franquia</h3><p>Você fala diretamente com quem vai te atender. Sem centrais de atendimento, sem intermediários, sem script robotizado.</p></div>
+        <div class="mval"><h3>Comprometimento Real</h3><p>Quando confirmamos uma reserva, cumprimos. Pontualidade e presença são inegociáveis para nós — sempre foram.</p></div>
+        <div class="mval"><h3>Missão Clara</h3><p>Oferecer a experiência de transporte mais completa, elegante e confiável da Tríplice Fronteira. Simples assim.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec-pad" style="background:var(--dark);border-top:1px solid rgba(201,168,76,0.07)">
+  <div class="container">
+    <div class="sec-header">
+      <p class="eye">Nossa trajetória</p>
+      <h2 class="sec-h2">Uma História de <em>Excelência</em></h2>
+    </div>
+    <div class="tl">
+      <div class="tlitem"><div class="tlyear">2018</div><h3>O Início</h3><p>Primeiras corridas executivas em Foz do Iguaçu com foco total em qualidade e discrição.</p></div>
+      <div class="tlitem"><div class="tlyear">2020</div><h3>Transfer Internacional</h3><p>Expansão para Argentina e Paraguai com motorista especializado em fronteiras.</p></div>
+      <div class="tlitem"><div class="tlyear">2022</div><h3>5.000 Clientes</h3><p>Marco de 5.000 passageiros atendidos de mais de 30 países diferentes.</p></div>
+      <div class="tlitem"><div class="tlyear">2025</div><h3>Referência em Foz</h3><p>Consolidados como a principal opção de transfer executivo da Tríplice Fronteira.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec-pad" style="background:var(--black);border-top:1px solid rgba(201,168,76,0.07)">
+  <div class="container">
+    <div class="sec-header">
+      <p class="eye">Nossa frota</p>
+      <h2 class="sec-h2">Veículos <em>à Altura</em> do Serviço</h2>
+    </div>
+    <div class="frota-grid">
+      <div class="fcard"><span class="ftag">Sedan · SUV</span><div class="fico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><h3>Veículos Premium</h3><p>Sedan e SUV de alto padrão, revisados periodicamente, higienizados antes de cada corrida com ar-condicionado regulado.</p></div>
+      <div class="fcard"><span class="ftag">Conforto</span><div class="fico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><h3>Amenities de Bordo</h3><p>Água mineral gelada, carregador de celular universal e Wi-Fi disponível. Cada detalhe pensado para sua viagem.</p></div>
+      <div class="fcard"><span class="ftag">Grupos</span><div class="fico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div><h3>Capacidade para Grupos</h3><p>Atendemos grupos maiores com van executiva. Consulte disponibilidade e valores para sua necessidade específica.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--dark);border-top:1px solid rgba(201,168,76,0.07)">
+  <div class="container">
+    <div class="equipe">
+      <div>
+        <p class="eye">Quem te atende</p>
+        <h2 class="sec-h2" style="margin-bottom:20px">O Profissional Que <em>Faz a Diferença</em></h2>
+        <p style="font-size:0.84rem;color:var(--gray-l);line-height:1.9;margin-bottom:16px">Nosso motorista executivo é mais do que um condutor — é um profissional treinado para garantir que cada aspecto da sua viagem seja impecável.</p>
+        <p style="font-size:0.84rem;color:var(--gray-l);line-height:1.9">Com experiência em atender executivos, delegações internacionais e turistas exigentes de todo o mundo, ele combina conhecimento local profundo com protocolo de atendimento de alto padrão.</p>
+        <div class="eqstats">
+          <div class="estat"><div class="estat-n">7+</div><div class="estat-l">Anos de Experiência</div></div>
+          <div class="estat"><div class="estat-n">30+</div><div class="estat-l">Países Atendidos</div></div>
+          <div class="estat"><div class="estat-n">5mil</div><div class="estat-l">Passageiros</div></div>
+          <div class="estat"><div class="estat-n">100%</div><div class="estat-l">Pontualidade</div></div>
+        </div>
+      </div>
+      <div class="idcard">
+        <h3>Motorista Trilíngue</h3>
+        <div class="idioma"><div class="iflag">🇧🇷</div><div><div class="iname">Português</div><div class="ilvl">Nativo</div></div><div class="ibar"><div class="ifill" style="width:100%"></div></div></div>
+        <div class="idioma"><div class="iflag">🇺🇸</div><div><div class="iname">Inglês</div><div class="ilvl">Fluente</div></div><div class="ibar"><div class="ifill" style="width:92%"></div></div></div>
+        <div class="idioma"><div class="iflag">🇦🇷</div><div><div class="iname">Espanhol</div><div class="ilvl">Fluente</div></div><div class="ibar"><div class="ifill" style="width:95%"></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-final">
+  <div class="container"><div class="cta-inner">
+    <p class="eye">Vamos juntos</p>
+    <h2 class="cta-h2">Pronto para Viver Foz<br>com <em>Excelência?</em></h2>
+    <p class="cta-sub">Reserve agora e experimente a diferença de viajar com quem realmente se importa.</p>
+    <a href="https://wa.me/5545991185798?text=Olá!%20Gostaria%20de%20reservar%20um%20transfer%20executivo." class="btn-gold" target="_blank">Reservar via WhatsApp</a>
+  </div></div>
+</section>
+
+<footer class="footer"><div class="container"><div class="footer-bottom" style="border-top:none;padding-top:0"><p>© 2025 Iguaçu Executive Transfer · Foz do Iguaçu, PR</p><a href="../index.html" style="color:var(--gold);font-size:0.68rem">← Voltar ao início</a></div></div></footer>
+<a href="https://wa.me/5545991185798" class="wa-float" target="_blank" aria-label="WhatsApp"><svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+<script src="../js/main.js"></script>
+</body></html>
