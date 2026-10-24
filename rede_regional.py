@@ -114,7 +114,7 @@ def gerar_schema_organization():
         "name": "Iguaçu Executive Transfer",
         "url": SITE,
         "logo": f"{SITE}/favicon.svg",
-        "telephone": "+554599164059",
+        "telephone": "+5545991185798",
         "areaServed": [
             {"@type": "City", "name": "Foz do Iguaçu"},
             {"@type": "City", "name": "Puerto Iguazú"},

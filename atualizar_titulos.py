@@ -7,8 +7,8 @@ import os, re
 from pathlib import Path
 
 BASE = Path(os.path.expanduser("~/Documents/iguacu-site"))
-TEL_BR = "(45) 9 9916-4059"
-TEL_INT = "+55 45 9 9916-4059"
+TEL_BR = "(45) 9 9118-5798"
+TEL_INT = "+55 45 9 9118-5798"
 
 # Títulos por pasta e slug
 TITULOS = {

@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 
 BASE = Path(os.path.expanduser("~/Documents/iguacu-site"))
-WA_NUMBER = "5545999164059"
+WA_NUMBER = "5545991185798"
 SITE_URL = "https://iguacuexecutivetransfer.com.br"
 GEO_LAT = "-25.5478"
 GEO_LNG = "-54.5882"
@@ -37,7 +37,7 @@ PAGINAS = [
       {"p":"O Corolla faz transfer para o aeroporto de Foz do Iguaçu à noite?","r":"Sim! Nosso serviço de táxi Corolla opera 24 horas em Foz do Iguaçu, incluindo madrugada. Há acréscimo de 20% entre 22h e 6h. Agende com antecedência pelo WhatsApp."},
       {"p":"Posso usar o Corolla para ir ao lado argentino das Cataratas?","r":"Sim! Fazemos transfer com Corolla 2026 até Puerto Iguazú na Argentina. O passageiro precisa ter passaporte em mãos para cruzar a fronteira. Consulte o valor pelo WhatsApp."},
       {"p":"O táxi Corolla em Foz do Iguaçu emite nota fiscal?","r":"Sim! Para empresas e viajantes corporativos, emitimos NFC-e e recibo detalhado. Basta informar CNPJ no momento da reserva pelo WhatsApp."},
-      {"p":"Quanto custa o táxi Corolla em Foz do Iguaçu?","r":"Os valores variam conforme o trajeto. Consulte pelo WhatsApp (45) 9 9916-4059 e receba um orçamento fixo sem surpresas. Aceitamos PIX, cartão e dinheiro."},
+      {"p":"Quanto custa o táxi Corolla em Foz do Iguaçu?","r":"Os valores variam conforme o trajeto. Consulte pelo WhatsApp (45) 9 9118-5798 e receba um orçamento fixo sem surpresas. Aceitamos PIX, cartão e dinheiro."},
     ],
     "depoimentos": [
       {"nome":"Ricardo Mendes","cidade":"São Paulo — SP","texto":"Solicitei o Corolla 2026 para o transfer do aeroporto de Foz do Iguaçu até o hotel. Carro impecável, motorista pontual e profissional. Muito melhor que qualquer aplicativo de táxi comum. Recomendo!"},
@@ -65,7 +65,7 @@ PAGINAS = [
       {"p":"A Spin tem ar-condicionado para todos em Foz do Iguaçu?","r":"Sim! A Spin 2026 possui ar-condicionado dianteiro e traseiro, garantindo conforto para todos os passageiros mesmo no calor de Foz do Iguaçu."},
       {"p":"Posso levar carrinho de bebê na Spin em Foz do Iguaçu?","r":"Sim! O bagageiro da Spin é amplo e acomoda carrinhos de bebê dobráveis, além das malas dos passageiros. Informe ao reservar para garantirmos o melhor espaço."},
       {"p":"A Spin faz transfer para o Parque das Aves em Foz do Iguaçu?","r":"Sim! Fazemos transfer para o Parque das Aves, Cataratas do Iguaçu, Itaipu, Puerto Iguazú e qualquer ponto de Foz do Iguaçu e região com a Spin 2026."},
-      {"p":"Qual o preço do táxi Spin para o aeroporto de Foz do Iguaçu?","r":"Os valores variam conforme origem e destino. Consulte pelo WhatsApp (45) 9 9916-4059 para receber orçamento fixo para seu grupo em Foz do Iguaçu."},
+      {"p":"Qual o preço do táxi Spin para o aeroporto de Foz do Iguaçu?","r":"Os valores variam conforme origem e destino. Consulte pelo WhatsApp (45) 9 9118-5798 para receber orçamento fixo para seu grupo em Foz do Iguaçu."},
       {"p":"A Spin tem cadeirinha para crianças em Foz do Iguaçu?","r":"Sim! Disponibilizamos cadeirinha infantil sob solicitação, sem custo adicional. Informe a idade da criança ao reservar pelo WhatsApp."},
     ],
     "depoimentos": [
@@ -95,7 +95,7 @@ PAGINAS = [
       {"p":"O SW4 executivo tem Wi-Fi e carregador em Foz do Iguaçu?","r":"Sim! Todos os nossos SW4 contam com Wi-Fi a bordo, carregadores USB e tomadas 12V. Água mineral e balas são oferecidas como cortesia."},
       {"p":"O SW4 é adequado para crianças em Foz do Iguaçu?","r":"Sim! O SW4 tem espaço generoso para cadeirinhas infantis. Informe a faixa etária das crianças ao reservar para que o motorista instale a cadeirinha correta."},
       {"p":"Qual a diferença do SW4 para um táxi normal em Foz do Iguaçu?","r":"O SW4 é um SUV executivo premium com preço fixo, motorista profissional treinado, veículo blindado opcional, água e cortesias a bordo — completamente diferente de um táxi comum ou aplicativo."},
-      {"p":"Como reservo o SW4 executivo em Foz do Iguaçu?","r":"Pelo WhatsApp (45) 9 9916-4059. Informe data, horário, origem e destino e receba confirmação imediata com preço fixo. Disponível 24 horas em Foz do Iguaçu."},
+      {"p":"Como reservo o SW4 executivo em Foz do Iguaçu?","r":"Pelo WhatsApp (45) 9 9118-5798. Informe data, horário, origem e destino e receba confirmação imediata com preço fixo. Disponível 24 horas em Foz do Iguaçu."},
     ],
     "depoimentos": [
       {"nome":"Diretor Comercial — Empresa Multinacional","cidade":"São Paulo — SP","texto":"Usamos o SW4 executivo para deslocamentos corporativos em Foz do Iguaçu durante 3 dias. Veículo impecável, motorista discreto e profissional, nota fiscal emitida na hora. O melhor serviço de transfer VIP que já contratei."},
@@ -124,7 +124,7 @@ PAGINAS = [
       {"p":"O Haval tem Wi-Fi gratuito em Foz do Iguaçu?","r":"Sim! Todos os nossos Haval contam com Wi-Fi a bordo gratuito, carregadores USB e tomada 12V para que você fique conectado durante o trajeto em Foz do Iguaçu."},
       {"p":"Posso pedir decoração para lua de mel no Haval em Foz do Iguaçu?","r":"Sim! Oferecemos decoração especial para casais em lua de mel, com flores e champagne opcional, mediante agendamento prévio pelo WhatsApp."},
       {"p":"O Haval executivo emite nota fiscal em Foz do Iguaçu?","r":"Sim! Emitimos NFC-e e nota fiscal para PJ. Basta informar o CNPJ no momento da reserva pelo WhatsApp."},
-      {"p":"Como reservo o Haval executivo em Foz do Iguaçu?","r":"Pelo WhatsApp (45) 9 9916-4059. Informe data, horário, origem e destino. Receba confirmação e preço fixo imediatamente. Disponível 24 horas."},
+      {"p":"Como reservo o Haval executivo em Foz do Iguaçu?","r":"Pelo WhatsApp (45) 9 9118-5798. Informe data, horário, origem e destino. Receba confirmação e preço fixo imediatamente. Disponível 24 horas."},
     ],
     "depoimentos": [
       {"nome":"Mariana e Pedro","cidade":"Belo Horizonte — MG","texto":"Passamos nossa lua de mel em Foz do Iguaçu e contratamos o Haval executivo para todos os translados. Teto panorâmico incrível, carro lindo e motorista super atencioso. Experiência perfeita!"},
@@ -240,7 +240,7 @@ PAGINAS = [
       {"p":"Preciso contratar guia turístico separado em Foz do Iguaçu?","r":"Nossos motoristas compartilham dicas e informações sobre cada atração, mas não substituem guias licenciados dentro dos parques. Podemos indicar e agendar guias credenciados se desejar."},
       {"p":"Quanto tempo é necessário para visitar as Cataratas do Iguaçu?","r":"Recomendamos de 3 a 4 horas para o lado brasileiro. Se incluir o lado argentino, planeje um dia inteiro. Nosso motorista aguarda o tempo necessário sem custo adicional."},
       {"p":"Turistas podem fazer compras em Ciudad del Este com vocês?","r":"Sim! Realizamos transfer para Ciudad del Este no Paraguai para turistas que desejam fazer compras. Consulte valores e orientações sobre documentos pelo WhatsApp."},
-      {"p":"Quanto custa um City Tour completo em Foz do Iguaçu?","r":"Os valores variam conforme o roteiro e número de passageiros. Consulte pelo WhatsApp (45) 9 9916-4059 para um orçamento personalizado do City Tour em Foz do Iguaçu."},
+      {"p":"Quanto custa um City Tour completo em Foz do Iguaçu?","r":"Os valores variam conforme o roteiro e número de passageiros. Consulte pelo WhatsApp (45) 9 9118-5798 para um orçamento personalizado do City Tour em Foz do Iguaçu."},
     ],
     "depoimentos": [
       {"nome":"Alessandro Ferrari","cidade":"Milão — Itália","texto":"My first time in Foz do Iguaçu was amazing thanks to Iguaçu Executive Transfer. The driver spoke excellent English, knew every attraction and gave me the best tips about local restaurants. Perfect service for tourists!"},
@@ -269,7 +269,7 @@ PAGINAS = [
       {"p":"Os motoristas são preparados para transfer corporativo em Foz do Iguaçu?","r":"Sim! Nossos motoristas são treinados em etiqueta corporativa, discrição e pontualidade. São adequados para transporte de executivos, delegações e autoridades em Foz do Iguaçu."},
       {"p":"Vocês atendem eventos corporativos em Foz do Iguaçu?","r":"Sim! Atendemos eventos, congressos, simpósios e reuniões corporativas em Foz do Iguaçu com frota variada e coordenação de múltiplos veículos simultâneos."},
       {"p":"Qual o prazo para emissão da nota fiscal do transfer em Foz do Iguaçu?","r":"A NFC-e é emitida no momento do pagamento. A nota de serviço para CNPJ é enviada por e-mail em até 24 horas após a viagem."},
-      {"p":"Como solicitar proposta corporativa de transfer em Foz do Iguaçu?","r":"Entre em contato pelo WhatsApp (45) 9 9916-4059 com CNPJ e demanda estimada. Preparamos proposta personalizada com condições e valores fixos para sua empresa em Foz do Iguaçu."},
+      {"p":"Como solicitar proposta corporativa de transfer em Foz do Iguaçu?","r":"Entre em contato pelo WhatsApp (45) 9 9118-5798 com CNPJ e demanda estimada. Preparamos proposta personalizada com condições e valores fixos para sua empresa em Foz do Iguaçu."},
     ],
     "depoimentos": [
       {"nome":"Gerente Comercial — Empresa Multinacional","cidade":"São Paulo — SP","texto":"Precisamos de transfer corporativo para 12 executivos em Foz do Iguaçu durante 3 dias. A Iguaçu Executive Transfer coordenou tudo: vários veículos, nota fiscal para todos e motoristas impecáveis. Recontratamos sempre que viemos à Foz."},
@@ -298,7 +298,7 @@ PAGINAS = [
       {"p":"Posso reservar o transfer do aeroporto de Foz do Iguaçu com antecedência?","r":"Sim e recomendamos! Reserve com pelo menos 2 horas de antecedência. Para chegadas de madrugada, reserve com 24 horas de antecedência para garantir disponibilidade."},
       {"p":"O motorista aguarda em caso de voo atrasado em Foz do Iguaçu?","r":"Sim! Rastreamos o voo em tempo real. Se houver atraso, o motorista ajusta o horário automaticamente e aguarda sem custo adicional."},
       {"p":"O transfer inclui ajuda com as malas no aeroporto de Foz do Iguaçu?","r":"Sim! O motorista auxilia com todas as malas, desde a saída do aeroporto até a entrega no quarto do hotel, sem custo adicional."},
-      {"p":"Qual o valor do transfer do aeroporto de Foz do Iguaçu para o hotel?","r":"Os valores variam conforme o destino e o veículo. Consulte pelo WhatsApp (45) 9 9916-4059 e receba orçamento fixo para seu transfer em Foz do Iguaçu."},
+      {"p":"Qual o valor do transfer do aeroporto de Foz do Iguaçu para o hotel?","r":"Os valores variam conforme o destino e o veículo. Consulte pelo WhatsApp (45) 9 9118-5798 e receba orçamento fixo para seu transfer em Foz do Iguaçu."},
     ],
     "depoimentos": [
       {"nome":"Marcelo Tavares","cidade":"São Paulo — SP","texto":"Cheguei a Foz do Iguaçu às 23h em um voo atrasado. O motorista estava lá esperando, sorrindo, sem cobrar nada extra pelo atraso. Carro impecável e chegada tranquila ao hotel. Serviço perfeito!"},
@@ -327,7 +327,7 @@ PAGINAS = [
       {"p":"Preciso comprar ingresso antecipado para as Cataratas do Iguaçu?","r":"Recomendamos comprar online antecipadamente, especialmente na alta temporada (julho e dezembro/janeiro). Nosso motorista pode orientar sobre como comprar os ingressos."},
       {"p":"O transfer para as Cataratas funciona todos os dias?","r":"Sim! O Parque Nacional das Cataratas do Iguaçu abre todos os dias, e nosso transfer opera 7 dias por semana, incluindo feriados."},
       {"p":"Como é a estrada para as Cataratas do Iguaçu em Foz?","r":"A BR-469 que liga Foz do Iguaçu ao parque é bem conservada, com cerca de 15 km de extensão e paisagem bonita. A viagem dura de 20 a 30 minutos dependendo do hotel de origem."},
-      {"p":"Qual o preço do transfer para as Cataratas do Iguaçu?","r":"Os valores variam conforme o hotel de origem e o número de passageiros. Consulte pelo WhatsApp (45) 9 9916-4059 para orçamento fixo do transfer às Cataratas."},
+      {"p":"Qual o preço do transfer para as Cataratas do Iguaçu?","r":"Os valores variam conforme o hotel de origem e o número de passageiros. Consulte pelo WhatsApp (45) 9 9118-5798 para orçamento fixo do transfer às Cataratas."},
     ],
     "depoimentos": [
       {"nome":"Beatriz Nascimento","cidade":"Rio de Janeiro — RJ","texto":"Fui às Cataratas do Iguaçu com a família e o motorista foi incrível! Saímos às 8h do hotel, chegamos na abertura do parque e ficamos 4 horas lá. Ele esperou pacientemente e ainda deu dicas dos melhores pontos para foto. Perfeito!"},
@@ -385,7 +385,7 @@ PAGINAS = [
       {"p":"O transfer VIP tem blindagem em Foz do Iguaçu?","r":"Consulte disponibilidade de veículo blindado pelo WhatsApp. Oferecemos essa opção para passageiros que exigem segurança máxima durante o transfer em Foz do Iguaçu."},
       {"p":"Posso personalizar o transfer VIP para lua de mel em Foz do Iguaçu?","r":"Sim! Oferecemos decoração floral, espumante, playlist personalizada e paradas em locais especiais para casais. Informe as preferências ao reservar pelo WhatsApp."},
       {"p":"O transfer VIP emite nota fiscal em Foz do Iguaçu?","r":"Sim! Emitimos NFC-e e nota de serviço para CNPJ. Para contratos corporativos VIP, preparamos faturamento personalizado conforme necessidade da empresa."},
-      {"p":"Como reservo transfer VIP em Foz do Iguaçu?","r":"Pelo WhatsApp (45) 9 9916-4059, com pelo menos 4 horas de antecedência. Para demandas de altíssimo padrão, recomendamos reserva com 24 horas de antecedência."},
+      {"p":"Como reservo transfer VIP em Foz do Iguaçu?","r":"Pelo WhatsApp (45) 9 9118-5798, com pelo menos 4 horas de antecedência. Para demandas de altíssimo padrão, recomendamos reserva com 24 horas de antecedência."},
     ],
     "depoimentos": [
       {"nome":"CEO — Empresa de Tecnologia","cidade":"São Paulo — SP","texto":"Venho mensalmente a Foz do Iguaçu para reuniões na Itaipu. O transfer VIP da Iguaçu Executive Transfer é impecável: carro de luxo, motorista discretíssimo e total profissionalismo. Único serviço que uso em Foz do Iguaçu."},
@@ -414,7 +414,7 @@ PAGINAS = [
       {"p":"Qual a quota de compras para trazer do Paraguai para Foz do Iguaçu?","r":"Brasileiros têm cota de US$ 300 em compras no Paraguai isentas de impostos. Acima disso, podem incidir impostos na Receita Federal brasileira. Consulte a Receita Federal para informações atualizadas."},
       {"p":"Quanto tempo dura o cruzamento da fronteira em Foz do Iguaçu?","r":"O tempo varia conforme o movimento. Em dias normais, 15-30 minutos. Em feriados e finais de semana, pode levar 1 a 2 horas. Nosso motorista conhece os melhores horários para cruzar."},
       {"p":"O táxi para a fronteira em Foz do Iguaçu funciona aos domingos?","r":"Sim! Operamos 7 dias por semana, incluindo domingos e feriados. A fronteira com o Paraguai tem restrições em alguns feriados paraguaios — consulte pelo WhatsApp."},
-      {"p":"Qual o valor do transfer para Puerto Iguazú ou Ciudad del Este?","r":"Os valores variam conforme tempo de espera e número de passageiros. Consulte pelo WhatsApp (45) 9 9916-4059 para orçamento fixo do transfer de fronteira em Foz do Iguaçu."},
+      {"p":"Qual o valor do transfer para Puerto Iguazú ou Ciudad del Este?","r":"Os valores variam conforme tempo de espera e número de passageiros. Consulte pelo WhatsApp (45) 9 9118-5798 para orçamento fixo do transfer de fronteira em Foz do Iguaçu."},
     ],
     "depoimentos": [
       {"nome":"Comprador — Varejo SP","cidade":"São Paulo — SP","texto":"Vim a Foz do Iguaçu especificamente para compras em Ciudad del Este. O motorista foi excelente: me orientou sobre a cota, conhecia as melhores lojas e me esperou 4 horas nas compras. Transfer de fronteira nota 10!"},
@@ -675,7 +675,7 @@ def gerar_html(p):
 </div>
 
 <footer>
-  <p>IGUAÇU EXECUTIVE TRANSFER · FOZ DO IGUAÇU · PARANÁ · BRASIL · (45) 9 9916-4059 · 24 HORAS</p>
+  <p>IGUAÇU EXECUTIVE TRANSFER · FOZ DO IGUAÇU · PARANÁ · BRASIL · (45) 9 9118-5798 · 24 HORAS</p>
 </footer>
 <div class="bottom-line"></div>
 

@@ -36,9 +36,9 @@ for pasta in BASE.rglob("*.html"):
     # ── META DESCRIPTION ──
     if 'name="description"' not in content:
         # Gera description a partir do title
-        desc = title.replace(" | Iguaçu Executive Transfer", "").replace(" | WhatsApp +55 45 9 9916-4059", "").strip()
+        desc = title.replace(" | Iguaçu Executive Transfer", "").replace(" | WhatsApp +55 45 9 9118-5798", "").strip()
         if len(desc) < 50:
-            desc = f"{desc} — Serviço executivo em Foz do Iguaçu. Motorista profissional, preço fixo, 24 horas. Reserve pelo WhatsApp (45) 9 9916-4059."
+            desc = f"{desc} — Serviço executivo em Foz do Iguaçu. Motorista profissional, preço fixo, 24 horas. Reserve pelo WhatsApp (45) 9 9118-5798."
         else:
             desc = f"{desc}. Motorista profissional, preço fixo, disponível 24 horas. Reserve pelo WhatsApp."
         desc = desc[:155]

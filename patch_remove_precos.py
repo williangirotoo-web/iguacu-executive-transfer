@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 BASE = Path(os.path.expanduser("~/Documents/iguacu-site"))
-WA_NUMBER = "5545999164059"
+WA_NUMBER = "5545991185798"
 SITE_URL = "https://iguacuexecutivetransfer.com.br"
 
 # Botão WhatsApp por idioma
