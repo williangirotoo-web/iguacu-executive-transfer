@@ -190,3 +190,20 @@ button { cursor: pointer; border: none; background: none; font-family: var(--san
   .wa-float { bottom: 20px; right: 20px; width: 52px; height: 52px; }
   .services, .diferenciais, .destinos, .passos, .faq, .cta-final { padding: 72px 0; }
 }
+/* ===== Submenus (dropdown) ===== */
+.nav-dd { position: relative; display: flex; align-items: center; height: var(--nav-h); }
+.nav-dd > .nav-dd-btn { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gray-l); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 0; font-family: inherit; transition: color var(--tr); }
+.nav-dd > .nav-dd-btn::after { content: ''; width: 5px; height: 5px; border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: rotate(45deg) translateY(-2px); }
+.nav-dd:hover > .nav-dd-btn, .nav-dd:focus-within > .nav-dd-btn { color: var(--gold); }
+.nav-dd-menu { position: absolute; top: calc(var(--nav-h) - 8px); left: -20px; min-width: 260px; background: rgba(8,8,8,0.98); border: 1px solid rgba(201,168,76,0.18); border-top: 2px solid var(--gold); padding: 10px 0; opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .2s, transform .2s, visibility .2s; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+.nav-dd:hover .nav-dd-menu, .nav-dd:focus-within .nav-dd-menu { opacity: 1; visibility: visible; transform: none; }
+.nav-links .nav-dd-menu a { display: block; padding: 10px 22px; font-size: 0.66rem; letter-spacing: 0.12em; white-space: nowrap; }
+.nav-links .nav-dd-menu a:hover { background: rgba(201,168,76,0.07); }
+.nav-dd-menu .dd-sep { height: 1px; background: rgba(201,168,76,0.12); margin: 6px 0; }
+.mobile-menu details { border-bottom: 1px solid rgba(255,255,255,0.05); }
+.mobile-menu summary { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-l); padding: 14px 0; cursor: pointer; list-style: none; display: flex; justify-content: space-between; }
+.mobile-menu summary::-webkit-details-marker { display: none; }
+.mobile-menu summary::after { content: '+'; color: var(--gold); }
+.mobile-menu details[open] summary::after { content: '−'; }
+.mobile-menu details a { padding: 11px 0 11px 16px; font-size: 0.72rem; border-bottom: 0; color: rgba(255,255,255,0.6); }
+.mobile-menu { max-height: calc(100vh - var(--nav-h)); overflow-y: auto; background: #080808; }
