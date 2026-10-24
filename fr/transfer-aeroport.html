@@ -44,7 +44,7 @@
     body{background:var(--black);color:var(--off-white);font-family:'Montserrat',sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:hidden}
     .top-line{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
     /* NAV */
-    nav{position:sticky;top:0;z-index:100;background:rgba(10,10,10,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(212,175,55,0.1);padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+    nav.nav-old{position:sticky;top:0;z-index:100;background:rgba(10,10,10,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(212,175,55,0.1);padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
     .nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none}
     .nav-logo-circle{width:36px;height:36px;border-radius:50%;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:0.8rem;color:var(--gold);letter-spacing:2px}
     .nav-brand{font-family:'Cormorant Garamond',serif;font-size:0.95rem;color:var(--off-white)}
@@ -141,16 +141,30 @@
     }
   </style>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/menu.css">
 </head>
 <body>
 <div class="top-line"></div>
 
-<nav>
-  <a href="https://iguacuexecutivetransfer.com.br" class="nav-logo">
-    <div class="nav-logo-circle">IET</div>
-    <span class="nav-brand">Iguaçu Executive Transfer</span>
-  </a>
-  <a href="https://wa.me/5545991185798?text=Bonjour!%20J'ai%20trouvé%20votre%20site%20et%20je%20voudrais%20réserver%20un%20transfert%20à%20Foz%20do%20Iguaçu." target="_blank" class="nav-cta">Réserver via WhatsApp</a>
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="https://iguacuexecutivetransfer.com.br/fr/index.html" class="logo"><span class="logo-m">IGUAÇU</span><span class="logo-s">Executive Transfer</span></a>
+    <div class="nav-links">
+      <a href="https://iguacuexecutivetransfer.com.br/fr/index.html">Accueil</a>
+      <a href="https://iguacuexecutivetransfer.com.br/fr/transfer-aeroport.html">Aéroport</a>
+      <a href="https://iguacuexecutivetransfer.com.br/fr/chutes-iguacu-transfer.html">Chutes d'Iguaçu</a>
+      <div class="nav-dd"><button type="button" class="nav-dd-btn" aria-haspopup="true">English</button><div class="nav-dd-menu"><a href="https://iguacuexecutivetransfer.com.br/en/airport-transfer.html">Airport transfer</a><a href="https://iguacuexecutivetransfer.com.br/ar-en/iguazu-falls-transfer-argentina.html">Iguazu Falls, Argentine side</a><a href="https://iguacuexecutivetransfer.com.br/ar-en/private-tour-iguazu-falls-both-sides.html">Private tour, both sides</a></div></div>
+      <a href="https://wa.me/5545991185798?text=Bonjour%20%21%20Je%20souhaite%20r%C3%A9server%20un%20transfert%20ex%C3%A9cutif." class="nav-cta" target="_blank" rel="noopener">Réserver</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="https://iguacuexecutivetransfer.com.br/fr/index.html">Accueil</a>
+    <a href="https://iguacuexecutivetransfer.com.br/fr/transfer-aeroport.html">Aéroport</a>
+    <a href="https://iguacuexecutivetransfer.com.br/fr/chutes-iguacu-transfer.html">Chutes d'Iguaçu</a>
+    <details><summary>English</summary><a href="https://iguacuexecutivetransfer.com.br/en/airport-transfer.html">Airport transfer</a><a href="https://iguacuexecutivetransfer.com.br/ar-en/iguazu-falls-transfer-argentina.html">Iguazu Falls, Argentine side</a><a href="https://iguacuexecutivetransfer.com.br/ar-en/private-tour-iguazu-falls-both-sides.html">Private tour, both sides</a></details>
+    <a href="https://wa.me/5545991185798?text=Bonjour%20%21%20Je%20souhaite%20r%C3%A9server%20un%20transfert%20ex%C3%A9cutif." target="_blank" rel="noopener">Réserver</a>
+  </div>
 </nav>
 
 <section class="hero">
@@ -413,5 +427,6 @@ const observer = new IntersectionObserver(entries => entries.forEach(e => {
 }), {threshold: 0.1});
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
+<script>(function(){var n=document.getElementById("nav"),m=document.getElementById("mobileMenu");addEventListener("scroll",function(){n.classList.toggle("scrolled",scrollY>40)},{passive:true});document.getElementById("hamburger").addEventListener("click",function(){m.classList.toggle("open")})})();</script>
 </body>
 </html>
