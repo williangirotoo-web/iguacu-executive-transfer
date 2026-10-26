@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MDTGZMLJML"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-MDTGZMLJML");
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Transfer VIP Puerto Iguazú | +55 45 99118-5798</title>
@@ -392,5 +400,8 @@ const obs=new IntersectionObserver(entries=>entries.forEach(e=>{
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 </script>
 <script>(function(){var n=document.getElementById("nav"),m=document.getElementById("mobileMenu");addEventListener("scroll",function(){n.classList.toggle("scrolled",scrollY>40)},{passive:true});document.getElementById("hamburger").addEventListener("click",function(){m.classList.toggle("open")})})();</script>
+<script id="iet-track">
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a");if(!a||typeof gtag!=="function")return;var h=a.getAttribute("href")||"";var t=h.indexOf("wa.me")>-1?"whatsapp":(h.indexOf("tel:")===0?"telefone":"");if(!t)return;gtag("event","generate_lead",{method:t,page_path:location.pathname,link_text:(a.textContent||"").trim().slice(0,60)});gtag("event","clique_"+t,{page_path:location.pathname});});
+</script>
 </body>
 </html>
