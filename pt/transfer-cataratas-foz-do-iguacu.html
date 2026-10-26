@@ -214,6 +214,16 @@
 </script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ImageObject", "contentUrl": "https://iguacuexecutivetransfer.com.br/img/cataratas-do-iguacu-arco-iris-1600.webp", "thumbnailUrl": "https://iguacuexecutivetransfer.com.br/img/cataratas-do-iguacu-arco-iris-900.webp", "name": "Cataratas do Iguaçu com arco-íris vistas da trilha do lado brasileiro, em Foz do Iguaçu", "width": 1600, "height": 900, "creditText": "Iguaçu Executive Transfer", "copyrightNotice": "© Iguaçu Executive Transfer", "creator": {"@type": "Organization", "name": "Iguaçu Executive Transfer"}}</script>
   <link rel="stylesheet" href="/css/menu.css">
+<style>
+.hero-img{position:relative;overflow:hidden}
+.page-hero.hero-img{min-height:60vh;display:flex;align-items:center;justify-content:center}
+.hero-img>.hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;display:block}
+.hero-img::after{content:'';position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at center,rgba(10,10,10,.8) 0%,rgba(10,10,10,.6) 75%),linear-gradient(180deg,rgba(10,10,10,.35),rgba(10,10,10,.65));pointer-events:none}
+.hero-img::before{z-index:2}
+.hero-img>*:not(.hero-bg):not(.hero-cap){position:relative;z-index:3}
+.hero-img>.hero-cap{position:absolute;right:16px;bottom:12px;left:16px;text-align:right;z-index:3;margin:0;font-size:.68rem;letter-spacing:.04em;color:rgba(240,237,232,.6)}
+@media(max-width:900px){.hero-img::after{background:linear-gradient(180deg,rgba(10,10,10,.8),rgba(10,10,10,.88))}.hero-img>.hero-cap{text-align:center}}
+</style>
 </head>
 <body>
 <div class="top-line"></div>
@@ -244,7 +254,8 @@
   </div>
 </nav>
 
-<section class="hero">
+<section class="hero hero-img">
+<img class="hero-bg" src="../img/cataratas-do-iguacu-arco-iris-1600.webp" srcset="../img/cataratas-do-iguacu-arco-iris-900.webp 900w, ../img/cataratas-do-iguacu-arco-iris-1600.webp 1600w" sizes="100vw" width="1600" height="900" alt="Cataratas do Iguaçu com arco-íris vistas da trilha do lado brasileiro, em Foz do Iguaçu" fetchpriority="high" decoding="async"><p class="hero-cap">Cataratas do Iguaçu, lado brasileiro. Levamos você do hotel até a entrada do Parque Nacional e esperamos durante a visita.</p>
   <div class="hero-inner">
     <div class="hero-badge"><span class="hero-dot"></span>Foz do Iguaçu · Paraná · Brasil · 24h</div>
     <h1>Transfer para as Cataratas do Iguaçu — Saída do Seu Hotel</h1>
@@ -260,12 +271,6 @@
     <div class="hashtags"><span class="tag">#TransferCataratas</span><span class="tag">#CataratásDoIguaçu</span><span class="tag">#FozDoIguacu</span><span class="tag">#ParqueNacional</span><span class="tag">#IguacuTransfer</span><span class="tag">#CataratásIguacu</span><span class="tag">#TransferPrivativo</span></div>
   </div>
 </section>
-<figure class="iet-foto" style="margin:0;background:#0a0a0a;padding:48px 24px">
-  <div style="max-width:1100px;margin:0 auto">
-    <img src="../img/cataratas-do-iguacu-arco-iris-1600.webp" srcset="../img/cataratas-do-iguacu-arco-iris-900.webp 900w, ../img/cataratas-do-iguacu-arco-iris-1600.webp 1600w" sizes="(max-width:1148px) 100vw, 1100px" width="1600" height="900" alt="Cataratas do Iguaçu com arco-íris vistas da trilha do lado brasileiro, em Foz do Iguaçu" loading="lazy" decoding="async" style="width:100%;height:auto;display:block;border-radius:12px">
-    <figcaption style="font-size:.8rem;color:#9a9a9a;margin-top:12px;text-align:center;line-height:1.6">Cataratas do Iguaçu, lado brasileiro. Levamos você do hotel até a entrada do Parque Nacional e esperamos durante a visita.</figcaption>
-  </div>
-</figure>
 
 
 <section style="background:#111;padding:80px 24px">
