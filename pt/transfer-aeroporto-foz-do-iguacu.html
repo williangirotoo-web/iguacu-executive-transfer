@@ -224,6 +224,12 @@
 }
 </script>
   <link rel="stylesheet" href="/css/menu.css">
+<link rel="preload" as="image" href="../img/frota-suv-executivo-corolla-cross-1600.webp" media="(min-width:901px)">
+<link rel="preload" as="image" href="../img/frota-suv-executivo-corolla-cross-900.webp" media="(max-width:900px)">
+<style>
+.hero.hero-foto{background:radial-gradient(ellipse at center,rgba(10,10,10,.82) 0%,rgba(10,10,10,.62) 75%),linear-gradient(180deg,rgba(10,10,10,.35),rgba(10,10,10,.6)),url("../img/frota-suv-executivo-corolla-cross-1600.webp") center 60%/cover no-repeat}
+@media(max-width:900px){.hero.hero-foto{background:linear-gradient(180deg,rgba(10,10,10,.82),rgba(10,10,10,.9)),url("../img/frota-suv-executivo-corolla-cross-900.webp") center/cover no-repeat}}
+</style>
 </head>
 <body>
 <div class="top-line"></div>
@@ -254,7 +260,7 @@
   </div>
 </nav>
 
-<section class="hero">
+<section class="hero hero-foto">
   <div class="hero-inner">
     <div class="hero-badge"><span class="hero-dot"></span>Foz do Iguaçu · Paraná · Brasil · 24h</div>
     <h1>Transfer Aeroporto Foz do Iguaçu — IGU para Qualquer Hotel 24 Horas</h1>
