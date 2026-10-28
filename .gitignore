@@ -1,0 +1,5 @@
+# Arquivos internos: ficam no seu computador, nao sao publicados
+*.py
+_blog_index.json
+Claude outputs/
+.DS_Store
