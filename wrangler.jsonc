@@ -16,7 +16,7 @@
     "run_worker_first": true
   },
   "d1_databases": [
-    { "binding": "DB", "database_name": "iet-reservas", "database_id": "PREENCHER_COM_O_ID_DO_D1" }
+    { "binding": "DB", "database_name": "iet-reservas", "database_id": "c113f678-3e0f-4caa-af30-e41cfe39784e" }
   ],
   "send_email": [
     { "name": "AVISOS", "destination_address": "atendimento@g7.taxi.br" }
