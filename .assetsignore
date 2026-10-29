@@ -8,3 +8,8 @@ node_modules
 Claude outputs
 .DS_Store
 .wrangler
+src
+package.json
+package-lock.json
+.dev.vars
+tests

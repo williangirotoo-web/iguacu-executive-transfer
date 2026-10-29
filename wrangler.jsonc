@@ -1,14 +1,33 @@
 {
-  // Cloudflare Workers (site estatico). Deploy automatico a cada push na branch main.
+  // Cloudflare Workers: site estatico + API de reservas. Deploy automatico a cada push na branch main.
   "name": "iguacu-executive-transfer",
+  "main": "src/worker.js",
   "compatibility_date": "2026-10-01",
-  // Endereco de teste desligado: o site responde so no dominio oficial (evita conteudo duplicado no Google)
+  // O site responde so no dominio oficial. Os enderecos de teste das versoes (preview) recebem "noindex" pelo Worker.
   "workers_dev": false,
-  "preview_urls": false,
+  "preview_urls": true,
   "assets": {
     "directory": ".",
+    "binding": "ASSETS",
     // "none" mantem as URLs .html exatamente como hoje (sem redirecionar /pagina.html para /pagina)
     "html_handling": "none",
-    "not_found_handling": "404-page"
-  }
+    "not_found_handling": "404-page",
+    // o Worker atende tudo: a API (/api/...) e repassa o resto para os arquivos do site
+    "run_worker_first": true
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "iet-reservas", "database_id": "PREENCHER_COM_O_ID_DO_D1" }
+  ],
+  "send_email": [
+    { "name": "AVISOS", "destination_address": "atendimento@g7.taxi.br" }
+  ],
+  "vars": {
+    "EMAIL_AVISOS": "atendimento@g7.taxi.br",
+    "EMAIL_REMETENTE": "reservas@iguacuexecutivetransfer.com.br",
+    "ADMIN_EMAILS": "atendimento@g7.taxi.br,williangirotoo@gmail.com",
+    "ACCESS_TEAM": "",
+    "ACCESS_AUD": "",
+    "TURNSTILE_SITEKEY": ""
+  },
+  "observability": { "enabled": true }
 }

@@ -6,6 +6,10 @@
 /fr/ /fr/index.html 200
 /ja/ /ja/index.html 200
 /zh/ /zh/index.html 200
+/reservar/ /reservar/index.html 200
+/reservar /reservar/ 301
+/admin/ /admin/index.html 200
+/admin /admin/ 301
 / /index.html 200
 
 /ar-es/excursion-cataratas-desde-puerto-iguazu.html /ar-es/taxi-cataratas-iguazu-argentina.html 301
