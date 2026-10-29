@@ -29,5 +29,23 @@
     "ACCESS_AUD": "",
     "TURNSTILE_SITEKEY": ""
   },
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+  // Versoes de teste (ramos diferentes de main). Usam o mesmo banco; os pedidos de teste
+  // ficam marcados com o endereco de teste (campo "origem") e podem ser cancelados no painel.
+  "previews": {
+    "vars": {
+      "EMAIL_AVISOS": "atendimento@g7.taxi.br",
+      "EMAIL_REMETENTE": "reservas@iguacuexecutivetransfer.com.br",
+      "ADMIN_EMAILS": "atendimento@g7.taxi.br,williangirotoo@gmail.com",
+      "ACCESS_TEAM": "",
+      "ACCESS_AUD": "",
+      "TURNSTILE_SITEKEY": ""
+    },
+    "d1_databases": [
+      { "binding": "DB", "database_id": "c113f678-3e0f-4caa-af30-e41cfe39784e" }
+    ],
+    "send_email": [
+      { "name": "AVISOS", "destination_address": "atendimento@g7.taxi.br" }
+    ]
+  }
 }
