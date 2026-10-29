@@ -74,7 +74,11 @@ function catalogo(env) {
 
 /* ---------------- anti-spam ---------------- */
 async function verificarTurnstile(env, token, ip) {
-  if (!env.TURNSTILE_SECRET) return true; // ainda não configurado
+  if (!env.TURNSTILE_SECRET) {
+    // sem a chave secreta: só libera se o site também estiver sem a chave pública (ex.: versão de teste)
+    if (env.TURNSTILE_SITEKEY) { console.error("TURNSTILE_SECRET ausente: pedido recusado"); return false; }
+    return true;
+  }
   if (!token) return false;
   const r = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
     method: "POST", body: new URLSearchParams({ secret: env.TURNSTILE_SECRET, response: token, remoteip: ip || "" }),
