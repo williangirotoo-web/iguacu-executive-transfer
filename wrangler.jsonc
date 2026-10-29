@@ -25,8 +25,8 @@
     "EMAIL_AVISOS": "atendimento@g7.taxi.br",
     "EMAIL_REMETENTE": "reservas@iguacuexecutivetransfer.com.br",
     "ADMIN_EMAILS": "atendimento@g7.taxi.br,williangirotoo@gmail.com",
-    "ACCESS_TEAM": "",
-    "ACCESS_AUD": "",
+    "ACCESS_TEAM": "delicate-haze-fce5",
+    "ACCESS_AUD": "202da0dafe43cea11864410474efb15654825de72230769e3756d2056dc2b9e8",
     "TURNSTILE_SITEKEY": "0x4AAAAAAFri2epNElaziuGF"
   },
   "observability": { "enabled": true },
@@ -37,8 +37,8 @@
       "EMAIL_AVISOS": "atendimento@g7.taxi.br",
       "EMAIL_REMETENTE": "reservas@iguacuexecutivetransfer.com.br",
       "ADMIN_EMAILS": "atendimento@g7.taxi.br,williangirotoo@gmail.com",
-      "ACCESS_TEAM": "",
-      "ACCESS_AUD": "",
+      "ACCESS_TEAM": "delicate-haze-fce5",
+      "ACCESS_AUD": "202da0dafe43cea11864410474efb15654825de72230769e3756d2056dc2b9e8",
       "TURNSTILE_SITEKEY": ""
     },
     "d1_databases": [
