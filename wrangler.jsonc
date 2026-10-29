@@ -1,0 +1,11 @@
+{
+  // Cloudflare Workers (site estatico). Deploy automatico a cada push na branch main.
+  "name": "iguacu-executive-transfer",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": ".",
+    // "none" mantem as URLs .html exatamente como hoje (sem redirecionar /pagina.html para /pagina)
+    "html_handling": "none",
+    "not_found_handling": "404-page"
+  }
+}

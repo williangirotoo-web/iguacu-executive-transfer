@@ -1,0 +1,10 @@
+.git
+.gitignore
+.assetsignore
+wrangler.jsonc
+CNAME
+node_modules
+*.py
+Claude outputs
+.DS_Store
+.wrangler
