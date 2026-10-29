@@ -27,7 +27,7 @@
     "ADMIN_EMAILS": "atendimento@g7.taxi.br,williangirotoo@gmail.com",
     "ACCESS_TEAM": "",
     "ACCESS_AUD": "",
-    "TURNSTILE_SITEKEY": ""
+    "TURNSTILE_SITEKEY": "0x4AAAAAAFri2epNElaziuGF"
   },
   "observability": { "enabled": true },
   // Versoes de teste (ramos diferentes de main). Usam o mesmo banco; os pedidos de teste
