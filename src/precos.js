@@ -182,7 +182,7 @@ export const POR_KM = {
   valorKm: { comum: 7, exec: 8, suv: 8.5, sete: 9, luxo: 20, van: 12 },
   minimo: { comum: 350, exec: 1000, suv: 1000, sete: 1000, luxo: 4000, van: 1500 },
   acrescimoAcimaKm: 500, acrescimoPct: 20,
-  maxKm: 1000, minKm: 5,
+  maxKm: 1000, minKm: 0, // trajeto curto paga o mínimo da categoria
   idaVoltaEsperaHoras: 5,
   fronteiraPorTrecho: 150,
   paisesAceitos: ["BRA", "ARG", "PRY"],
