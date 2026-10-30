@@ -20,7 +20,7 @@
       waAjuda: "Prefere falar com a gente?", waBtn: "Chamar no WhatsApp", seg: "Preço fechado calculado na hora · dados protegidos", cob: "Valores em reais (R$), por veículo.",
       h1: "Reserve seu transfer em Foz do Iguaçu", sub: "Escolha o trajeto e a categoria do veículo. Preço fechado, calculado na hora, sem taxímetro.",
       trust: ["Preço fechado", "Cancelamento grátis até {h} h antes", "Transfer 24h com agendamento", "Argentina e Paraguai"],
-      g_todos: "Todos", g_aeroporto: "Aeroportos", g_passeios: "Cataratas e passeios", g_motorista: "Motorista à disposição", g_viagens: "Outras cidades",
+      paisTit: "Para onde você vai?", p_todos: "Todos", p_br: "Brasil", p_ar: "Argentina", p_py: "Paraguai", g_todos: "Todos", g_aeroporto: "Aeroportos", g_passeios: "Cataratas e passeios", g_motorista: "Motorista à disposição", g_viagens: "Outras cidades",
       apartir: "a partir de", porveiculo: "por veículo", escolher: "Escolher", consulta: "Sob consulta", pedir: "Pedir cotação no WhatsApp",
       consTit: "Grupos e experiências", consDesc: "Atendimento personalizado pelo WhatsApp:",
       data: "Data", hora: "Horário", horaVoo: "Horário do voo", sentido: "Sentido", chegada: "Chegada (aeroporto → hotel)", saida: "Saída (hotel → aeroporto)",
@@ -68,7 +68,7 @@
       waAjuda: "Rather talk to us?", waBtn: "Chat on WhatsApp", seg: "Fixed price calculated instantly · data protected", cob: "Prices in Brazilian reais (R$), per vehicle.",
       h1: "Book your transfer in Foz do Iguaçu", sub: "Choose your route and vehicle. Fixed price calculated instantly, no meter.",
       trust: ["Fixed price", "Free cancellation up to {h} h before", "24h transfers with advance booking", "Argentina & Paraguay"],
-      g_todos: "All", g_aeroporto: "Airports", g_passeios: "Falls & tours", g_motorista: "Driver at your disposal", g_viagens: "Other cities",
+      paisTit: "Where are you going?", p_todos: "All", p_br: "Brazil", p_ar: "Argentina", p_py: "Paraguay", g_todos: "All", g_aeroporto: "Airports", g_passeios: "Falls & tours", g_motorista: "Driver at your disposal", g_viagens: "Other cities",
       apartir: "from", porveiculo: "per vehicle", escolher: "Select", consulta: "On request", pedir: "Request a quote on WhatsApp",
       consTit: "Groups & experiences", consDesc: "Personal service via WhatsApp:",
       data: "Date", hora: "Time", horaVoo: "Flight time", sentido: "Direction", chegada: "Arrival (airport → hotel)", saida: "Departure (hotel → airport)",
@@ -116,7 +116,7 @@
       waAjuda: "¿Prefiere hablar con nosotros?", waBtn: "Escribir por WhatsApp", seg: "Precio cerrado calculado al instante · datos protegidos", cob: "Valores en reales (R$), por vehículo.",
       h1: "Reserve su traslado en Foz do Iguaçu", sub: "Elija el trayecto y la categoría del vehículo. Precio cerrado al instante, sin taxímetro.",
       trust: ["Precio cerrado", "Cancelación gratis hasta {h} h antes", "Traslados 24 h con reserva", "Argentina y Paraguay"],
-      g_todos: "Todos", g_aeroporto: "Aeropuertos", g_passeios: "Cataratas y paseos", g_motorista: "Chofer a disposición", g_viagens: "Otras ciudades",
+      paisTit: "¿A dónde va?", p_todos: "Todos", p_br: "Brasil", p_ar: "Argentina", p_py: "Paraguay", g_todos: "Todos", g_aeroporto: "Aeropuertos", g_passeios: "Cataratas y paseos", g_motorista: "Chofer a disposición", g_viagens: "Otras ciudades",
       apartir: "desde", porveiculo: "por vehículo", escolher: "Elegir", consulta: "A consultar", pedir: "Pedir cotización por WhatsApp",
       consTit: "Grupos y experiencias", consDesc: "Atención personalizada por WhatsApp:",
       data: "Fecha", hora: "Horario", horaVoo: "Horario del vuelo", sentido: "Sentido", chegada: "Llegada (aeropuerto → hotel)", saida: "Salida (hotel → aeropuerto)",
@@ -159,7 +159,7 @@
   };
   var qs = new URLSearchParams(location.search);
   var htmlLang = (document.documentElement.lang || "pt").slice(0, 2);
-  var S = { lang: qs.get("lang") || store.get("lang", htmlLang), grupo: qs.get("g") || "todos", cart: store.get("cart2", []), q: "", sort: "rec", pax: "any" };
+  var S = { lang: qs.get("lang") || store.get("lang", htmlLang), grupo: qs.get("g") || "todos", pais: /^(br|ar|py)$/.test(qs.get("p") || "") ? qs.get("p") : "todos", cart: store.get("cart2", []), q: "", sort: "rec", pax: "any" };
   if (!T[S.lang]) S.lang = "pt";
   var CAT = null; // catálogo vindo da API
   function t(k, v) {
@@ -235,10 +235,26 @@
     if (s.fronteira) b.push(t("b_fronteira"));
     return b.map(function (x) { return "<span>" + esc(x) + "</span>"; }).join("");
   }
+  function noPais(s, p) { p = p || S.pais; return p === "todos" || (s.paises || ["br"]).indexOf(p) >= 0; }
+  var FLAG = {
+    br: '<svg viewBox="0 0 28 20" aria-hidden="true"><rect width="28" height="20" rx="3" fill="#169b3c"/><path d="M14 3l10 7-10 7L4 10z" fill="#fedf00"/><circle cx="14" cy="10" r="3.9" fill="#002776"/><path d="M10.3 9.2c2.5-.6 5.1-.3 7.4.9" stroke="#fff" stroke-width=".8" fill="none"/></svg>',
+    ar: '<svg viewBox="0 0 28 20" aria-hidden="true"><rect width="28" height="20" rx="3" fill="#74acdf"/><rect y="6.67" width="28" height="6.66" fill="#fff"/><circle cx="14" cy="10" r="2.1" fill="#f6b40e"/></svg>',
+    py: '<svg viewBox="0 0 28 20" aria-hidden="true"><rect width="28" height="20" rx="3" fill="#0038a8"/><path d="M0 3a3 3 0 013-3h22a3 3 0 013 3v3.67H0z" fill="#d52b1e"/><rect y="6.67" width="28" height="6.66" fill="#fff"/><circle cx="14" cy="10" r="2" fill="none" stroke="#0038a8" stroke-width=".7"/></svg>',
+    todos: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5a14 14 0 010 19 14 14 0 010-19"/></svg>'
+  };
+  function renderPaises() {
+    var el = $("#r-paises"); if (!el) return;
+    txt("#r-paises-t", t("paisTit"));
+    el.innerHTML = ["todos", "br", "ar", "py"].map(function (p) {
+      var n = CAT.servicos.filter(function (s) { return (S.grupo === "todos" || s.grupo === S.grupo) && noPais(s, p); }).length;
+      return '<button type="button" class="r-pais' + (S.pais === p ? " on" : "") + '" data-p="' + p + '" aria-pressed="' + (S.pais === p) + '">' + FLAG[p] + "<b>" + esc(t("p_" + p)) + "</b><i>" + n + "</i></button>";
+    }).join("");
+  }
   function filtered() {
     var q = norm(S.q), pm = paxMin();
     var list = CAT.servicos.filter(function (s) {
       if (S.grupo !== "todos" && s.grupo !== S.grupo) return false;
+      if (!noPais(s)) return false;
       if (q && norm(L(s.nome) + " " + L(s.desc)).indexOf(q) < 0) return false;
       if (S.pax !== "any" && minPrice(s, pm) == null) return false;
       return true;
@@ -256,16 +272,17 @@
   function renderList() {
     var grupos = ["todos", "aeroporto", "passeios", "motorista", "viagens"];
     $("#r-chips").innerHTML = grupos.map(function (g) {
-      var n = CAT.servicos.filter(function (s) { return g === "todos" || s.grupo === g; }).length;
+      var n = CAT.servicos.filter(function (s) { return (g === "todos" || s.grupo === g) && noPais(s); }).length;
       return '<button type="button" class="r-chip' + (S.grupo === g ? " on" : "") + '" data-g="' + g + '">' + esc(t("g_" + g)) + " <i>" + n + "</i></button>";
     }).join("");
+    renderPaises();
     var list = filtered(), pm = paxMin();
     txt("#r-count", t("nRes", { n: list.length }));
     var html = list.map(function (s, i) {
       var mp = minPrice(s, pm);
       return '<article class="r-card reveal" style="--d:' + Math.min(i, 8) * 40 + 'ms"><div class="r-img"><img src="/img/' + s.foto + '-900.webp" alt="' + esc(L(s.nome)) + '" loading="lazy" width="900" height="506">' +
         '<div class="r-badges">' + badges(s) + "</div></div>" +
-        '<div class="r-card-b"><span class="r-grp">' + esc(t("g_" + s.grupo)) + "</span><h3>" + esc(L(s.nome)) + "</h3><p>" + esc(L(s.desc)) + "</p>" +
+        '<div class="r-card-b"><span class="r-grp">' + esc(t("g_" + s.grupo)) + '<span class="r-flags">' + (s.paises || ["br"]).map(function (p) { return '<span title="' + esc(t("p_" + p)) + '">' + FLAG[p] + "</span>"; }).join("") + "</span></span><h3>" + esc(L(s.nome)) + "</h3><p>" + esc(L(s.desc)) + "</p>" +
         '<div class="r-card-f"><span><small>' + esc(t("apartir")) + "</small> <b>" + (mp == null ? esc(t("consulta")) : brl(mp)) + "</b> <small>" + esc(t("porveiculo")) + "</small></span>" +
         '<button type="button" class="r-btn" data-sel="' + s.id + '">' + esc(t("escolher")) + ' <span aria-hidden="true">→</span></button></div></div></article>';
     }).join("");
@@ -274,7 +291,7 @@
       html += '<article class="r-card r-card-calc reveal"><div class="r-card-b"><span class="r-grp">' + esc(t("g_viagens")) + "</span><h3>" + esc(t("calcTit")) + "</h3><p>" + esc(t("calcDesc")) + "</p>" +
         '<a class="r-btn r-btn-wa" target="_blank" rel="noopener" href="' + waLink(t("calcTit")) + '">' + esc(t("calcBtn")) + "</a></div></article>";
     }
-    if (S.grupo === "todos") {
+    if (S.grupo === "todos" && S.pais === "todos") {
       html += '<article class="r-card r-card-cons reveal"><div class="r-card-b"><span class="r-grp">' + esc(t("consulta")) + "</span><h3>" + esc(t("consTit")) + "</h3><p>" + esc(t("consDesc")) + "</p><ul>" +
         CAT.consulta.map(function (c) { return "<li>" + esc(L(c.nome)) + "</li>"; }).join("") + "</ul>" +
         '<a class="r-btn r-btn-wa" target="_blank" rel="noopener" href="' + waLink(t("pedir") + ": " + CAT.consulta.map(function (c) { return L(c.nome); }).join(" / ")) + '">' + esc(t("pedir")) + "</a></div></article>";
@@ -481,13 +498,18 @@
   document.addEventListener("click", function (e) {
     var b = e.target.closest("button, a"); if (!b || !CAT) return;
     if (b.dataset.g) { S.grupo = b.dataset.g; renderList(); }
+    else if (b.dataset.p) {
+      S.pais = b.dataset.p; renderList();
+      try { var u = new URL(location.href); if (S.pais === "todos") u.searchParams.delete("p"); else u.searchParams.set("p", S.pais); history.replaceState(null, "", u); } catch (x) {}
+      track("select_content", { content_type: "pais", item_id: S.pais });
+    }
     else if (b.dataset.sel) openSvc(b.dataset.sel);
     else if (b.hasAttribute("data-close")) closeModal();
     else if (b.dataset.rm !== undefined) { S.cart.splice(+b.dataset.rm, 1); saveCart(); }
     else if (b.dataset.lang) { S.lang = b.dataset.lang; store.set("lang", S.lang); all(); }
     else if (b.id === "r-go" || b.id === "r-bar-go") { $("#r-checkout").hidden = false; renderCheckout(); $("#r-checkout").scrollIntoView({ behavior: "smooth" }); }
     else if (b.id === "r-novo") { $("#r-checkout").hidden = true; scrollTo({ top: 0, behavior: "smooth" }); }
-    else if (b.id === "r-clear") { S.grupo = "todos"; S.q = ""; S.pax = "any"; S.sort = "rec"; $("#r-q").value = ""; renderStatic(); renderList(); }
+    else if (b.id === "r-clear") { S.grupo = "todos"; S.pais = "todos"; S.q = ""; S.pax = "any"; S.sort = "rec"; $("#r-q").value = ""; renderStatic(); renderList(); }
   });
   var qT; $("#r-q").addEventListener("input", function () { var v = this.value; clearTimeout(qT); qT = setTimeout(function () { S.q = v; renderList(); }, 150); });
   $("#r-sort").addEventListener("change", function () { S.sort = this.value; renderList(); });

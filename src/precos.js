@@ -172,6 +172,15 @@ SERVICOS.push(
   V("salto-del-guaira", "Salto del Guairá (Paraguai)", "Salto del Guairá (Paraguay)", "Salto del Guairá (Paraguay)", P(2000, 2500, 2600, 3500, 5000)),
 );
 
+/* Países envolvidos em cada serviço (filtro "Para onde você vai?" da página de reservas) */
+const PAISES = {
+  "igu-pi": ["br", "ar"], "igr-foz": ["ar", "br"], "igr-pi": ["ar"], "igu-cde": ["br", "py"],
+  "ar-iv": ["ar"], "ar-ida": ["ar"], "dois-lados": ["br", "ar"], "tres-paises": ["br", "ar", "py"],
+  "cde": ["py"], "jantar-pi": ["ar"], "por-hora": ["br", "ar", "py"], "diaria": ["br", "ar", "py"],
+  "posadas": ["ar"], "buenos-aires": ["ar"], "assuncao": ["py"], "salto-del-guaira": ["py"],
+};
+for (const s of SERVICOS) s.paises = PAISES[s.id] || ["br"];
+
 /* Só pelo WhatsApp (sem preço no site) */
 export const CONSULTA = [
   { id: "van", nome: N("Van executiva para grupos", "Executive van for groups", "Van ejecutiva para grupos") },
