@@ -1,6 +1,7 @@
 /* Iguaçu Executive Transfer — Worker (API de reservas + site estático) */
-import { CONFIG, CATEGORIAS, SERVICOS, CONSULTA, HORA_EXTRA, POR_HORA, datasEspeciais } from "./precos.js";
+import { CONFIG, CATEGORIAS, SERVICOS, CONSULTA, HORA_EXTRA, POR_HORA, POR_KM, datasEspeciais } from "./precos.js";
 import { normalizarItem, cotar, cotarTodas, valorAgora, servico } from "./cotacao.js";
+import { buscarLugares, resolverRota } from "./rota.js";
 import { EmailMessage } from "cloudflare:email";
 
 export const STATUS = ["solicitacao", "pagamento_pendente", "aprovado", "aguardando_confirmacao", "confirmada", "concluida", "cancelada"];
@@ -66,6 +67,7 @@ function catalogo(env) {
       cadeirinha: CONFIG.cadeirinha, pet: CONFIG.pet, sinalPct: CONFIG.sinalPct, pagamento: CONFIG.pagamento,
       pagamentoViagens: CONFIG.pagamentoViagens, horaExtra: HORA_EXTRA, porHora: { minimoHoras: POR_HORA.minimoHoras, maximoHoras: POR_HORA.maximoHoras },
       turnstileSiteKey: env.TURNSTILE_SITEKEY || "", pagamentoOnline: false,
+      porKm: { ...POR_KM, ativo: !!(env.ORS_KEY || env.ORS_MOCK === "1") },
     },
     categorias: CATEGORIAS, servicos: SERVICOS, consulta: CONSULTA,
     datasEspeciais: [...datasEspeciais(ano), ...datasEspeciais(ano + 1)],
@@ -130,6 +132,7 @@ function resumoTexto(p, itens, comLinks, origem) {
     if (it.destino) linhas.push(`   Levar para: ${it.destino}`);
     linhas.push(`   Passageiros: ${it.pax} · Malas: ${it.malas}` + (it.cadeirinhas ? ` · Cadeirinhas: ${it.cadeirinhas}` : "") + (it.pet ? " · Com pet" : ""));
     if (it.horas_extras) linhas.push(`   Horas extras: ${it.horas_extras}`);
+    if (it.km) linhas.push(`   Distância: ${it.km} km por trecho` + (it.km_fora ? " (inclui taxa de fronteira)" : ""));
     if (servico(it.servico_id)?.tipo === "hora") linhas.push(`   Horas contratadas: ${it.horas}`);
     if (servico(it.servico_id)?.tipo === "diaria") linhas.push(`   Diárias: ${it.dias}`);
     if (it.data_especial) linhas.push(`   Data especial: +${CONFIG.feriadoAcrescimoPct}%`);
@@ -143,6 +146,15 @@ function resumoTexto(p, itens, comLinks, origem) {
     if (tel.length >= 10) linhas.push(`WhatsApp do cliente: https://wa.me/${tel.length <= 11 ? "55" + tel : tel}`);
   }
   return linhas.join("\n");
+}
+
+/* Viagem sob medida: a distância e o país vêm SEMPRE do servidor */
+async function prepararKm(env, it) {
+  const svc = servico(it.servico);
+  if (!svc || svc.tipo !== "km") return;
+  it.rota = await resolverRota(env, it.de, it.para);
+  if (it.de) it.origem = it.de.label || it.origem;
+  if (it.para) it.destino = (it.para.label || it.destino) + (it.idaVolta ? " (ida e volta)" : "");
 }
 
 /* ---------------- criar pedido ---------------- */
@@ -169,6 +181,7 @@ async function criarPedido(req, env, ctx) {
   const itens = [];
   for (let i = 0; i < brutos.length; i++) {
     const it = normalizarItem(brutos[i]);
+    await prepararKm(env, it);
     const cot = cotar(it, agora);
     if (!cot.ok) return erro("item_invalido", 422, { item: i, motivo: cot.erro, detalhe: cot });
     if (!it.origem) return erro("item_invalido", 422, { item: i, motivo: "origem" });
@@ -213,7 +226,8 @@ async function criarPedido(req, env, ctx) {
   const pedido = { codigo, ...cliente, total: pag.total, valor_agora: pag.agora };
   const itensDb = itens.map(({ it, cot, svc }, i) => ({ servico_id: it.servico, servico_nome: svc.nome.pt, categoria: it.categoria, data: it.data, hora: it.hora,
     sentido: it.sentido, voo: it.voo, origem: it.origem, destino: it.destino, pax: it.pax, malas: it.malas, cadeirinhas: it.cadeirinhas, pet: it.pet,
-    horas_extras: it.horasExtras, horas: it.horas, dias: it.dias, data_especial: cot.dataEspecial, valor: cot.valor, modo: pag.detalhes[i].modo }));
+    horas_extras: it.horasExtras, horas: it.horas, dias: it.dias, data_especial: cot.dataEspecial, valor: cot.valor, modo: pag.detalhes[i].modo,
+    km: cot.km || null, km_fora: it.rota ? !!it.rota.fora : false }));
   const origem = new URL(req.url).origin;
   ctx.waitUntil(enviarAviso(env, `Nova reserva ${codigo} — ${cliente.nome} — ${brl(pag.total)}`, resumoTexto(pedido, itensDb, true, origem)));
 
@@ -334,7 +348,12 @@ async function api(req, env, ctx, url) {
   if (p === "/api/cotacao" && m === "POST") {
     let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
     const it = normalizarItem(b);
+    await prepararKm(env, it);
     return json(b.categoria ? cotar(it) : cotarTodas(it));
+  }
+  if (p === "/api/lugares" && m === "GET") {
+    const r = await buscarLugares(env, url.searchParams.get("q"), url.searchParams.get("lang"));
+    return json(r, r.ok ? 200 : 503, r.ok ? { "cache-control": "public, max-age=3600" } : {});
   }
   if (p === "/api/pedidos" && m === "POST") return criarPedido(req, env, ctx);
   const mm = p.match(/^\/api\/pedidos\/(IET-[A-Z0-9]{6})$/);

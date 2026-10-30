@@ -172,12 +172,33 @@ SERVICOS.push(
   V("salto-del-guaira", "Salto del Guairá (Paraguai)", "Salto del Guairá (Paraguay)", "Salto del Guairá (Paraguay)", P(2000, 2500, 2600, 3500, 5000)),
 );
 
+/* ---------- Viagem sob medida: preço por km (calculadora) ----------
+   Aprovado pelo Willian: valor por km por categoria, com mínimo por viagem;
+   km acima de 500 custam 20% a mais; máximo 1.000 km por trecho;
+   ida e volta = 2 trechos (com até 5 h de espera no destino);
+   destino na Argentina ou no Paraguai soma R$ 150 por trecho;
+   sem cobrança de deslocamento (uma das pontas precisa estar na região de Foz). */
+export const POR_KM = {
+  valorKm: { comum: 7, exec: 8, suv: 8.5, sete: 9, luxo: 20, van: 12 },
+  minimo: { comum: 350, exec: 1000, suv: 1000, sete: 1000, luxo: 4000, van: 1500 },
+  acrescimoAcimaKm: 500, acrescimoPct: 20,
+  maxKm: 1000, minKm: 5,
+  idaVoltaEsperaHoras: 5,
+  fronteiraPorTrecho: 150,
+  paisesAceitos: ["BRA", "ARG", "PRY"],
+  regiaoFoz: { lat: -25.5163, lon: -54.5854, raioKm: 60 },
+};
+SERVICOS.push({ id: "km", grupo: "viagens", tipo: "km", oculto: true, foto: "suv-executivo-corolla-cross-preto",
+  nome: N("Viagem sob medida (preço por km)", "Custom trip (price per km)", "Viaje a medida (precio por km)"),
+  desc: N("Digite a origem e o destino: calculamos a distância e o preço na hora.", "Enter pickup and destination: we calculate distance and price instantly.", "Ingrese origen y destino: calculamos la distancia y el precio al instante."),
+  precos: { ...POR_KM.valorKm } });
+
 /* Países envolvidos em cada serviço (filtro "Para onde você vai?" da página de reservas) */
 const PAISES = {
   "igu-pi": ["br", "ar"], "igr-foz": ["ar", "br"], "igr-pi": ["ar"], "igu-cde": ["br", "py"],
   "ar-iv": ["ar"], "ar-ida": ["ar"], "dois-lados": ["br", "ar"], "tres-paises": ["br", "ar", "py"],
   "cde": ["py"], "jantar-pi": ["ar"], "por-hora": ["br", "ar", "py"], "diaria": ["br", "ar", "py"],
-  "posadas": ["ar"], "buenos-aires": ["ar"], "assuncao": ["py"], "salto-del-guaira": ["py"],
+  "posadas": ["ar"], "buenos-aires": ["ar"], "assuncao": ["py"], "salto-del-guaira": ["py"], "km": ["br", "ar", "py"],
 };
 for (const s of SERVICOS) s.paises = PAISES[s.id] || ["br"];
 

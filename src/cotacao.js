@@ -1,6 +1,6 @@
 /* Motor de preços: calcula o valor de um serviço SEMPRE no servidor.
    Nunca confia em valor vindo do navegador. */
-import { CONFIG, CATEGORIAS, SERVICOS, HORA_EXTRA, POR_HORA, datasEspeciais } from "./precos.js";
+import { CONFIG, CATEGORIAS, SERVICOS, HORA_EXTRA, POR_HORA, POR_KM, datasEspeciais } from "./precos.js";
 
 const SVC = Object.fromEntries(SERVICOS.map((s) => [s.id, s]));
 const centavos = (v) => Math.round(v * 100) / 100;
@@ -14,6 +14,23 @@ function ehDataEspecial(data) {
 
 export function servico(id) { return SVC[id] || null; }
 
+/* Ponto escolhido no mapa: só latitude, longitude e nome. A distância é sempre calculada no servidor. */
+function lugar(v) {
+  if (!v || typeof v !== "object") return null;
+  const lat = Number(v.lat), lon = Number(v.lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return null;
+  return { lat: Math.round(lat * 1e5) / 1e5, lon: Math.round(lon * 1e5) / 1e5, label: String(v.label == null ? "" : v.label).trim().slice(0, 160) };
+}
+
+/* Preço de UM trecho por km (sem fronteira): km acima do limite custam X% a mais; nunca abaixo do mínimo */
+export function precoTrechoKm(km, cat) {
+  const v = POR_KM.valorKm[cat], min = POR_KM.minimo[cat];
+  if (v == null) return null;
+  const lim = POR_KM.acrescimoAcimaKm;
+  const bruto = Math.min(km, lim) * v + Math.max(0, km - lim) * v * (1 + POR_KM.acrescimoPct / 100);
+  return Math.max(min, Math.round(bruto));
+}
+
 /* Normaliza o que veio do navegador: só campos conhecidos, tipos certos, tamanhos limitados */
 export function normalizarItem(x) {
   const s = (v, n = 160) => String(v == null ? "" : v).trim().slice(0, n);
@@ -25,15 +42,16 @@ export function normalizarItem(x) {
     cadeirinhas: Math.max(0, int(x.cadeirinhas, 0)), pet: !!x.pet,
     horasExtras: Math.max(0, int(x.horasExtras, 0)), horas: int(x.horas, POR_HORA.minimoHoras),
     dias: Math.max(1, int(x.dias, 1)),
+    idaVolta: !!x.idaVolta, de: lugar(x.de), para: lugar(x.para),
   };
 }
 
 function antecedencia(svc, cat) {
-  return svc.tipo === "viagem" ? CONFIG.antecedenciaViagensHoras : CONFIG.antecedenciaHoras[cat];
+  return svc.tipo === "viagem" || svc.tipo === "km" ? CONFIG.antecedenciaViagensHoras : CONFIG.antecedenciaHoras[cat];
 }
 
 export function modosPagamento(svc, cat) {
-  const regra = svc.tipo === "viagem" ? CONFIG.pagamentoViagens : CONFIG.pagamento[cat];
+  const regra = svc.tipo === "viagem" || svc.tipo === "km" ? CONFIG.pagamentoViagens : CONFIG.pagamento[cat];
   return regra === "escolha" ? ["sinal", "total"] : [regra];
 }
 
@@ -67,6 +85,15 @@ export function cotar(item, agora = Date.now()) {
     if (item.dias > 15) return { ok: false, erro: "dias", max: 15 };
     base = svc.precos[cat] * item.dias;
     linhas.push({ k: "diarias", qtd: item.dias, unit: svc.precos[cat], valor: base });
+  } else if (svc.tipo === "km") {
+    // item.rota é preenchida SÓ pelo servidor (worker.js → resolverRota), nunca pelo navegador
+    const r = item.rota;
+    if (!r || !r.ok) return { ok: false, erro: (r && r.erro) || "rota_falta" };
+    const trecho = precoTrechoKm(r.km, cat);
+    const n = item.idaVolta ? 2 : 1;
+    base = trecho * n;
+    linhas.push({ k: "km", qtd: r.km, trechos: n, unit: POR_KM.valorKm[cat], minimo: trecho === POR_KM.minimo[cat], valor: base });
+    if (r.fora) linhas.push({ k: "fronteira", qtd: n, unit: POR_KM.fronteiraPorTrecho, valor: POR_KM.fronteiraPorTrecho * n });
   } else {
     base = svc.precos[cat];
     linhas.push({ k: "base", valor: base });
@@ -100,7 +127,8 @@ export function cotar(item, agora = Date.now()) {
   const valor = centavos(subtotal);
   return {
     ok: true, valor, linhas, dataEspecial: especial, inicio: new Date(inicio).toISOString(),
-    modos: modosPagamento(svc, cat), fronteira: !!svc.fronteira,
+    modos: modosPagamento(svc, cat), fronteira: svc.tipo === "km" ? !!item.rota.fora : !!svc.fronteira,
+    ...(svc.tipo === "km" ? { km: item.rota.km, idaVolta: item.idaVolta } : {}),
   };
 }
 
@@ -108,11 +136,12 @@ export function cotar(item, agora = Date.now()) {
 export function cotarTodas(item, agora) {
   const svc = SVC[item.servico]; if (!svc) return { ok: false, erro: "servico_invalido" };
   const out = {};
+  if (svc.tipo === "km" && !(item.rota && item.rota.ok)) return { ok: false, erro: (item.rota && item.rota.erro) || "rota_falta", rota: item.rota || null };
   for (const cat of Object.keys(CATEGORIAS)) {
     if (!(cat in svc.precos)) continue;
     out[cat] = cotar({ ...item, categoria: cat }, agora);
   }
-  return { ok: true, categorias: out };
+  return { ok: true, categorias: out, ...(svc.tipo === "km" ? { rota: item.rota } : {}) };
 }
 
 /* Quanto pagar agora: por item, conforme a regra da categoria e a escolha do cliente */

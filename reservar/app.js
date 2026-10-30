@@ -14,7 +14,7 @@
       paxF: "Pessoas", p_any: "Qualquer", p_4: "Até 4", p_6: "5 ou 6", p_7: "7 ou mais",
       nRes: "{n} serviços", nada: "Nenhum serviço encontrado com esses filtros.", limpar: "Limpar filtros",
       b_espera: "Espera {n} h", b_fronteira: "Fronteira", b_hora: "Por hora", b_dia: "Dia inteiro", b_ida: "Só ida", b_iv: "Ida e volta",
-      calcTit: "Não achou seu trajeto?", calcDesc: "Em breve: calcule pelo endereço de saída e destino. Por enquanto, peça a cotação no WhatsApp.", calcBtn: "Cotar no WhatsApp",
+      calcTit: "Não achou seu trajeto?", calcDesc: "Em breve: calcule pelo endereço de saída e destino. Por enquanto, peça a cotação no WhatsApp.", calcBtn: "Cotar no WhatsApp", calcDesc2: "Digite de onde sai e para onde vai: calculamos a distância pela estrada e o preço de cada categoria na hora.", calcBtn2: "Calcular preço", kmDe: "Saindo de", kmPara: "Indo para", kmPh: "Cidade, hotel ou endereço", kmIdaVolta: "Ida e volta (com até {h} h de espera no destino)", kmInfo: "{km} km pela estrada · cerca de {t}", kmInfoIV: "{km} km por trecho (ida e volta) · cerca de {t} cada", kmFora: "Inclui taxa de fronteira de {v} por trecho.", kmRegras: "Preço por veículo, com pedágios. Trechos acima de {a} km têm acréscimo de {p}% nos km excedentes. Uma das pontas precisa ser na região de Foz do Iguaçu.", kmBusca: "Buscando…", kmNada: "Nenhum lugar encontrado. Tente o nome da cidade.", e_rota_falta: "Escolha a origem e o destino na lista", e_fora_regiao: "Saída ou destino precisa ser na região de Foz do Iguaçu. Para outros trajetos, fale no WhatsApp.", e_pais_nao_atende: "Atendemos destinos no Brasil, Argentina e Paraguai.", e_km_max: "Acima de {max} km: peça a cotação no WhatsApp.", e_km_min: "Trajeto muito curto. Veja os serviços da lista.", e_rota_sem_estrada: "Não encontramos rota por estrada entre esses pontos.", e_calc_indisponivel: "Calculadora indisponível agora. Peça a cotação no WhatsApp.",
       comoTit: "Como funciona", faqTit: "Perguntas frequentes",
       faq: [["Como pago a reserva?", "Depois que confirmamos a disponibilidade, enviamos o link de pagamento pelo WhatsApp: Pix, cartão em até 6x sem juros ou PayPal. Categoria Comum e 7 lugares pagam 100% na reserva; Executivo e SUV podem pagar 50% de sinal."], ["Com quanta antecedência posso reservar?", "Pelo site, a partir de 1 hora antes na categoria Comum e 5 horas antes nas demais. Para viagens a outras cidades, 5 horas."], ["E se meu voo atrasar?", "Informe o número do voo na reserva: acompanhamos o horário de chegada. A primeira hora de espera após o pouso é grátis."], ["Posso cancelar?", "Sim. O cancelamento é grátis até {h} horas antes. Depois disso, devolvemos {d}% do valor pago."], ["Que documento preciso para Argentina ou Paraguai?", "Brasileiros: RG original (com menos de 10 anos) ou passaporte. Estrangeiros: passaporte. Menores de idade precisam de documentação própria."], ["O preço é por pessoa?", "Não. Todos os valores são por veículo, para o grupo inteiro, dentro da capacidade da categoria."]],
       waAjuda: "Prefere falar com a gente?", waBtn: "Chamar no WhatsApp", seg: "Preço fechado calculado na hora · dados protegidos", cob: "Valores em reais (R$), por veículo.",
@@ -62,7 +62,7 @@
       paxF: "People", p_any: "Any", p_4: "Up to 4", p_6: "5 or 6", p_7: "7 or more",
       nRes: "{n} services", nada: "No services match these filters.", limpar: "Clear filters",
       b_espera: "{n} h waiting", b_fronteira: "Border", b_hora: "Hourly", b_dia: "Full day", b_ida: "One way", b_iv: "Round trip",
-      calcTit: "Can't find your route?", calcDesc: "Coming soon: price by pick-up and drop-off address. For now, ask for a quote on WhatsApp.", calcBtn: "Quote on WhatsApp",
+      calcTit: "Can't find your route?", calcDesc: "Coming soon: price by pick-up and drop-off address. For now, ask for a quote on WhatsApp.", calcBtn: "Quote on WhatsApp", calcDesc2: "Enter pick-up and destination: we calculate the road distance and the price of each vehicle instantly.", calcBtn2: "Get price", kmDe: "From", kmPara: "To", kmPh: "City, hotel or address", kmIdaVolta: "Round trip (up to {h} h waiting at destination)", kmInfo: "{km} km by road · about {t}", kmInfoIV: "{km} km each way (round trip) · about {t} each", kmFora: "Includes a border fee of {v} each way.", kmRegras: "Price per vehicle, tolls included. Legs over {a} km have a {p}% surcharge on the extra km. Pick-up or destination must be in the Foz do Iguaçu area.", kmBusca: "Searching…", kmNada: "No place found. Try the city name.", e_rota_falta: "Choose pick-up and destination from the list", e_fora_regiao: "Pick-up or destination must be in the Foz do Iguaçu area. For other routes, contact us on WhatsApp.", e_pais_nao_atende: "We serve Brazil, Argentina and Paraguay.", e_km_max: "Over {max} km: ask for a quote on WhatsApp.", e_km_min: "Route too short. See the services listed.", e_rota_sem_estrada: "No road route found between these points.", e_calc_indisponivel: "Calculator unavailable right now. Ask for a quote on WhatsApp.",
       comoTit: "How it works", faqTit: "FAQ",
       faq: [["How do I pay?", "Once we confirm availability, we send a payment link on WhatsApp: Pix, card or PayPal. Standard and 7-seater pay 100% at booking; Executive and SUV can pay a 50% deposit."], ["How far in advance can I book?", "Online, from 1 hour before (Standard) and 5 hours before (other vehicles). Trips to other cities: 5 hours."], ["What if my flight is delayed?", "Add your flight number: we follow the arrival time. The first hour of waiting after landing is free."], ["Can I cancel?", "Yes. Cancellation is free up to {h} hours before. After that, {d}% is refunded."], ["Which document do I need for Argentina or Paraguay?", "Foreign visitors: passport. Brazilians: original ID card (issued less than 10 years ago) or passport. Minors need their own documents."], ["Is the price per person?", "No. All prices are per vehicle, for the whole group, within the vehicle capacity."]],
       waAjuda: "Rather talk to us?", waBtn: "Chat on WhatsApp", seg: "Fixed price calculated instantly · data protected", cob: "Prices in Brazilian reais (R$), per vehicle.",
@@ -110,7 +110,7 @@
       paxF: "Personas", p_any: "Cualquiera", p_4: "Hasta 4", p_6: "5 o 6", p_7: "7 o más",
       nRes: "{n} servicios", nada: "Ningún servicio coincide con estos filtros.", limpar: "Limpiar filtros",
       b_espera: "Espera {n} h", b_fronteira: "Frontera", b_hora: "Por hora", b_dia: "Día completo", b_ida: "Solo ida", b_iv: "Ida y vuelta",
-      calcTit: "¿No encontró su trayecto?", calcDesc: "Próximamente: precio por dirección de salida y destino. Por ahora, pida la cotización por WhatsApp.", calcBtn: "Cotizar por WhatsApp",
+      calcTit: "¿No encontró su trayecto?", calcDesc: "Próximamente: precio por dirección de salida y destino. Por ahora, pida la cotización por WhatsApp.", calcBtn: "Cotizar por WhatsApp", calcDesc2: "Ingrese origen y destino: calculamos la distancia por ruta y el precio de cada vehículo al instante.", calcBtn2: "Calcular precio", kmDe: "Desde", kmPara: "Hasta", kmPh: "Ciudad, hotel o dirección", kmIdaVolta: "Ida y vuelta (hasta {h} h de espera en destino)", kmInfo: "{km} km por ruta · unas {t}", kmInfoIV: "{km} km por tramo (ida y vuelta) · unas {t} cada uno", kmFora: "Incluye tasa de frontera de {v} por tramo.", kmRegras: "Precio por vehículo, con peajes. Tramos de más de {a} km tienen recargo de {p}% en los km excedentes. El origen o el destino debe estar en la región de Foz do Iguaçu.", kmBusca: "Buscando…", kmNada: "No encontramos el lugar. Pruebe con el nombre de la ciudad.", e_rota_falta: "Elija origen y destino de la lista", e_fora_regiao: "El origen o el destino debe estar en la región de Foz do Iguaçu. Para otros trayectos, escríbanos por WhatsApp.", e_pais_nao_atende: "Atendemos Brasil, Argentina y Paraguay.", e_km_max: "Más de {max} km: pida la cotización por WhatsApp.", e_km_min: "Trayecto muy corto. Vea los servicios de la lista.", e_rota_sem_estrada: "No encontramos ruta por carretera entre esos puntos.", e_calc_indisponivel: "Calculadora no disponible ahora. Pida la cotización por WhatsApp.",
       comoTit: "Cómo funciona", faqTit: "Preguntas frecuentes",
       faq: [["¿Cómo pago?", "Cuando confirmamos la disponibilidad, enviamos el link de pago por WhatsApp: Pix, tarjeta o PayPal. Estándar y 7 plazas pagan el 100% al reservar; Ejecutivo y SUV pueden pagar una seña del 50%."], ["¿Con cuánta anticipación puedo reservar?", "Online, desde 1 hora antes (Estándar) y 5 horas antes (demás vehículos). Viajes a otras ciudades: 5 horas."], ["¿Y si mi vuelo se atrasa?", "Indique el número de vuelo: seguimos el horario de llegada. La primera hora de espera tras el aterrizaje es gratis."], ["¿Puedo cancelar?", "Sí. La cancelación es gratis hasta {h} horas antes. Después, devolvemos el {d}% del valor."], ["¿Qué documento necesito para Argentina o Paraguay?", "Argentinos: DNI físico vigente o pasaporte. Otros extranjeros: pasaporte. Los menores necesitan documentación propia."], ["¿El precio es por persona?", "No. Todos los valores son por vehículo, para todo el grupo, dentro de la capacidad del vehículo."]],
       waAjuda: "¿Prefiere hablar con nosotros?", waBtn: "Escribir por WhatsApp", seg: "Precio cerrado calculado al instante · datos protegidos", cob: "Valores en reales (R$), por vehículo.",
@@ -246,13 +246,15 @@
     var el = $("#r-paises"); if (!el) return;
     txt("#r-paises-t", t("paisTit"));
     el.innerHTML = ["todos", "br", "ar", "py"].map(function (p) {
-      var n = CAT.servicos.filter(function (s) { return (S.grupo === "todos" || s.grupo === S.grupo) && noPais(s, p); }).length;
+      var n = CAT.servicos.filter(function (s) { return !s.oculto && (S.grupo === "todos" || s.grupo === S.grupo) && noPais(s, p); }).length;
       return '<button type="button" class="r-pais' + (S.pais === p ? " on" : "") + '" data-p="' + p + '" aria-pressed="' + (S.pais === p) + '">' + FLAG[p] + "<b>" + esc(t("p_" + p)) + "</b><i>" + n + "</i></button>";
     }).join("");
   }
+  function kmAtivo() { return !!(CAT && CAT.config.porKm && CAT.config.porKm.ativo && svc("km")); }
   function filtered() {
     var q = norm(S.q), pm = paxMin();
     var list = CAT.servicos.filter(function (s) {
+      if (s.oculto) return false;
       if (S.grupo !== "todos" && s.grupo !== S.grupo) return false;
       if (!noPais(s)) return false;
       if (q && norm(L(s.nome) + " " + L(s.desc)).indexOf(q) < 0) return false;
@@ -272,7 +274,7 @@
   function renderList() {
     var grupos = ["todos", "aeroporto", "passeios", "motorista", "viagens"];
     $("#r-chips").innerHTML = grupos.map(function (g) {
-      var n = CAT.servicos.filter(function (s) { return (g === "todos" || s.grupo === g) && noPais(s); }).length;
+      var n = CAT.servicos.filter(function (s) { return !s.oculto && (g === "todos" || s.grupo === g) && noPais(s); }).length;
       return '<button type="button" class="r-chip' + (S.grupo === g ? " on" : "") + '" data-g="' + g + '">' + esc(t("g_" + g)) + " <i>" + n + "</i></button>";
     }).join("");
     renderPaises();
@@ -288,8 +290,9 @@
     }).join("");
     if (!list.length) html = '<div class="r-none"><p>' + esc(t("nada")) + '</p><button type="button" class="r-btn r-ghost" id="r-clear">' + esc(t("limpar")) + "</button></div>";
     if (S.grupo === "todos" || S.grupo === "viagens") {
-      html += '<article class="r-card r-card-calc reveal"><div class="r-card-b"><span class="r-grp">' + esc(t("g_viagens")) + "</span><h3>" + esc(t("calcTit")) + "</h3><p>" + esc(t("calcDesc")) + "</p>" +
-        '<a class="r-btn r-btn-wa" target="_blank" rel="noopener" href="' + waLink(t("calcTit")) + '">' + esc(t("calcBtn")) + "</a></div></article>";
+      html += '<article class="r-card r-card-calc reveal"><div class="r-card-b"><span class="r-grp">' + esc(t("g_viagens")) + "</span><h3>" + esc(t("calcTit")) + "</h3><p>" + esc(t(kmAtivo() ? "calcDesc2" : "calcDesc")) + "</p>" +
+        (kmAtivo() ? '<button type="button" class="r-btn" data-sel="km">' + esc(t("calcBtn2")) + ' <span aria-hidden="true">→</span></button>'
+          : '<a class="r-btn r-btn-wa" target="_blank" rel="noopener" href="' + waLink(t("calcTit")) + '">' + esc(t("calcBtn")) + "</a>") + "</div></article>";
     }
     if (S.grupo === "todos" && S.pais === "todos") {
       html += '<article class="r-card r-card-cons reveal"><div class="r-card-b"><span class="r-grp">' + esc(t("consulta")) + "</span><h3>" + esc(t("consTit")) + "</h3><p>" + esc(t("consDesc")) + "</p><ul>" +
@@ -326,6 +329,13 @@
     f += '<div class="r-row">' + field(t("data") + " *", '<input type="date" name="data" min="' + hoje() + '" required>') +
       field((s.voo ? t("horaVoo") : t("hora")) + " *", '<input type="time" name="hora" required>') + "</div>";
     if (s.voo) f += field(t("voo"), '<input name="voo" placeholder="G3 1234" maxlength="20">');
+    if (s.tipo === "km") {
+      var pk = cfg.porKm;
+      f += acField("de", t("kmDe") + " *") + acField("para", t("kmPara") + " *") +
+        '<label class="r-chk"><input type="checkbox" name="idaVolta"' + (cur.idaVolta ? " checked" : "") + "> <span>" + esc(t("kmIdaVolta", { h: pk.idaVoltaEsperaHoras })) + "</span></label>" +
+        '<div class="r-kminfo" id="r-kminfo" aria-live="polite"></div>' +
+        '<p class="r-note">' + esc(t("kmRegras", { a: pk.acrescimoAcimaKm, p: pk.acrescimoPct })) + "</p>";
+    } else
     f += '<div class="r-row">' + field(t("origem") + " *", '<input name="origem" required maxlength="160" autocomplete="street-address">') +
       field(s.tipo === "transfer" || s.tipo === "viagem" ? t("destino") : t("destinoOpc"), '<input name="destino" maxlength="160">') + "</div>";
     f += '<div class="r-row">' + field(t("pax"), num("pax", cur.pax, 1, 15)) + field(t("malas"), num("malas", cur.malas, 0, 15)) + "</div>";
@@ -342,6 +352,47 @@
       '</button><button type="submit" class="r-btn">' + esc(t("add")) + "</button></div>";
     m.innerHTML = f;
     renderCats(); requestQuotes();
+  }
+  /* ---------- busca de lugares (viagem por km) ---------- */
+  function acField(n, label) {
+    var v = cur[n] ? cur[n].label : "";
+    return '<div class="r-f r-ac"><label for="r-ac-' + n + '"><span>' + esc(label) + '</span></label><input id="r-ac-' + n + '" data-ac="' + n + '" value="' + esc(v) + '" placeholder="' + esc(t("kmPh")) +
+      '" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="r-acl-' + n + '"><ul class="r-acl" id="r-acl-' + n + '" role="listbox" hidden></ul></div>';
+  }
+  var acT = null, acSeq = 0, acRes = {};
+  function acSearch(inp) {
+    var n = inp.dataset.ac, q = inp.value.trim(), ul = $("#r-acl-" + n);
+    cur[n] = null; quotes = {}; requestQuotes();
+    clearTimeout(acT);
+    if (q.length < 3) { ul.hidden = true; inp.setAttribute("aria-expanded", "false"); return; }
+    acT = setTimeout(function () {
+      var seq = ++acSeq;
+      ul.innerHTML = '<li class="r-acm">' + esc(t("kmBusca")) + "</li>"; ul.hidden = false;
+      fetch("/api/lugares?q=" + encodeURIComponent(q) + "&lang=" + S.lang).then(function (r) { return r.json(); }).then(function (r) {
+        if (seq !== acSeq || !cur) return;
+        var L2 = (r && r.lugares) || []; acRes[n] = L2;
+        ul.innerHTML = !r.ok ? '<li class="r-acm">' + esc(errTxt(r)) + "</li>" : !L2.length ? '<li class="r-acm">' + esc(t("kmNada")) + "</li>" :
+          L2.map(function (x, i) { return '<li role="option" data-aci="' + i + '" data-acn="' + n + '">' + esc(x.label) + "</li>"; }).join("");
+        inp.setAttribute("aria-expanded", "true");
+      }).catch(function () { ul.innerHTML = '<li class="r-acm">' + esc(t("e_rede")) + "</li>"; });
+    }, 280);
+  }
+  function acPick(n, i) {
+    var x = acRes[n] && acRes[n][i]; if (!x || !cur) return;
+    cur[n] = { lat: x.lat, lon: x.lon, label: x.label };
+    if (n === "de") cur.origem = x.label; else cur.destino = x.label;
+    var inp = $("#r-ac-" + n); inp.value = x.label; inp.setAttribute("aria-expanded", "false");
+    $("#r-acl-" + n).hidden = true;
+    if (n === "de" && !cur.para) { var o = $("#r-ac-para"); if (o) o.focus(); }
+    requestQuotes();
+  }
+  function fmtMin(m) { var h = Math.floor(m / 60), mm = m % 60; return h ? h + " h" + (mm ? " " + (mm < 10 ? "0" : "") + mm : "") : mm + " min"; }
+  function renderKmInfo(r) {
+    var el = $("#r-kminfo"); if (!el) return;
+    if (!r) { el.innerHTML = ""; el.className = "r-kminfo"; return; }
+    if (!r.ok) { el.className = "r-kminfo r-kmerr"; el.innerHTML = esc(errTxt(r)) + (r.erro !== "rota_falta" ? ' <a target="_blank" rel="noopener" href="' + waLink(t("calcTit") + " " + (cur.origem || "") + " → " + (cur.destino || "")) + '">WhatsApp →</a>' : ""); return; }
+    el.className = "r-kminfo r-kmok";
+    el.innerHTML = "<b>" + esc(t(cur.idaVolta ? "kmInfoIV" : "kmInfo", { km: r.km, t: fmtMin(r.min || 0) })) + "</b>" + (r.fora ? "<span>" + esc(t("kmFora", { v: brl(CAT.config.porKm.fronteiraPorTrecho) })) + "</span>" : "");
   }
   function catsHtml() {
     var s = svc(cur.servico), out = "";
@@ -369,6 +420,7 @@
     ["pax", "malas", "cadeirinhas", "horasExtras", "horas", "dias"].forEach(function (k) { var v = g(k); if (v !== undefined) cur[k] = Math.max(0, parseInt(v, 10) || 0); });
     if (cur.pax < 1) cur.pax = 1;
     cur.pet = !!g("pet");
+    if (g("idaVolta") !== undefined) cur.idaVolta = !!g("idaVolta");
     var r = fm.querySelector('[name="categoria"]:checked'); cur.categoria = r ? r.value : cur.categoria;
   }
   function requestQuotes() {
@@ -376,10 +428,15 @@
     qTimer = setTimeout(function () {
       if (!cur) return;
       var seq = ++qSeq, body = JSON.parse(JSON.stringify(cur)); delete body.categoria;
-      if (!cur.data || !cur.hora) { quotes = {}; Object.keys(svc(cur.servico).precos).forEach(function (k) { quotes[k] = { ok: false, erro: "data_hora" }; }); renderCats(); return; }
+      var ehKm = svc(cur.servico).tipo === "km";
+      function todas(e) { quotes = {}; Object.keys(svc(cur.servico).precos).forEach(function (k) { quotes[k] = { ok: false, erro: e }; }); renderCats(); }
+      if (ehKm && (!cur.de || !cur.para)) { renderKmInfo(null); todas("rota_falta"); return; }
+      if (!cur.data || !cur.hora) { if (!ehKm) { todas("data_hora"); return; } body.data = hoje(); body.hora = "23:59"; body._soRota = true; }
       api("/api/cotacao", body).then(function (r) {
         if (seq !== qSeq || !cur) return;
+        if (ehKm) { renderKmInfo(r && (r.rota || r)); if (!r || !r.ok) { todas(r && r.erro || "calc_indisponivel"); return; } }
         quotes = (r && r.categorias) || {};
+        if (body._soRota) Object.keys(quotes).forEach(function (k) { if (quotes[k] && (quotes[k].ok || quotes[k].erro === "antecedencia")) quotes[k] = { ok: false, erro: "data_hora" }; });
         if (cur.categoria && !(quotes[cur.categoria] && quotes[cur.categoria].ok)) cur.categoria = null;
         renderCats();
       }).catch(function () { if (seq === qSeq) { $("#r-merr").textContent = t("e_rede"); } });
@@ -396,6 +453,7 @@
     if (it.voo) parts.push(t("voo") + ": " + it.voo);
     parts.push(t("origem").replace(/ \(.*\)/, "") + ": " + it.origem);
     if (it.destino) parts.push(t("destino") + ": " + it.destino);
+    if (it.cot && it.cot.km) parts.push(t(it.idaVolta ? "kmInfoIV" : "kmInfo", { km: it.cot.km, t: "" }).replace(/ · .*$/, ""));
     parts.push(t("pax") + ": " + it.pax + " · " + t("malas") + ": " + it.malas);
     return parts;
   }
@@ -496,6 +554,8 @@
 
   /* ---------- eventos ---------- */
   document.addEventListener("click", function (e) {
+    var li = e.target.closest("[data-aci]"); if (li) { acPick(li.dataset.acn, +li.dataset.aci); return; }
+    if (!e.target.closest(".r-ac")) $$(".r-acl").forEach(function (u) { u.hidden = true; });
     var b = e.target.closest("button, a"); if (!b || !CAT) return;
     if (b.dataset.g) { S.grupo = b.dataset.g; renderList(); }
     else if (b.dataset.p) {
@@ -523,16 +583,19 @@
     readModal(); requestQuotes();
   });
   $("#r-modal-b").addEventListener("input", function (e) {
+    if (e.target.dataset.ac) { acSearch(e.target); return; }
     if (["pax", "malas", "horas", "dias", "horasExtras", "cadeirinhas"].indexOf(e.target.name) > -1) { readModal(); requestQuotes(); }
   });
   $("#r-modal").addEventListener("close", function () { cur = null; });
   $("#r-modal-b").addEventListener("submit", function (e) {
     e.preventDefault(); readModal();
     var er = $("#r-merr");
+    if (document.activeElement && document.activeElement.dataset && document.activeElement.dataset.ac) { var ul0 = $("#r-acl-" + document.activeElement.dataset.ac); if (ul0 && !ul0.hidden && acRes[document.activeElement.dataset.ac] && acRes[document.activeElement.dataset.ac].length) { acPick(document.activeElement.dataset.ac, 0); return; } }
+    if (svc(cur.servico).tipo === "km" && (!cur.de || !cur.para)) { er.textContent = t("e_rota_falta"); return; }
     if (!cur.origem || !cur.data || !cur.hora) { er.textContent = t("e_campos"); return; }
     var q = cur.categoria && quotes[cur.categoria];
     if (!q || !q.ok) { er.textContent = t("e_cat"); return; }
-    var item = JSON.parse(JSON.stringify(cur)); item.cot = { valor: q.valor, modos: q.modos };
+    var item = JSON.parse(JSON.stringify(cur)); item.cot = { valor: q.valor, modos: q.modos, km: q.km };
     S.cart.push(item); saveCart(); closeModal();
     ["#r-cart", "#r-bar"].forEach(function (sel) { var el = $(sel); if (el) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); } });
     track("add_to_cart", { value: q.valor, currency: "BRL", items: [{ item_id: item.servico, item_variant: item.categoria }] });
