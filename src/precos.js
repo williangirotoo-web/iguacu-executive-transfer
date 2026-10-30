@@ -54,7 +54,8 @@ export const CATEGORIAS = {
 // hora extra (passeios com espera e diária)
 export const HORA_EXTRA = { comum: 100, exec: 125, suv: 140, sete: 150, luxo: 750, van: null };
 // motorista por hora (mínimo 8 h)
-export const POR_HORA = { valor: { comum: 100, exec: 125, suv: 140, sete: 150, luxo: 750, van: null }, minimoHoras: 8, maximoHoras: 12 };
+// pacote de 5 horas = 10× o valor da hora; depois disso, cada hora extra no valor da hora (aprovado em 01/11/2026)
+export const POR_HORA = { valor: { comum: 100, exec: 125, suv: 140, sete: 150, luxo: 750, van: null }, pacoteHoras: 5, pacoteMult: 10, minimoHoras: 5, maximoHoras: 12 };
 
 const P = (comum, exec, suv, sete, luxo, van = null) => ({ comum, exec, suv, sete, luxo, van });
 const N = (pt, en, es) => ({ pt, en, es });
@@ -73,7 +74,7 @@ export const SERVICOS = [
   { id: "igr-foz", grupo: "aeroporto", tipo: "transfer", voo: true, sentido: true, fronteira: true, foto: "cataratas-do-iguacu-arco-iris",
     nome: N("Aeroporto de Puerto Iguazú (IGR) ⇄ hotel em Foz", "Iguazú Airport (IGR) ⇄ hotel in Foz", "Aeropuerto de Iguazú (IGR) ⇄ hotel en Foz"),
     desc: N("Chegou pela Argentina? Levamos ao seu hotel no Brasil.", "Landing in Argentina? We take you to your hotel in Brazil.", "¿Llega por Argentina? Lo llevamos a su hotel en Brasil."),
-    precos: P(500, 1150, 1300, 500, 5000) },
+    precos: P(350, 1150, 1300, 500, 5000) },
   { id: "igr-pi", grupo: "aeroporto", tipo: "transfer", voo: true, sentido: true, foto: "cataratas-do-iguacu-vista-do-rio",
     nome: N("Aeroporto de Puerto Iguazú (IGR) ⇄ hotel em Puerto Iguazú", "Iguazú Airport (IGR) ⇄ hotel in Puerto Iguazú", "Aeropuerto de Iguazú (IGR) ⇄ hotel en Puerto Iguazú"),
     desc: N("Transfer dentro de Puerto Iguazú, na Argentina.", "Transfer within Puerto Iguazú, Argentina.", "Traslado dentro de Puerto Iguazú, Argentina."),
@@ -111,7 +112,7 @@ export const SERVICOS = [
   { id: "marco", grupo: "passeios", tipo: "passeio", foto: "marco-das-tres-fronteiras",
     nome: N("Marco das Três Fronteiras — ida e volta", "Triple Frontier Landmark — round trip", "Hito de las Tres Fronteras — ida y vuelta"),
     desc: N("Ida e volta ao Marco das Três Fronteiras.", "Round trip to the Triple Frontier Landmark.", "Ida y vuelta al Hito de las Tres Fronteras."),
-    precos: P(1200, 1300, 1500, 1500, 7900) },
+    precos: P(1500, 1600, 1700, 1700, 7900) },
   { id: "city-tour", grupo: "passeios", tipo: "passeio", espera: 8, foto: "templo-budista-foz-do-iguacu",
     nome: N("City tour em Foz do Iguaçu", "Foz do Iguaçu city tour", "City tour en Foz do Iguaçu"),
     desc: N("Templo Budista, Mesquita e outros pontos da cidade, até 8 horas.", "Buddhist Temple, Mosque and other city sights, up to 8 hours.", "Templo Budista, Mezquita y otros puntos, hasta 8 horas."),
@@ -127,7 +128,7 @@ export const SERVICOS = [
   { id: "jantar-pi", grupo: "passeios", tipo: "passeio", fronteira: true, foto: "motorista-executivo-suv-preto",
     nome: N("Jantar em Puerto Iguazú (AR) — ida e volta", "Dinner in Puerto Iguazú (AR) — round trip", "Cena en Puerto Iguazú (AR) — ida y vuelta"),
     desc: N("Levamos e buscamos no horário combinado.", "Drop-off and pick-up at the agreed time.", "Lo llevamos y buscamos a la hora acordada."),
-    precos: P(1250, 1500, 1400, 1800, 9000) },
+    precos: P(1500, 1600, 1700, 1800, 9000) },
   { id: "noivas", grupo: "passeios", tipo: "passeio", espera: 5, foto: "motorista-executivo-suv-preto",
     nome: N("Transfer para noivas", "Bridal car", "Traslado para novias"),
     desc: N("Carro para a noiva, com motorista à disposição por até 5 horas.", "Bridal car with the driver at your disposal for up to 5 hours.", "Auto para la novia, con chofer a disposición hasta 5 horas."),
@@ -135,8 +136,8 @@ export const SERVICOS = [
 
   // ---------- Motorista à disposição ----------
   { id: "por-hora", grupo: "motorista", tipo: "hora", fronteira: true, foto: "motorista-executivo-suv-preto",
-    nome: N("Motorista por hora (mínimo 8 horas)", "Driver by the hour (8-hour minimum)", "Chofer por hora (mínimo 8 horas)"),
-    desc: N("Motorista à sua disposição. Pode cruzar para Argentina e Paraguai.", "Driver at your disposal. Border crossings to Argentina and Paraguay allowed.", "Chofer a su disposición. Puede cruzar a Argentina y Paraguay."),
+    nome: N("Motorista por hora (pacote de 5 horas)", "Driver by the hour (5-hour package)", "Chofer por hora (paquete de 5 horas)"),
+    desc: N("Motorista à sua disposição por até 5 horas; depois, cobrança por hora extra. Pode cruzar para Argentina e Paraguai.", "Driver at your disposal for up to 5 hours; extra hours charged after that. Border crossings to Argentina and Paraguay allowed.", "Chofer a su disposición hasta 5 horas; después, se cobra la hora extra. Puede cruzar a Argentina y Paraguay."),
     precos: POR_HORA.valor },
   { id: "diaria", grupo: "motorista", tipo: "diaria", fronteira: true, foto: "suv-executivo-corolla-cross-preto",
     nome: N("Diária de motorista com carro (12 h, 200 km)", "Full day with driver (12 h, 200 km)", "Día completo con chofer (12 h, 200 km)"),

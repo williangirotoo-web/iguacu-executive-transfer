@@ -79,8 +79,14 @@ export function cotar(item, agora = Date.now()) {
   if (svc.tipo === "hora") {
     const h = item.horas;
     if (h < POR_HORA.minimoHoras || h > POR_HORA.maximoHoras) return { ok: false, erro: "horas", min: POR_HORA.minimoHoras, max: POR_HORA.maximoHoras };
-    base = svc.precos[cat] * h;
-    linhas.push({ k: "horas", qtd: h, unit: svc.precos[cat], valor: base });
+    const vh = svc.precos[cat], pac = vh * POR_HORA.pacoteMult;
+    base = pac;
+    linhas.push({ k: "pacote", qtd: POR_HORA.pacoteHoras, valor: pac });
+    if (h > POR_HORA.pacoteHoras) {
+      const extra = (h - POR_HORA.pacoteHoras) * vh;
+      linhas.push({ k: "horas", qtd: h - POR_HORA.pacoteHoras, unit: vh, valor: extra });
+      base += extra;
+    }
   } else if (svc.tipo === "diaria") {
     if (item.dias > 15) return { ok: false, erro: "dias", max: 15 };
     base = svc.precos[cat] * item.dias;

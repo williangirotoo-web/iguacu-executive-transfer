@@ -314,7 +314,7 @@
 </style>
 <script>
 (function(){if(!window.fetch)return;fetch("/api/catalogo").then(function(r){return r.json()}).then(function(c){
-var m={};c.servicos.forEach(function(s){var v=[];for(var k in s.precos)if(s.precos[k]!=null)v.push(s.precos[k]);if(v.length){var x=Math.min.apply(null,v);m[s.id]=s.tipo==="hora"?x*c.config.porHora.minimoHoras:x}});
+var m={};c.servicos.forEach(function(s){var v=[];for(var k in s.precos)if(s.precos[k]!=null)v.push(s.precos[k]);if(v.length){var x=Math.min.apply(null,v);m[s.id]=s.tipo==="hora"?x*(c.config.porHora.pacoteMult||c.config.porHora.minimoHoras):x}});
 document.querySelectorAll("[data-rsv]").forEach(function(e){var v=m[e.getAttribute("data-rsv")];if(v)e.textContent="a partir de R$ "+v.toLocaleString("pt-BR")})}).catch(function(){})})();
 </script>
 

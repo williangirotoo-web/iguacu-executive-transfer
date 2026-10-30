@@ -26,7 +26,7 @@
       data: "Data", hora: "Horário", horaVoo: "Horário do voo", sentido: "Sentido", chegada: "Chegada (aeroporto → hotel)", saida: "Saída (hotel → aeroporto)",
       voo: "Número do voo", origem: "Buscar em (hotel ou endereço)", destino: "Levar para", destinoOpc: "Levar para (opcional)",
       pax: "Passageiros", malas: "Malas grandes", cadeirinhas: "Cadeirinhas infantis (R$ {v} cada)", pet: "Vou levar um pet",
-      horasExtras: "Horas extras de espera", horas: "Quantas horas", dias: "Quantas diárias",
+      horasExtras: "Horas extras de espera", horas: "Quantas horas (o pacote inclui 5 h)", dias: "Quantas diárias",
       categoria: "Categoria do veículo", ate: "até {n} passageiros", malasTxt: "{n} malas grandes", malasMao: " + {n} de mão",
       ref: "Ex.: {m}. Modelos de referência; a categoria é garantida, o modelo não.",
       inclui: "Espera incluída: {n} h", fronteira: "Leve documento original (RG ou passaporte) para cruzar a fronteira.",
@@ -74,7 +74,7 @@
       data: "Date", hora: "Time", horaVoo: "Flight time", sentido: "Direction", chegada: "Arrival (airport → hotel)", saida: "Departure (hotel → airport)",
       voo: "Flight number", origem: "Pick-up (hotel or address)", destino: "Drop-off", destinoOpc: "Drop-off (optional)",
       pax: "Passengers", malas: "Large suitcases", cadeirinhas: "Child car seats (R$ {v} each)", pet: "I'm bringing a pet",
-      horasExtras: "Extra waiting hours", horas: "How many hours", dias: "How many days",
+      horasExtras: "Extra waiting hours", horas: "How many hours (package includes 5 h)", dias: "How many days",
       categoria: "Vehicle category", ate: "up to {n} passengers", malasTxt: "{n} large suitcases", malasMao: " + {n} carry-on",
       ref: "E.g. {m}. Reference models; the category is guaranteed, the model is not.",
       inclui: "Waiting included: {n} h", fronteira: "Bring your original passport or ID to cross the border.",
@@ -122,7 +122,7 @@
       data: "Fecha", hora: "Horario", horaVoo: "Horario del vuelo", sentido: "Sentido", chegada: "Llegada (aeropuerto → hotel)", saida: "Salida (hotel → aeropuerto)",
       voo: "Número de vuelo", origem: "Buscar en (hotel o dirección)", destino: "Llevar a", destinoOpc: "Llevar a (opcional)",
       pax: "Pasajeros", malas: "Valijas grandes", cadeirinhas: "Sillas para niños (R$ {v} c/u)", pet: "Voy con mascota",
-      horasExtras: "Horas extra de espera", horas: "Cuántas horas", dias: "Cuántos días",
+      horasExtras: "Horas extra de espera", horas: "Cuántas horas (el paquete incluye 5 h)", dias: "Cuántos días",
       categoria: "Categoría del vehículo", ate: "hasta {n} pasajeros", malasTxt: "{n} valijas grandes", malasMao: " + {n} de mano",
       ref: "Ej.: {m}. Modelos de referencia; la categoría está garantizada, el modelo no.",
       inclui: "Espera incluida: {n} h", fronteira: "Lleve su documento original (DNI o pasaporte) para cruzar la frontera.",
@@ -222,7 +222,7 @@
       .map(function (k) { return s.precos[k]; });
     if (!v.length) return null;
     var m = Math.min.apply(null, v);
-    return s.tipo === "hora" ? m * CAT.config.porHora.minimoHoras : m;
+    return s.tipo === "hora" ? m * (CAT.config.porHora.pacoteMult || CAT.config.porHora.minimoHoras) : m;
   }
   function norm(x) { return String(x || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
   function badges(s) {

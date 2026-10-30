@@ -65,7 +65,7 @@ function catalogo(env) {
       whatsapp: CONFIG.whatsapp, antecedenciaHoras: CONFIG.antecedenciaHoras, antecedenciaViagensHoras: CONFIG.antecedenciaViagensHoras,
       cancelamento: CONFIG.cancelamento, feriadoAcrescimoPct: CONFIG.feriadoAcrescimoPct, esperaAeroporto: CONFIG.esperaAeroporto,
       cadeirinha: CONFIG.cadeirinha, pet: CONFIG.pet, sinalPct: CONFIG.sinalPct, pagamento: CONFIG.pagamento,
-      pagamentoViagens: CONFIG.pagamentoViagens, horaExtra: HORA_EXTRA, porHora: { minimoHoras: POR_HORA.minimoHoras, maximoHoras: POR_HORA.maximoHoras },
+      pagamentoViagens: CONFIG.pagamentoViagens, horaExtra: HORA_EXTRA, porHora: { minimoHoras: POR_HORA.minimoHoras, maximoHoras: POR_HORA.maximoHoras, pacoteHoras: POR_HORA.pacoteHoras, pacoteMult: POR_HORA.pacoteMult },
       turnstileSiteKey: env.TURNSTILE_SITEKEY || "", pagamentoOnline: false,
       porKm: { ...POR_KM, ativo: true },
     },
