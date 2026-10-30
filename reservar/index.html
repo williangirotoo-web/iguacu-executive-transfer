@@ -68,6 +68,28 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:'Montserrat',sys
 .r-cta-ico svg{width:24px;height:24px}
 .r-cta-km .r-btn{flex:none;white-space:nowrap}
 @media(max-width:640px){.r-cta-km{flex-wrap:wrap;gap:12px}.r-cta-km>div{flex-basis:calc(100% - 62px)}.r-cta-km .r-btn{width:100%;justify-content:center}}
+.r-volta{margin:6px 0 4px;padding:12px 14px 4px;border-left:2px solid var(--gold);background:rgba(212,175,55,.05);border-radius:0 12px 12px 0;animation:rVin .35s var(--ease)}
+.r-volta .r-sm{margin:0 0 10px}
+@keyframes rVin{from{opacity:0;translate:0 -6px}to{opacity:1;translate:0 0}}
+.r-route{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.r-pt{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;font-size:.66rem;font-weight:700;background:var(--gold);color:#0a0a0a;box-shadow:0 0 0 4px rgba(212,175,55,.15)}
+.r-line{position:relative;flex:1;height:2px;background:rgba(212,175,55,.18);border-radius:2px}
+.r-line i{position:absolute;inset:0;border-radius:2px;background:repeating-linear-gradient(90deg,var(--gold) 0 10px,transparent 10px 18px);transform-origin:0 50%}
+.r-kmload .r-line i{animation:rDash .8s linear infinite;opacity:.7}
+@keyframes rDash{from{background-position:0 0}to{background-position:18px 0}}
+.r-go .r-line i{animation:rDraw .9s var(--ease) both}
+@keyframes rDraw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.r-line em{position:absolute;top:50%;left:0;width:26px;height:26px;margin:-13px 0 0 -13px;color:var(--gold);filter:drop-shadow(0 0 8px rgba(212,175,55,.8));animation:rCar 1.15s var(--ease) both}
+.r-line em svg{width:100%;height:100%}
+@keyframes rCar{from{left:0;opacity:0}15%{opacity:1}to{left:100%}}
+.r-kmload{border-color:rgba(212,175,55,.3);background:linear-gradient(100deg,rgba(212,175,55,.04) 30%,rgba(212,175,55,.14) 50%,rgba(212,175,55,.04) 70%);background-size:220% 100%;animation:rShim 1.3s linear infinite}
+@keyframes rShim{from{background-position:120% 0}to{background-position:-120% 0}}
+.r-kmtxt{font-size:.78rem;color:var(--mut,#9a9a9a)}
+.r-kmbig{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.r-kmbig b{font-family:'Cormorant Garamond',serif;font-size:2.1rem;line-height:1;color:var(--gold)!important}
+.r-kmbig span{font-size:.78rem;color:var(--txt)!important}
+.r-flash{animation:rFlash .9s var(--ease)}
+@keyframes rFlash{0%{text-shadow:0 0 0 rgba(212,175,55,0)}35%{text-shadow:0 0 18px rgba(212,175,55,.9);color:#f3dc8e}100%{text-shadow:0 0 0 rgba(212,175,55,0)}}
 .r-paises-w{margin:0 0 18px}
 .r-paises-t{margin:0 0 10px;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
 .r-paises{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
@@ -308,7 +330,7 @@ dialog#r-modal::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
 <dialog id="r-modal"><form id="r-modal-b" novalidate></form></dialog>
 <div class="r-bar" id="r-bar" hidden><span><b id="r-bar-n">0</b> · <span id="r-bar-v"></span></span><button type="button" class="r-btn" id="r-bar-go">→</button></div>
 <p class="r-legal">Iguaçu Executive Transfer · CNPJ 57.169.205/0001-12 · CNPJ 57.168.941/0001-56 · Foz do Iguaçu, PR, Brasil · +55 45 99118-5798</p>
-<script src="/reservar/app.js?v=7"></script>
+<script src="/reservar/app.js?v=8"></script>
 <script>(function(){var n=document.getElementById("nav"),m=document.getElementById("mobileMenu");addEventListener("scroll",function(){n.classList.toggle("scrolled",scrollY>40)},{passive:true});document.getElementById("hamburger").addEventListener("click",function(){m.classList.toggle("open")})})();</script>
 </body>
 </html>

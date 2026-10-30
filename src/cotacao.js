@@ -42,7 +42,7 @@ export function normalizarItem(x) {
     cadeirinhas: Math.max(0, int(x.cadeirinhas, 0)), pet: !!x.pet,
     horasExtras: Math.max(0, int(x.horasExtras, 0)), horas: int(x.horas, POR_HORA.minimoHoras),
     dias: Math.max(1, int(x.dias, 1)),
-    idaVolta: !!x.idaVolta, de: lugar(x.de), para: lugar(x.para),
+    idaVolta: !!x.idaVolta, dataVolta: s(x.dataVolta, 10), horaVolta: s(x.horaVolta, 5), de: lugar(x.de), para: lugar(x.para),
   };
 }
 
@@ -89,6 +89,12 @@ export function cotar(item, agora = Date.now()) {
     // item.rota é preenchida SÓ pelo servidor (worker.js → resolverRota), nunca pelo navegador
     const r = item.rota;
     if (!r || !r.ok) return { ok: false, erro: (r && r.erro) || "rota_falta" };
+    if (item.idaVolta) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(item.dataVolta) || !/^\d{2}:\d{2}$/.test(item.horaVolta)) return { ok: false, erro: "volta_falta" };
+      const volta = Date.parse(item.dataVolta + "T" + item.horaVolta + ":00" + CONFIG.fuso);
+      if (!Number.isFinite(volta) || volta <= inicio) return { ok: false, erro: "volta_antes" };
+      if (volta > inicio + 90 * 864e5) return { ok: false, erro: "data_longe" };
+    }
     const trecho = precoTrechoKm(r.km, cat);
     const n = item.idaVolta ? 2 : 1;
     base = trecho * n;

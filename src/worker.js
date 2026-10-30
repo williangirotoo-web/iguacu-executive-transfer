@@ -154,7 +154,8 @@ async function prepararKm(env, it) {
   if (!svc || svc.tipo !== "km") return;
   it.rota = await resolverRota(env, it.de, it.para);
   if (it.de) it.origem = it.de.label || it.origem;
-  if (it.para) it.destino = (it.para.label || it.destino) + (it.idaVolta ? " (ida e volta)" : "");
+  const dm = (d) => (d || "").split("-").reverse().slice(0, 2).join("/");
+  if (it.para) it.destino = (it.para.label || it.destino) + (it.idaVolta ? ` (ida e volta · volta ${dm(it.dataVolta)} às ${it.horaVolta})` : "");
 }
 
 /* ---------------- criar pedido ---------------- */

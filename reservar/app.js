@@ -14,7 +14,7 @@
       paxF: "Pessoas", p_any: "Qualquer", p_4: "Até 4", p_6: "5 ou 6", p_7: "7 ou mais",
       nRes: "{n} serviços", nada: "Nenhum serviço encontrado com esses filtros.", limpar: "Limpar filtros",
       b_espera: "Espera {n} h", b_fronteira: "Fronteira", b_hora: "Por hora", b_dia: "Dia inteiro", b_ida: "Só ida", b_iv: "Ida e volta",
-      calcTit: "Não achou seu trajeto?", calcDesc: "Em breve: calcule pelo endereço de saída e destino. Por enquanto, peça a cotação no WhatsApp.", calcBtn: "Cotar no WhatsApp", calcDesc2: "Digite de onde sai e para onde vai: calculamos a distância pela estrada e o preço de cada categoria na hora.", calcBtn2: "Calcular preço", ctaKm: "Outro destino? Calcule o preço pela distância", ctaKmSub: "Qualquer cidade no Brasil, Argentina ou Paraguai, saindo ou chegando em Foz do Iguaçu.", kmDe: "Saindo de", kmPara: "Indo para", kmPh: "Cidade, hotel ou endereço", kmIdaVolta: "Ida e volta (com até {h} h de espera no destino)", kmInfo: "{km} km pela estrada · cerca de {t}", kmInfoIV: "{km} km por trecho (ida e volta) · cerca de {t} cada", kmFora: "Inclui taxa de fronteira de {v} por trecho.", kmRegras: "Preço por veículo, com pedágios. Trechos acima de {a} km têm acréscimo de {p}% nos km excedentes. Uma das pontas precisa ser na região de Foz do Iguaçu.", kmBusca: "Buscando…", kmNada: "Nenhum lugar encontrado. Tente o nome da cidade.", e_rota_falta: "Escolha a origem e o destino na lista", e_fora_regiao: "Saída ou destino precisa ser na região de Foz do Iguaçu. Para outros trajetos, fale no WhatsApp.", e_pais_nao_atende: "Atendemos destinos no Brasil, Argentina e Paraguai.", e_km_max: "Acima de {max} km: peça a cotação no WhatsApp.", e_km_min: "Trajeto muito curto. Veja os serviços da lista.", e_rota_sem_estrada: "Não encontramos rota por estrada entre esses pontos.", e_calc_indisponivel: "Calculadora indisponível agora. Peça a cotação no WhatsApp.",
+      calcTit: "Não achou seu trajeto?", calcDesc: "Em breve: calcule pelo endereço de saída e destino. Por enquanto, peça a cotação no WhatsApp.", calcBtn: "Cotar no WhatsApp", calcDesc2: "Digite de onde sai e para onde vai: calculamos a distância pela estrada e o preço de cada categoria na hora.", calcBtn2: "Calcular preço", ctaKm: "Outro destino? Calcule o preço pela distância", ctaKmSub: "Qualquer cidade no Brasil, Argentina ou Paraguai, saindo ou chegando em Foz do Iguaçu.", kmDe: "Saindo de", kmPara: "Indo para", kmDataVolta: "Data da volta", kmHoraVolta: "Horário da volta", kmVoltaDica: "Volta no mesmo dia: o motorista espera até {h} h no destino. Volta em outro dia: buscamos você na data e horário marcados.", kmCalc: "Calculando a melhor rota…", kmPorTrecho: "km por trecho", kmTotal: "km", e_volta_falta: "Informe a data e o horário da volta", e_volta_antes: "A volta precisa ser depois da ida", voltaTxt: "Volta", kmPh: "Cidade, hotel ou endereço", kmIdaVolta: "Ida e volta (com até {h} h de espera no destino)", kmInfo: "{km} km pela estrada · cerca de {t}", kmInfoIV: "{km} km por trecho (ida e volta) · cerca de {t} cada", kmFora: "Inclui taxa de fronteira de {v} por trecho.", kmRegras: "Preço por veículo, com pedágios. Trechos acima de {a} km têm acréscimo de {p}% nos km excedentes. Uma das pontas precisa ser na região de Foz do Iguaçu.", kmBusca: "Buscando…", kmNada: "Nenhum lugar encontrado. Tente o nome da cidade.", e_rota_falta: "Escolha a origem e o destino na lista", e_fora_regiao: "Saída ou destino precisa ser na região de Foz do Iguaçu. Para outros trajetos, fale no WhatsApp.", e_pais_nao_atende: "Atendemos destinos no Brasil, Argentina e Paraguai.", e_km_max: "Acima de {max} km: peça a cotação no WhatsApp.", e_km_min: "Trajeto muito curto. Veja os serviços da lista.", e_rota_sem_estrada: "Não encontramos rota por estrada entre esses pontos.", e_calc_indisponivel: "Calculadora indisponível agora. Peça a cotação no WhatsApp.",
       comoTit: "Como funciona", faqTit: "Perguntas frequentes",
       faq: [["Como pago a reserva?", "Depois que confirmamos a disponibilidade, enviamos o link de pagamento pelo WhatsApp: Pix, cartão em até 6x sem juros ou PayPal. Categoria Comum e 7 lugares pagam 100% na reserva; Executivo e SUV podem pagar 50% de sinal."], ["Com quanta antecedência posso reservar?", "Pelo site, a partir de 1 hora antes na categoria Comum e 5 horas antes nas demais. Para viagens a outras cidades, 5 horas."], ["E se meu voo atrasar?", "Informe o número do voo na reserva: acompanhamos o horário de chegada. A primeira hora de espera após o pouso é grátis."], ["Posso cancelar?", "Sim. O cancelamento é grátis até {h} horas antes. Depois disso, devolvemos {d}% do valor pago."], ["Que documento preciso para Argentina ou Paraguai?", "Brasileiros: RG original (com menos de 10 anos) ou passaporte. Estrangeiros: passaporte. Menores de idade precisam de documentação própria."], ["O preço é por pessoa?", "Não. Todos os valores são por veículo, para o grupo inteiro, dentro da capacidade da categoria."]],
       waAjuda: "Prefere falar com a gente?", waBtn: "Chamar no WhatsApp", seg: "Preço fechado calculado na hora · dados protegidos", cob: "Valores em reais (R$), por veículo.",
@@ -62,7 +62,7 @@
       paxF: "People", p_any: "Any", p_4: "Up to 4", p_6: "5 or 6", p_7: "7 or more",
       nRes: "{n} services", nada: "No services match these filters.", limpar: "Clear filters",
       b_espera: "{n} h waiting", b_fronteira: "Border", b_hora: "Hourly", b_dia: "Full day", b_ida: "One way", b_iv: "Round trip",
-      calcTit: "Can't find your route?", calcDesc: "Coming soon: price by pick-up and drop-off address. For now, ask for a quote on WhatsApp.", calcBtn: "Quote on WhatsApp", calcDesc2: "Enter pick-up and destination: we calculate the road distance and the price of each vehicle instantly.", calcBtn2: "Get price", ctaKm: "Another destination? Get a price by distance", ctaKmSub: "Any city in Brazil, Argentina or Paraguay, to or from Foz do Iguaçu.", kmDe: "From", kmPara: "To", kmPh: "City, hotel or address", kmIdaVolta: "Round trip (up to {h} h waiting at destination)", kmInfo: "{km} km by road · about {t}", kmInfoIV: "{km} km each way (round trip) · about {t} each", kmFora: "Includes a border fee of {v} each way.", kmRegras: "Price per vehicle, tolls included. Legs over {a} km have a {p}% surcharge on the extra km. Pick-up or destination must be in the Foz do Iguaçu area.", kmBusca: "Searching…", kmNada: "No place found. Try the city name.", e_rota_falta: "Choose pick-up and destination from the list", e_fora_regiao: "Pick-up or destination must be in the Foz do Iguaçu area. For other routes, contact us on WhatsApp.", e_pais_nao_atende: "We serve Brazil, Argentina and Paraguay.", e_km_max: "Over {max} km: ask for a quote on WhatsApp.", e_km_min: "Route too short. See the services listed.", e_rota_sem_estrada: "No road route found between these points.", e_calc_indisponivel: "Calculator unavailable right now. Ask for a quote on WhatsApp.",
+      calcTit: "Can't find your route?", calcDesc: "Coming soon: price by pick-up and drop-off address. For now, ask for a quote on WhatsApp.", calcBtn: "Quote on WhatsApp", calcDesc2: "Enter pick-up and destination: we calculate the road distance and the price of each vehicle instantly.", calcBtn2: "Get price", ctaKm: "Another destination? Get a price by distance", ctaKmSub: "Any city in Brazil, Argentina or Paraguay, to or from Foz do Iguaçu.", kmDe: "From", kmPara: "To", kmDataVolta: "Return date", kmHoraVolta: "Return time", kmVoltaDica: "Same-day return: the driver waits up to {h} h at the destination. Return on another day: we pick you up on the date and time chosen.", kmCalc: "Calculating the best route…", kmPorTrecho: "km each way", kmTotal: "km", e_volta_falta: "Enter the return date and time", e_volta_antes: "The return must be after the outbound trip", voltaTxt: "Return", kmPh: "City, hotel or address", kmIdaVolta: "Round trip (up to {h} h waiting at destination)", kmInfo: "{km} km by road · about {t}", kmInfoIV: "{km} km each way (round trip) · about {t} each", kmFora: "Includes a border fee of {v} each way.", kmRegras: "Price per vehicle, tolls included. Legs over {a} km have a {p}% surcharge on the extra km. Pick-up or destination must be in the Foz do Iguaçu area.", kmBusca: "Searching…", kmNada: "No place found. Try the city name.", e_rota_falta: "Choose pick-up and destination from the list", e_fora_regiao: "Pick-up or destination must be in the Foz do Iguaçu area. For other routes, contact us on WhatsApp.", e_pais_nao_atende: "We serve Brazil, Argentina and Paraguay.", e_km_max: "Over {max} km: ask for a quote on WhatsApp.", e_km_min: "Route too short. See the services listed.", e_rota_sem_estrada: "No road route found between these points.", e_calc_indisponivel: "Calculator unavailable right now. Ask for a quote on WhatsApp.",
       comoTit: "How it works", faqTit: "FAQ",
       faq: [["How do I pay?", "Once we confirm availability, we send a payment link on WhatsApp: Pix, card or PayPal. Standard and 7-seater pay 100% at booking; Executive and SUV can pay a 50% deposit."], ["How far in advance can I book?", "Online, from 1 hour before (Standard) and 5 hours before (other vehicles). Trips to other cities: 5 hours."], ["What if my flight is delayed?", "Add your flight number: we follow the arrival time. The first hour of waiting after landing is free."], ["Can I cancel?", "Yes. Cancellation is free up to {h} hours before. After that, {d}% is refunded."], ["Which document do I need for Argentina or Paraguay?", "Foreign visitors: passport. Brazilians: original ID card (issued less than 10 years ago) or passport. Minors need their own documents."], ["Is the price per person?", "No. All prices are per vehicle, for the whole group, within the vehicle capacity."]],
       waAjuda: "Rather talk to us?", waBtn: "Chat on WhatsApp", seg: "Fixed price calculated instantly · data protected", cob: "Prices in Brazilian reais (R$), per vehicle.",
@@ -110,7 +110,7 @@
       paxF: "Personas", p_any: "Cualquiera", p_4: "Hasta 4", p_6: "5 o 6", p_7: "7 o más",
       nRes: "{n} servicios", nada: "Ningún servicio coincide con estos filtros.", limpar: "Limpiar filtros",
       b_espera: "Espera {n} h", b_fronteira: "Frontera", b_hora: "Por hora", b_dia: "Día completo", b_ida: "Solo ida", b_iv: "Ida y vuelta",
-      calcTit: "¿No encontró su trayecto?", calcDesc: "Próximamente: precio por dirección de salida y destino. Por ahora, pida la cotización por WhatsApp.", calcBtn: "Cotizar por WhatsApp", calcDesc2: "Ingrese origen y destino: calculamos la distancia por ruta y el precio de cada vehículo al instante.", calcBtn2: "Calcular precio", ctaKm: "¿Otro destino? Calcule el precio por distancia", ctaKmSub: "Cualquier ciudad de Brasil, Argentina o Paraguay, desde o hacia Foz do Iguaçu.", kmDe: "Desde", kmPara: "Hasta", kmPh: "Ciudad, hotel o dirección", kmIdaVolta: "Ida y vuelta (hasta {h} h de espera en destino)", kmInfo: "{km} km por ruta · unas {t}", kmInfoIV: "{km} km por tramo (ida y vuelta) · unas {t} cada uno", kmFora: "Incluye tasa de frontera de {v} por tramo.", kmRegras: "Precio por vehículo, con peajes. Tramos de más de {a} km tienen recargo de {p}% en los km excedentes. El origen o el destino debe estar en la región de Foz do Iguaçu.", kmBusca: "Buscando…", kmNada: "No encontramos el lugar. Pruebe con el nombre de la ciudad.", e_rota_falta: "Elija origen y destino de la lista", e_fora_regiao: "El origen o el destino debe estar en la región de Foz do Iguaçu. Para otros trayectos, escríbanos por WhatsApp.", e_pais_nao_atende: "Atendemos Brasil, Argentina y Paraguay.", e_km_max: "Más de {max} km: pida la cotización por WhatsApp.", e_km_min: "Trayecto muy corto. Vea los servicios de la lista.", e_rota_sem_estrada: "No encontramos ruta por carretera entre esos puntos.", e_calc_indisponivel: "Calculadora no disponible ahora. Pida la cotización por WhatsApp.",
+      calcTit: "¿No encontró su trayecto?", calcDesc: "Próximamente: precio por dirección de salida y destino. Por ahora, pida la cotización por WhatsApp.", calcBtn: "Cotizar por WhatsApp", calcDesc2: "Ingrese origen y destino: calculamos la distancia por ruta y el precio de cada vehículo al instante.", calcBtn2: "Calcular precio", ctaKm: "¿Otro destino? Calcule el precio por distancia", ctaKmSub: "Cualquier ciudad de Brasil, Argentina o Paraguay, desde o hacia Foz do Iguaçu.", kmDe: "Desde", kmPara: "Hasta", kmDataVolta: "Fecha de regreso", kmHoraVolta: "Hora de regreso", kmVoltaDica: "Regreso el mismo día: el chofer espera hasta {h} h en destino. Regreso otro día: lo buscamos en la fecha y hora elegidas.", kmCalc: "Calculando la mejor ruta…", kmPorTrecho: "km por tramo", kmTotal: "km", e_volta_falta: "Indique la fecha y hora de regreso", e_volta_antes: "El regreso debe ser después de la ida", voltaTxt: "Regreso", kmPh: "Ciudad, hotel o dirección", kmIdaVolta: "Ida y vuelta (hasta {h} h de espera en destino)", kmInfo: "{km} km por ruta · unas {t}", kmInfoIV: "{km} km por tramo (ida y vuelta) · unas {t} cada uno", kmFora: "Incluye tasa de frontera de {v} por tramo.", kmRegras: "Precio por vehículo, con peajes. Tramos de más de {a} km tienen recargo de {p}% en los km excedentes. El origen o el destino debe estar en la región de Foz do Iguaçu.", kmBusca: "Buscando…", kmNada: "No encontramos el lugar. Pruebe con el nombre de la ciudad.", e_rota_falta: "Elija origen y destino de la lista", e_fora_regiao: "El origen o el destino debe estar en la región de Foz do Iguaçu. Para otros trayectos, escríbanos por WhatsApp.", e_pais_nao_atende: "Atendemos Brasil, Argentina y Paraguay.", e_km_max: "Más de {max} km: pida la cotización por WhatsApp.", e_km_min: "Trayecto muy corto. Vea los servicios de la lista.", e_rota_sem_estrada: "No encontramos ruta por carretera entre esos puntos.", e_calc_indisponivel: "Calculadora no disponible ahora. Pida la cotización por WhatsApp.",
       comoTit: "Cómo funciona", faqTit: "Preguntas frecuentes",
       faq: [["¿Cómo pago?", "Cuando confirmamos la disponibilidad, enviamos el link de pago por WhatsApp: Pix, tarjeta o PayPal. Estándar y 7 plazas pagan el 100% al reservar; Ejecutivo y SUV pueden pagar una seña del 50%."], ["¿Con cuánta anticipación puedo reservar?", "Online, desde 1 hora antes (Estándar) y 5 horas antes (demás vehículos). Viajes a otras ciudades: 5 horas."], ["¿Y si mi vuelo se atrasa?", "Indique el número de vuelo: seguimos el horario de llegada. La primera hora de espera tras el aterrizaje es gratis."], ["¿Puedo cancelar?", "Sí. La cancelación es gratis hasta {h} horas antes. Después, devolvemos el {d}% del valor."], ["¿Qué documento necesito para Argentina o Paraguay?", "Argentinos: DNI físico vigente o pasaporte. Otros extranjeros: pasaporte. Los menores necesitan documentación propia."], ["¿El precio es por persona?", "No. Todos los valores son por vehículo, para todo el grupo, dentro de la capacidad del vehículo."]],
       waAjuda: "¿Prefiere hablar con nosotros?", waBtn: "Escribir por WhatsApp", seg: "Precio cerrado calculado al instante · datos protegidos", cob: "Valores en reales (R$), por vehículo.",
@@ -335,6 +335,8 @@
       var pk = cfg.porKm;
       f += acField("de", t("kmDe") + " *") + acField("para", t("kmPara") + " *") +
         '<label class="r-chk"><input type="checkbox" name="idaVolta"' + (cur.idaVolta ? " checked" : "") + "> <span>" + esc(t("kmIdaVolta", { h: pk.idaVoltaEsperaHoras })) + "</span></label>" +
+        '<div class="r-volta" id="r-volta"' + (cur.idaVolta ? "" : " hidden") + '><div class="r-row">' + field(t("kmDataVolta") + " *", '<input type="date" name="dataVolta" min="' + hoje() + '"' + (cur.dataVolta ? ' value="' + esc(cur.dataVolta) + '"' : "") + ">") +
+        field(t("kmHoraVolta") + " *", '<input type="time" name="horaVolta"' + (cur.horaVolta ? ' value="' + esc(cur.horaVolta) + '"' : "") + ">") + '</div><p class="r-sm">' + esc(t("kmVoltaDica", { h: pk.idaVoltaEsperaHoras })) + "</p></div>" +
         '<div class="r-kminfo" id="r-kminfo" aria-live="polite"></div>' +
         '<p class="r-note">' + esc(t("kmRegras", { a: pk.acrescimoAcimaKm, p: pk.acrescimoPct })) + "</p>";
     } else
@@ -393,8 +395,47 @@
     var el = $("#r-kminfo"); if (!el) return;
     if (!r) { el.innerHTML = ""; el.className = "r-kminfo"; return; }
     if (!r.ok) { el.className = "r-kminfo r-kmerr"; el.innerHTML = esc(errTxt(r)) + (r.erro !== "rota_falta" ? ' <a target="_blank" rel="noopener" href="' + waLink(t("calcTit") + " " + (cur.origem || "") + " → " + (cur.destino || "")) + '">WhatsApp →</a>' : ""); return; }
+    if (r.carregando) {
+      if (el.classList.contains("r-kmload")) return;
+      el.className = "r-kminfo r-kmload";
+      el.innerHTML = '<div class="r-route"><span class="r-pt">A</span><span class="r-line"><i></i></span><span class="r-pt">B</span></div><span class="r-kmtxt">' + esc(t("kmCalc")) + "</span>";
+      return;
+    }
+    var chave = r.km + "|" + cur.idaVolta + "|" + r.fora;
+    if (el.dataset.k === chave && el.classList.contains("r-kmok")) return;
+    el.dataset.k = chave;
     el.className = "r-kminfo r-kmok";
-    el.innerHTML = "<b>" + esc(t(cur.idaVolta ? "kmInfoIV" : "kmInfo", { km: r.km, t: fmtMin(r.min || 0) })) + "</b>" + (r.fora ? "<span>" + esc(t("kmFora", { v: brl(CAT.config.porKm.fronteiraPorTrecho) })) + "</span>" : "");
+    var car = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 11l1.6-4.2A2 2 0 018.5 5.5h7a2 2 0 011.9 1.3L19 11h.5A1.5 1.5 0 0121 12.5V16a1 1 0 01-1 1h-1a2 2 0 01-4 0H9a2 2 0 01-4 0H4a1 1 0 01-1-1v-3.5A1.5 1.5 0 014.5 11zm2.2 0h9.6l-1.2-3.3a.5.5 0 00-.5-.3h-6.2a.5.5 0 00-.5.3z"/></svg>';
+    el.innerHTML = '<div class="r-route r-go"><span class="r-pt">A</span><span class="r-line"><i></i><em>' + car + '</em></span><span class="r-pt">B</span></div>' +
+      '<div class="r-kmbig"><b data-cnt="' + r.km + '">0</b><span>' + esc(t(cur.idaVolta ? "kmPorTrecho" : "kmTotal")) + " · ≈ " + esc(fmtMin(r.min || 0)) + (cur.idaVolta ? " · " + esc(t("kmIdaVolta", { h: CAT.config.porKm.idaVoltaEsperaHoras }).split(" (")[0]) : "") + "</span></div>" +
+      (r.fora ? "<span>" + esc(t("kmFora", { v: brl(CAT.config.porKm.fronteiraPorTrecho) })) + "</span>" : "");
+    contar(el.querySelector("[data-cnt]"), r.km, 900, function (v) { return String(Math.round(v)); });
+  }
+  var reduz = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function contar(node, alvo, ms, fmt) {
+    if (!node) return;
+    if (reduz) { node.textContent = fmt(alvo); return; }
+    var t0 = null;
+    requestAnimationFrame(function passo(ts) {
+      if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / ms), e = 1 - Math.pow(1 - p, 3);
+      node.textContent = fmt(alvo * e);
+      if (p < 1 && node.isConnected) requestAnimationFrame(passo);
+    });
+  }
+  var precosVistos = {};
+  function animarPrecos() {
+    if (!cur) return;
+    $$("#r-cats .r-cat").forEach(function (l) {
+      var i = l.querySelector('input[name="categoria"]'), em = l.querySelector(".r-price");
+      if (!i || !em || em.classList.contains("r-pmsg")) return;
+      var q = quotes[i.value]; if (!q || !q.ok) return;
+      var chave = cur.servico + ":" + i.value, antes = precosVistos[chave];
+      precosVistos[chave] = q.valor;
+      if (antes === q.valor) return;
+      var txt = em.firstChild; if (!txt || txt.nodeType !== 3) return;
+      em.classList.remove("r-flash"); void em.offsetWidth; em.classList.add("r-flash");
+      contar({ set textContent(v) { txt.nodeValue = v; }, isConnected: true }, q.valor, 700, function (v) { return brl(Math.round(v)); });
+    });
   }
   function catsHtml() {
     var s = svc(cur.servico), out = "";
@@ -422,7 +463,14 @@
     ["pax", "malas", "cadeirinhas", "horasExtras", "horas", "dias"].forEach(function (k) { var v = g(k); if (v !== undefined) cur[k] = Math.max(0, parseInt(v, 10) || 0); });
     if (cur.pax < 1) cur.pax = 1;
     cur.pet = !!g("pet");
-    if (g("idaVolta") !== undefined) cur.idaVolta = !!g("idaVolta");
+    if (g("idaVolta") !== undefined) {
+      cur.idaVolta = !!g("idaVolta");
+      var vb = $("#r-volta"); if (vb) vb.hidden = !cur.idaVolta;
+      cur.dataVolta = String(g("dataVolta") || ""); cur.horaVolta = String(g("horaVolta") || "");
+      var dv = fm.querySelector('[name="dataVolta"]');
+      if (cur.idaVolta && dv && !cur.dataVolta && cur.data) { dv.value = cur.data; cur.dataVolta = cur.data; }
+      if (dv && cur.data) dv.min = cur.data;
+    }
     var r = fm.querySelector('[name="categoria"]:checked'); cur.categoria = r ? r.value : cur.categoria;
   }
   function requestQuotes() {
@@ -433,14 +481,16 @@
       var ehKm = svc(cur.servico).tipo === "km";
       function todas(e) { quotes = {}; Object.keys(svc(cur.servico).precos).forEach(function (k) { quotes[k] = { ok: false, erro: e }; }); renderCats(); }
       if (ehKm && (!cur.de || !cur.para)) { renderKmInfo(null); todas("rota_falta"); return; }
-      if (!cur.data || !cur.hora) { if (!ehKm) { todas("data_hora"); return; } body.data = hoje(); body.hora = "23:59"; body._soRota = true; }
+      if (!cur.data || !cur.hora) { if (!ehKm) { todas("data_hora"); return; } body.data = hoje(); body.hora = "23:58"; body.dataVolta = body.data; body.horaVolta = "23:59"; body._soRota = true; }
+      if (ehKm) renderKmInfo({ carregando: true });
       api("/api/cotacao", body).then(function (r) {
         if (seq !== qSeq || !cur) return;
         if (ehKm) { renderKmInfo(r && (r.rota || r)); if (!r || !r.ok) { todas(r && r.erro || "calc_indisponivel"); return; } }
         quotes = (r && r.categorias) || {};
         if (body._soRota) Object.keys(quotes).forEach(function (k) { if (quotes[k] && (quotes[k].ok || quotes[k].erro === "antecedencia")) quotes[k] = { ok: false, erro: "data_hora" }; });
+        if (body._soRota) Object.keys(quotes).forEach(function (k) { if (quotes[k] && /^volta_/.test(quotes[k].erro)) quotes[k] = { ok: false, erro: "data_hora" }; });
         if (cur.categoria && !(quotes[cur.categoria] && quotes[cur.categoria].ok)) cur.categoria = null;
-        renderCats();
+        renderCats(); animarPrecos();
       }).catch(function () { if (seq === qSeq) { $("#r-merr").textContent = t("e_rede"); } });
     }, 250);
   }
@@ -455,6 +505,7 @@
     if (it.voo) parts.push(t("voo") + ": " + it.voo);
     parts.push(t("origem").replace(/ \(.*\)/, "") + ": " + it.origem);
     if (it.destino) parts.push(t("destino") + ": " + it.destino);
+    if (it.idaVolta && it.dataVolta) parts.push(t("voltaTxt") + ": " + fmtDate(it.dataVolta) + " " + it.horaVolta);
     if (it.cot && it.cot.km) parts.push(t(it.idaVolta ? "kmInfoIV" : "kmInfo", { km: it.cot.km, t: "" }).replace(/ · .*$/, ""));
     parts.push(t("pax") + ": " + it.pax + " · " + t("malas") + ": " + it.malas);
     return parts;
@@ -594,6 +645,7 @@
     var er = $("#r-merr");
     if (document.activeElement && document.activeElement.dataset && document.activeElement.dataset.ac) { var ul0 = $("#r-acl-" + document.activeElement.dataset.ac); if (ul0 && !ul0.hidden && acRes[document.activeElement.dataset.ac] && acRes[document.activeElement.dataset.ac].length) { acPick(document.activeElement.dataset.ac, 0); return; } }
     if (svc(cur.servico).tipo === "km" && (!cur.de || !cur.para)) { er.textContent = t("e_rota_falta"); return; }
+    if (svc(cur.servico).tipo === "km" && cur.idaVolta && (!cur.dataVolta || !cur.horaVolta)) { er.textContent = t("e_volta_falta"); return; }
     if (!cur.origem || !cur.data || !cur.hora) { er.textContent = t("e_campos"); return; }
     var q = cur.categoria && quotes[cur.categoria];
     if (!q || !q.ok) { er.textContent = t("e_cat"); return; }
