@@ -122,3 +122,11 @@ h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;line-hei
   body{padding-bottom:78px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv,.a-hero-in>*,.a-hero-card{opacity:1!important;translate:none!important}}
+/* variação da página do aeroporto IGR */
+.a-hero.a-igr::before{background-image:url(/img/motorista-executivo-corolla-cross-cinza-1600.webp);background-position:center 45%}
+.a-list{list-style:none;padding:0;margin:0 0 18px;display:grid;gap:10px}
+.a-list li{position:relative;padding-left:22px;color:var(--mut)}
+.a-list li::before{content:"";position:absolute;left:2px;top:.62em;width:8px;height:8px;border-radius:50%;background:var(--gold)}
+.a-list b{color:var(--txt,#f2efe8)}
+.a-gr{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;text-align:center}
+.a-gr p{margin:0;color:var(--mut)}
