@@ -67,7 +67,7 @@ function catalogo(env) {
       cadeirinha: CONFIG.cadeirinha, pet: CONFIG.pet, sinalPct: CONFIG.sinalPct, pagamento: CONFIG.pagamento,
       pagamentoViagens: CONFIG.pagamentoViagens, horaExtra: HORA_EXTRA, porHora: { minimoHoras: POR_HORA.minimoHoras, maximoHoras: POR_HORA.maximoHoras },
       turnstileSiteKey: env.TURNSTILE_SITEKEY || "", pagamentoOnline: false,
-      porKm: { ...POR_KM, ativo: !!(env.ORS_KEY || env.ORS_MOCK === "1") },
+      porKm: { ...POR_KM, ativo: true },
     },
     categorias: CATEGORIAS, servicos: SERVICOS, consulta: CONSULTA,
     datasEspeciais: [...datasEspeciais(ano), ...datasEspeciais(ano + 1)],
