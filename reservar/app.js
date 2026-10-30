@@ -32,7 +32,7 @@
       inclui: "Espera incluída: {n} h", fronteira: "Leve documento original (RG ou passaporte) para cruzar a fronteira.",
       espAero: "1 hora de espera grátis após o pouso. Depois, R$ {v} por hora.",
       add: "Adicionar à reserva", cancelar: "Cancelar", calculando: "Calculando…",
-      carrinho: "Sua reserva", vazio: "Nenhum serviço adicionado ainda.", total: "Total", remover: "Remover", continuar: "Continuar", verReserva: "Finalizar →",
+      carrinho: "Sua reserva", vazio: "Nenhum serviço adicionado ainda.", vazioTit: "Seu carrinho está vazio", vazioTxt: "Clique em Escolher num serviço e ele aparece aqui, com o preço.", vazioDica: "Dá para juntar vários num pedido só: chegada do aeroporto, passeios e a volta.", total: "Total", remover: "Remover", continuar: "Continuar", verReserva: "Finalizar →",
       dados: "Seus dados", nome: "Nome completo", email: "E-mail", tel: "WhatsApp com DDD/código do país", pais: "País", obs: "Observações (opcional)",
       pagar: "Pagamento na reserva", pSinal: "Pagar {p}% de sinal na reserva e o restante ao motorista no dia",
       pTotal: "Pagar 100% na reserva", aPagar: "A pagar na reserva", restante: "Restante no dia",
@@ -80,7 +80,7 @@
       inclui: "Waiting included: {n} h", fronteira: "Bring your original passport or ID to cross the border.",
       espAero: "1 hour free waiting after landing. After that, R$ {v} per hour.",
       add: "Add to booking", cancelar: "Cancel", calculando: "Calculating…",
-      carrinho: "Your booking", vazio: "No services added yet.", total: "Total", remover: "Remove", continuar: "Continue", verReserva: "Checkout →",
+      carrinho: "Your booking", vazio: "No services added yet.", vazioTit: "Your cart is empty", vazioTxt: "Click Choose on a service and it shows up here, with the price.", vazioDica: "You can combine several in one booking: airport arrival, tours and the return.", total: "Total", remover: "Remove", continuar: "Continue", verReserva: "Checkout →",
       dados: "Your details", nome: "Full name", email: "Email", tel: "WhatsApp with country code", pais: "Country", obs: "Notes (optional)",
       pagar: "Payment at booking", pSinal: "Pay a {p}% deposit at booking and the rest to the driver on the day",
       pTotal: "Pay 100% at booking", aPagar: "Due at booking", restante: "Due on the day",
@@ -128,7 +128,7 @@
       inclui: "Espera incluida: {n} h", fronteira: "Lleve su documento original (DNI o pasaporte) para cruzar la frontera.",
       espAero: "1 hora de espera gratis tras el aterrizaje. Después, R$ {v} por hora.",
       add: "Agregar a la reserva", cancelar: "Cancelar", calculando: "Calculando…",
-      carrinho: "Su reserva", vazio: "Todavía no agregó servicios.", total: "Total", remover: "Quitar", continuar: "Continuar", verReserva: "Finalizar →",
+      carrinho: "Su reserva", vazio: "Todavía no agregó servicios.", vazioTit: "Su carrito está vacío", vazioTxt: "Haga clic en Elegir en un servicio y aparece aquí, con el precio.", vazioDica: "Puede juntar varios en un solo pedido: llegada al aeropuerto, paseos y el regreso.", total: "Total", remover: "Quitar", continuar: "Continuar", verReserva: "Finalizar →",
       dados: "Sus datos", nome: "Nombre completo", email: "Email", tel: "WhatsApp con código de país", pais: "País", obs: "Observaciones (opcional)",
       pagar: "Pago en la reserva", pSinal: "Pagar una seña del {p}% en la reserva y el resto al chofer el día del viaje",
       pTotal: "Pagar el 100% en la reserva", aPagar: "A pagar en la reserva", restante: "Resto el día del viaje",
@@ -471,7 +471,7 @@
   function renderCart() {
     $("#r-cart-tit").textContent = t("carrinho");
     var box = $("#r-cart-items");
-    if (!S.cart.length) box.innerHTML = '<p class="r-empty">' + esc(t("vazio")) + "</p>";
+    if (!S.cart.length) box.innerHTML = '<div class="r-empty"><span class="r-empty-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3.5h2.6l2.4 11.2a1.6 1.6 0 001.6 1.3h8.6a1.6 1.6 0 001.6-1.2L21 8H6.1"/></svg></span><b>' + esc(t("vazioTit")) + "</b><p>" + esc(t("vazioTxt")) + '</p><p class="r-empty-dica">' + esc(t("vazioDica")) + "</p></div>";
     else box.innerHTML = S.cart.map(function (it, i) {
       var s = svc(it.servico); if (!s) return "";
       return '<div class="r-ci"><b>' + esc(L(s.nome)) + "</b><span>" + itemDesc(it).map(esc).join("<br>") + '</span><div class="r-ci-f"><em>' + brl(it.cot.valor) +
@@ -479,7 +479,7 @@
     }).join("");
     var tot = S.cart.reduce(function (a, it) { return a + it.cot.valor; }, 0);
     $("#r-cart-tot").innerHTML = S.cart.length ? "<div><span>" + esc(t("total")) + "</span><b>" + brl(tot) + "</b></div>" : "";
-    $("#r-go").disabled = !S.cart.length; $("#r-go").textContent = t("continuar");
+    $("#r-go").disabled = !S.cart.length; $("#r-go").hidden = !S.cart.length; $("#r-go").textContent = t("continuar");
     $("#r-bar-n").textContent = S.cart.length; $("#r-bar-v").textContent = S.cart.length ? brl(tot) : "";
     $("#r-bar").hidden = !S.cart.length; $("#r-bar-go").textContent = t("verReserva");
     if (!$("#r-checkout").hidden) updatePay();

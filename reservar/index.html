@@ -41,7 +41,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:'Montserrat',sys
 .r-tools button{background:transparent;border:0;color:var(--mut);padding:6px 14px;border-radius:20px;font:inherit;font-size:.72rem;font-weight:600;cursor:pointer;transition:all .25s}
 .r-tools button.on{background:var(--gold);color:#0a0a0a}
 /* benefícios */
-.r-benef{position:relative;z-index:1;max-width:1200px;margin:-8px auto 0;padding:0 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.r-benef{position:relative;z-index:1;max-width:1360px;margin:-8px auto 0;padding:0 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .r-bf{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line2);border-radius:14px;padding:18px;transition:border-color .3s,transform .3s var(--ease)}
 .r-bf:hover{border-color:var(--line);transform:translateY(-2px)}
 .r-bf i{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:rgba(212,175,55,.1);color:var(--gold)}
@@ -49,7 +49,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:'Montserrat',sys
 .r-bf b{display:block;font-size:.86rem;margin-bottom:2px}.r-bf span{font-size:.74rem;color:var(--mut);line-height:1.45;display:block}
 /* barra de filtros */
 .r-wrap>*{min-width:0}
-.r-wrap{max-width:1200px;margin:0 auto;padding:34px 24px 70px;display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start}
+.r-wrap{max-width:1360px;margin:0 auto;padding:34px 24px 70px;display:grid;grid-template-columns:1fr 310px;gap:28px;align-items:start}
 .r-ac{position:relative}
 .r-acl{position:absolute;left:0;right:0;top:100%;z-index:30;margin:4px 0 0;padding:4px;list-style:none;background:#141518;border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 40px -12px #000;max-height:260px;overflow:auto}
 .r-acl li{padding:10px 12px;border-radius:8px;font-size:.8rem;cursor:pointer;line-height:1.35}
@@ -139,7 +139,12 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:'Montserrat',sys
 .r-ci b{color:var(--txt);font-size:.83rem}
 .r-ci-f{display:flex;justify-content:space-between;align-items:center}.r-ci-f em{font-style:normal;color:var(--txt);font-weight:600}
 @keyframes fin{from{opacity:0;transform:translateY(6px)}}
-.r-empty{font-size:.8rem;color:var(--mut)}
+.r-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:14px 6px 6px;font-size:.8rem;color:var(--mut)}
+.r-empty-ico{display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:rgba(212,175,55,.1);border:1px dashed rgba(212,175,55,.45);color:var(--gold);margin-bottom:4px}
+.r-empty-ico svg{width:26px;height:26px}
+.r-empty b{color:var(--txt);font-size:.9rem}.r-empty p{margin:0;line-height:1.5}
+.r-empty-dica{margin-top:6px!important;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line2);font-size:.74rem}
+.r-cart [hidden]{display:none!important}
 #r-cart-tot{margin:12px 0}#r-cart-tot div{display:flex;justify-content:space-between;font-size:.92rem}
 .r-cart .r-btn{width:100%}
 .r-cobrado{font-size:.66rem;color:var(--mut);margin:10px 0 0}
@@ -148,7 +153,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:'Montserrat',sys
 .bump{animation:bump .5s var(--ease)}
 @keyframes bump{30%{transform:scale(1.03);box-shadow:0 0 0 2px rgba(212,175,55,.5)}}
 /* como funciona + faq */
-.r-sec{max-width:1200px;margin:0 auto;padding:10px 24px 60px}
+.r-sec{max-width:1360px;margin:0 auto;padding:10px 24px 60px}
 .r-sec h2{font-family:'Cormorant Garamond',serif;font-size:clamp(1.7rem,3.5vw,2.3rem);margin:0 0 18px;text-align:center}
 .r-como{list-style:none;padding:0;margin:0 0 50px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;counter-reset:c}
 .r-como li{background:var(--bg2);border:1px solid var(--line2);border-radius:14px;padding:20px;display:flex;gap:14px;align-items:center;font-size:.86rem}
@@ -303,7 +308,7 @@ dialog#r-modal::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
 <dialog id="r-modal"><form id="r-modal-b" novalidate></form></dialog>
 <div class="r-bar" id="r-bar" hidden><span><b id="r-bar-n">0</b> · <span id="r-bar-v"></span></span><button type="button" class="r-btn" id="r-bar-go">→</button></div>
 <p class="r-legal">Iguaçu Executive Transfer · CNPJ 57.169.205/0001-12 · CNPJ 57.168.941/0001-56 · Foz do Iguaçu, PR, Brasil · +55 45 99118-5798</p>
-<script src="/reservar/app.js?v=6"></script>
+<script src="/reservar/app.js?v=7"></script>
 <script>(function(){var n=document.getElementById("nav"),m=document.getElementById("mobileMenu");addEventListener("scroll",function(){n.classList.toggle("scrolled",scrollY>40)},{passive:true});document.getElementById("hamburger").addEventListener("click",function(){m.classList.toggle("open")})})();</script>
 </body>
 </html>
