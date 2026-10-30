@@ -14,9 +14,9 @@ h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;line-hei
 .a-wa{background:var(--wa);color:#fff}
 .a-big{padding:16px 26px;font-size:.78rem}
 /* hero */
-.a-hero{position:relative;isolation:isolate;overflow:hidden;min-height:88vh;display:grid;grid-template-columns:1fr 360px;gap:40px;align-items:center;max-width:1240px;margin:0 auto;padding:120px 24px 70px}
-.a-hero::before{content:"";position:absolute;inset:0 calc(50% - 50vw);z-index:-2;background:url(/img/transfer-aeroporto-suv-executivo-corolla-cross-1600.webp) center 35%/cover no-repeat;animation:aKb 22s ease-out forwards}
-.a-hero::after{content:"";position:absolute;inset:0 calc(50% - 50vw);z-index:-1;background:linear-gradient(90deg,rgba(8,9,10,.94) 0%,rgba(8,9,10,.78) 55%,rgba(8,9,10,.55) 100%),linear-gradient(180deg,transparent 60%,var(--bg))}
+.a-hero{position:relative;isolation:isolate;overflow:hidden;min-height:88vh;display:grid;grid-template-columns:1fr 360px;gap:40px;align-items:center;padding:120px max(24px,calc((100% - 1192px)/2)) 70px}
+.a-hero::before{content:"";position:absolute;inset:0;z-index:-2;background:url(/img/transfer-aeroporto-suv-executivo-corolla-cross-1600.webp) center 35%/cover no-repeat;animation:aKb 22s ease-out forwards}
+.a-hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(8,9,10,.94) 0%,rgba(8,9,10,.78) 55%,rgba(8,9,10,.55) 100%),linear-gradient(180deg,transparent 60%,var(--bg))}
 @keyframes aKb{from{scale:1.08}to{scale:1}}
 .a-bc{font-size:.72rem;color:var(--mut);margin-bottom:18px}.a-bc a{color:var(--mut);text-decoration:none}.a-bc a:hover{color:var(--gold)}
 .a-hero h1{font-size:clamp(2.3rem,5.2vw,3.9rem);margin:0 0 16px}
