@@ -144,3 +144,27 @@ h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;line-hei
 .a-hero-card .a-fx{font-size:.78rem;margin:2px 0 4px}
 .a-cat-f .a-fx{margin-top:-8px}
 .a-fx-nota{margin-top:-4px!important;font-size:.7rem!important;opacity:.85}
+/* página Sobre */
+.a-hero.a-sobre::before{background-image:url(/img/sedan-executivo-corolla-preto-avenida-1376.webp);background-position:62% 55%}
+.a-stats-card>span{display:block;margin-bottom:6px}
+.a-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 18px}
+.a-stats>div{padding:14px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(212,175,55,.05)}
+.a-stats b{display:block;font-family:'Cormorant Garamond',serif;font-size:2.2rem;line-height:1;color:var(--gold2)}
+.a-stats small{display:block;margin-top:6px;font-size:.68rem;color:var(--mut);letter-spacing:.04em}
+.a-txt{color:var(--mut);font-size:.92rem;line-height:1.75;margin:0 0 14px}.a-txt b{color:var(--txt)}
+.a-inc-mini{grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.a-inc-mini>div{padding:14px;flex-direction:row;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.a-inc-mini>div svg{flex:none;width:30px;height:30px;padding:6px}
+.a-inc-mini>div b{flex:1;min-width:0;align-self:center}
+.a-inc-mini>div span{flex-basis:100%;margin-top:-4px}
+.a-rota em svg{width:30px;height:30px;padding:6px;border-radius:10px;background:rgba(212,175,55,.1);color:var(--gold)}
+.a-redes{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.a-rede{padding:20px;border:1px solid var(--line2);border-radius:14px;background:var(--bg2)}
+.a-rede h3{margin:0 0 4px;font-family:'Cormorant Garamond',serif;font-size:1.35rem}
+.a-rede p{margin:0 0 10px;font-size:.78rem;color:var(--mut);line-height:1.6}
+.a-rede .a-rede-s{color:var(--gold);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase}
+.a-rede .a-rede-l{margin:0}.a-rede .a-rede-l a{color:var(--gold);text-decoration:none;font-size:.74rem;font-weight:600}
+.a-rede .a-rede-l a:hover{text-decoration:underline}
+.a-list a{color:var(--gold)}
+@media(max-width:1000px){.a-redes{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.a-redes,.a-inc-mini{grid-template-columns:1fr}.a-stats b{font-size:1.9rem}}

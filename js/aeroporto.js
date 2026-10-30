@@ -34,6 +34,23 @@
     if (nota && !document.querySelector(".a-fx-nota")) { var p2 = document.createElement("p"); p2.className = "a-note a-fx-nota"; p2.textContent = txtFx[lang] || txtFx.pt; nota.insertAdjacentElement("afterend", p2); }
   });
 
+  // números que sobem contando (página Sobre)
+  var cnt = $$("[data-cnt]");
+  if (cnt.length && "IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    var ioC = new IntersectionObserver(function (en) {
+      en.forEach(function (x) {
+        if (!x.isIntersecting) return; ioC.unobserve(x.target);
+        var el = x.target, alvo = +el.getAttribute("data-cnt"), ini = alvo > 1000 ? alvo - 13 : 0, t0 = null;
+        requestAnimationFrame(function passo(ts) {
+          if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / 1300), e = 1 - Math.pow(1 - p, 3);
+          el.textContent = String(Math.round(ini + (alvo - ini) * e));
+          if (p < 1) requestAnimationFrame(passo);
+        });
+      });
+    }, { threshold: .6 });
+    cnt.forEach(function (el) { ioC.observe(el); });
+  }
+
   var bar = document.querySelector(".a-mbar");
   addEventListener("scroll", function () { if (bar) bar.classList.toggle("on", scrollY > innerHeight * 0.7); }, { passive: true });
 
