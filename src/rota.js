@@ -57,7 +57,7 @@ export async function buscarLugares(env, q, lang) {
   q = String(q || "").trim().slice(0, 80);
   if (q.length < 3) return { ok: true, lugares: [] };
   if (env.ORS_MOCK === "1") return { ok: true, lugares: mockLugares(q) };
-  if (!env.ORS_KEY) return { ok: false, erro: "calc_indisponivel" };
+  if (!env.ORS_KEY) return { ok: false, erro: "calc_indisponivel", ors: "sem_chave" };
   const l = ["pt", "en", "es"].includes(lang) ? lang : "pt";
   return comCache("ac:" + l + ":" + norm(q), 86400 * 7, async () => {
     const u = new URL(ORS + "/geocode/autocomplete");
@@ -68,7 +68,7 @@ export async function buscarLugares(env, q, lang) {
     u.searchParams.set("size", "6");
     u.searchParams.set("lang", l);
     const r = await fetch(u, { headers: { Authorization: env.ORS_KEY, Accept: "application/json" }, signal: AbortSignal.timeout(8000) });
-    if (!r.ok) { console.error("ors autocomplete", r.status, (await r.text()).slice(0, 200)); return { ok: false, erro: "calc_indisponivel" }; }
+    if (!r.ok) { console.error("ors autocomplete", r.status, (await r.text()).slice(0, 200)); return { ok: false, erro: "calc_indisponivel", ors: r.status }; }
     const d = await r.json();
     const lugares = (d.features || []).map((f) => ({
       label: String(f.properties && f.properties.label || "").slice(0, 160),
@@ -85,10 +85,11 @@ async function paisDe(env, p) {
     const u = new URL(ORS + "/geocode/reverse");
     u.searchParams.set("point.lat", String(p.lat)); u.searchParams.set("point.lon", String(p.lon)); u.searchParams.set("size", "1");
     const r = await fetch(u, { headers: { Authorization: env.ORS_KEY, Accept: "application/json" }, signal: AbortSignal.timeout(8000) });
-    if (!r.ok) { console.error("ors reverse", r.status, (await r.text()).slice(0, 200)); return { ok: false }; }
+    if (!r.ok) { console.error("ors reverse", r.status, (await r.text()).slice(0, 200)); return { ok: false, ors: r.status }; }
     const d = await r.json(), f = (d.features || [])[0];
     return f ? { ok: true, pais: f.properties.country_a } : { ok: false };
   });
+  if (!v.ok) paisDe.ultimo = v.ors;
   return v.ok ? v.pais : null;
 }
 
@@ -103,7 +104,7 @@ async function distanciaKm(env, a, b) {
       signal: AbortSignal.timeout(10000),
     });
     if (!r.ok) console.error("ors directions", r.status, (await r.clone().text()).slice(0, 200));
-    if (!r.ok) return { ok: false, erro: r.status === 404 ? "rota_sem_estrada" : "calc_indisponivel" };
+    if (!r.ok) return { ok: false, erro: r.status === 404 ? "rota_sem_estrada" : "calc_indisponivel", ors: r.status };
     const d = await r.json(), s = d.routes && d.routes[0] && d.routes[0].summary;
     if (!s) return { ok: false, erro: "rota_sem_estrada" };
     return { ok: true, km: Math.max(1, Math.ceil(s.distance / 1000)), min: Math.round(s.duration / 60) };
@@ -117,7 +118,7 @@ export async function resolverRota(env, de, para) {
   if (!naRegiao(de) && !naRegiao(para)) return { ok: false, erro: "fora_regiao" };
   try {
     const [pa, pb, dist] = await Promise.all([paisDe(env, de), paisDe(env, para), distanciaKm(env, de, para)]);
-    if (!pa || !pb) return { ok: false, erro: "calc_indisponivel" };
+    if (!pa || !pb) return { ok: false, erro: "calc_indisponivel", ors: paisDe.ultimo || null };
     if (!POR_KM.paisesAceitos.includes(pa) || !POR_KM.paisesAceitos.includes(pb)) return { ok: false, erro: "pais_nao_atende" };
     if (!dist.ok) return dist;
     if (dist.km > POR_KM.maxKm) return { ok: false, erro: "km_max", max: POR_KM.maxKm, km: dist.km };
@@ -125,6 +126,6 @@ export async function resolverRota(env, de, para) {
     return { ok: true, km: dist.km, min: dist.min, fora: pa !== "BRA" || pb !== "BRA", paises: [pa, pb] };
   } catch (e) {
     console.error("rota", e && e.message);
-    return { ok: false, erro: "calc_indisponivel" };
+    return { ok: false, erro: "calc_indisponivel", ors: e && e.name === "TimeoutError" ? "tempo" : "falha" };
   }
 }
