@@ -352,7 +352,7 @@ async function api(req, env, ctx, url) {
     return json(b.categoria ? cotar(it) : cotarTodas(it));
   }
   if (p === "/api/lugares" && m === "GET") {
-    const r = await buscarLugares(env, url.searchParams.get("q"), url.searchParams.get("lang"));
+    let r; try { r = await buscarLugares(env, url.searchParams.get("q"), url.searchParams.get("lang")); } catch (e) { console.error("lugares", e && e.message); r = { ok: false, erro: "calc_indisponivel" }; }
     return json(r, r.ok ? 200 : 503, r.ok ? { "cache-control": "public, max-age=3600" } : {});
   }
   if (p === "/api/pedidos" && m === "POST") return criarPedido(req, env, ctx);

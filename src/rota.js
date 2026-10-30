@@ -67,8 +67,8 @@ export async function buscarLugares(env, q, lang) {
     u.searchParams.set("focus.point.lon", String(POR_KM.regiaoFoz.lon));
     u.searchParams.set("size", "6");
     u.searchParams.set("lang", l);
-    const r = await fetch(u, { headers: { Authorization: env.ORS_KEY, Accept: "application/json" } });
-    if (!r.ok) return { ok: false, erro: "calc_indisponivel" };
+    const r = await fetch(u, { headers: { Authorization: env.ORS_KEY, Accept: "application/json" }, signal: AbortSignal.timeout(8000) });
+    if (!r.ok) { console.error("ors autocomplete", r.status, (await r.text()).slice(0, 200)); return { ok: false, erro: "calc_indisponivel" }; }
     const d = await r.json();
     const lugares = (d.features || []).map((f) => ({
       label: String(f.properties && f.properties.label || "").slice(0, 160),
@@ -84,8 +84,8 @@ async function paisDe(env, p) {
   const v = await comCache(k, 86400 * 30, async () => {
     const u = new URL(ORS + "/geocode/reverse");
     u.searchParams.set("point.lat", String(p.lat)); u.searchParams.set("point.lon", String(p.lon)); u.searchParams.set("size", "1");
-    const r = await fetch(u, { headers: { Authorization: env.ORS_KEY, Accept: "application/json" } });
-    if (!r.ok) return { ok: false };
+    const r = await fetch(u, { headers: { Authorization: env.ORS_KEY, Accept: "application/json" }, signal: AbortSignal.timeout(8000) });
+    if (!r.ok) { console.error("ors reverse", r.status, (await r.text()).slice(0, 200)); return { ok: false }; }
     const d = await r.json(), f = (d.features || [])[0];
     return f ? { ok: true, pais: f.properties.country_a } : { ok: false };
   });
@@ -100,7 +100,9 @@ async function distanciaKm(env, a, b) {
       method: "POST",
       headers: { Authorization: env.ORS_KEY, "content-type": "application/json", Accept: "application/json" },
       body: JSON.stringify({ coordinates: [[a.lon, a.lat], [b.lon, b.lat]], radiuses: [5000, 5000] }),
+      signal: AbortSignal.timeout(10000),
     });
+    if (!r.ok) console.error("ors directions", r.status, (await r.clone().text()).slice(0, 200));
     if (!r.ok) return { ok: false, erro: r.status === 404 ? "rota_sem_estrada" : "calc_indisponivel" };
     const d = await r.json(), s = d.routes && d.routes[0] && d.routes[0].summary;
     if (!s) return { ok: false, erro: "rota_sem_estrada" };
