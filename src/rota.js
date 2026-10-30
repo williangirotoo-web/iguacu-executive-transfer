@@ -1,4 +1,4 @@
-/* Distância por estrada e país de cada ponto, para a viagem sob medida (preço por km).
+/* Viagem sob medida — distância por estrada e país de cada ponto, para a viagem sob medida (preço por km).
    Usa o OpenRouteService (chave no segredo ORS_KEY). Tudo calculado no servidor.
    Em desenvolvimento local, ORS_MOCK=1 (.dev.vars) usa uma lista fixa de cidades. */
 import { POR_KM } from "./precos.js";
