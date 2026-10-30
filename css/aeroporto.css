@@ -130,3 +130,12 @@ h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;line-hei
 .a-list b{color:var(--txt,#f2efe8)}
 .a-gr{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;text-align:center}
 .a-gr p{margin:0;color:var(--mut)}
+/* variação: transfer noturno */
+.a-hero.a-not::before{background-image:url(/img/motorista-executivo-suv-preto-1600.webp);background-position:center 45%;filter:saturate(.75) brightness(.85)}
+.a-hero.a-not::after{background:radial-gradient(ellipse 40% 50% at 85% 15%,rgba(212,175,55,.14),transparent 70%),linear-gradient(90deg,rgba(6,7,12,.96) 0%,rgba(6,7,12,.82) 55%,rgba(6,7,12,.6) 100%),linear-gradient(180deg,transparent 60%,var(--bg))}
+.a-rotas3{grid-template-columns:repeat(3,1fr)}
+.a-inc2{grid-template-columns:1fr 1fr}
+.a-inc2>div{padding:22px}.a-inc2 b{font-size:1rem}.a-inc2 span{font-size:.84rem;line-height:1.6}
+.a-inc span a{color:var(--gold)}
+@media(max-width:1000px){.a-rotas3{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.a-rotas3,.a-inc2{grid-template-columns:1fr}}
