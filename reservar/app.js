@@ -7,6 +7,17 @@
 
   var T = {
     pt: {
+      eyebrow: "Reserva online · Preço fechado na hora",
+      passos: ["Escolha o serviço", "Data, passageiros e categoria", "Envie e confirmamos no WhatsApp"],
+      benef: [["Preço fechado", "Você vê o valor antes de reservar. Sem taxímetro e sem surpresa."], ["Motorista profissional", "Atendimento discreto, carro limpo e pontualidade combinada."], ["Cancelamento grátis", "Até {h} h antes da viagem, sem custo."], ["3 países", "Brasil, Argentina e Paraguai com travessia de fronteira."]],
+      busca: "Buscar serviço, cidade ou passeio", ordem: "Ordenar", o_rec: "Recomendados", o_menor: "Menor preço", o_maior: "Maior preço", o_az: "Nome (A–Z)",
+      paxF: "Pessoas", p_any: "Qualquer", p_4: "Até 4", p_6: "5 ou 6", p_7: "7 ou mais",
+      nRes: "{n} serviços", nada: "Nenhum serviço encontrado com esses filtros.", limpar: "Limpar filtros",
+      b_espera: "Espera {n} h", b_fronteira: "Fronteira", b_hora: "Por hora", b_dia: "Dia inteiro", b_ida: "Só ida", b_iv: "Ida e volta",
+      calcTit: "Não achou seu trajeto?", calcDesc: "Em breve: calcule pelo endereço de saída e destino. Por enquanto, peça a cotação no WhatsApp.", calcBtn: "Cotar no WhatsApp",
+      comoTit: "Como funciona", faqTit: "Perguntas frequentes",
+      faq: [["Como pago a reserva?", "Depois que confirmamos a disponibilidade, enviamos o link de pagamento pelo WhatsApp: Pix, cartão em até 6x sem juros ou PayPal. Categoria Comum e 7 lugares pagam 100% na reserva; Executivo e SUV podem pagar 50% de sinal."], ["Com quanta antecedência posso reservar?", "Pelo site, a partir de 1 hora antes na categoria Comum e 5 horas antes nas demais. Para viagens a outras cidades, 5 horas."], ["E se meu voo atrasar?", "Informe o número do voo na reserva: acompanhamos o horário de chegada. A primeira hora de espera após o pouso é grátis."], ["Posso cancelar?", "Sim. O cancelamento é grátis até {h} horas antes. Depois disso, devolvemos {d}% do valor pago."], ["Que documento preciso para Argentina ou Paraguai?", "Brasileiros: RG original (com menos de 10 anos) ou passaporte. Estrangeiros: passaporte. Menores de idade precisam de documentação própria."], ["O preço é por pessoa?", "Não. Todos os valores são por veículo, para o grupo inteiro, dentro da capacidade da categoria."]],
+      waAjuda: "Prefere falar com a gente?", waBtn: "Chamar no WhatsApp", seg: "Preço fechado calculado na hora · dados protegidos", cob: "Valores em reais (R$), por veículo.",
       h1: "Reserve seu transfer em Foz do Iguaçu", sub: "Escolha o trajeto e a categoria do veículo. Preço fechado, calculado na hora, sem taxímetro.",
       trust: ["Preço fechado", "Cancelamento grátis até {h} h antes", "Transfer 24h com agendamento", "Argentina e Paraguai"],
       g_todos: "Todos", g_aeroporto: "Aeroportos", g_passeios: "Cataratas e passeios", g_motorista: "Motorista à disposição", g_viagens: "Outras cidades",
@@ -44,6 +55,17 @@
       e_generico: "Não foi possível enviar. Tente de novo ou fale no WhatsApp.",
     },
     en: {
+      eyebrow: "Online booking · Fixed price, instantly",
+      passos: ["Choose the service", "Date, passengers and vehicle", "Send it and we confirm on WhatsApp"],
+      benef: [["Fixed price", "See the price before you book. No meter, no surprises."], ["Professional driver", "Discreet service, clean car and agreed punctuality."], ["Free cancellation", "Up to {h} h before the trip, at no cost."], ["3 countries", "Brazil, Argentina and Paraguay, border crossing included."]],
+      busca: "Search service, city or tour", ordem: "Sort", o_rec: "Recommended", o_menor: "Lowest price", o_maior: "Highest price", o_az: "Name (A–Z)",
+      paxF: "People", p_any: "Any", p_4: "Up to 4", p_6: "5 or 6", p_7: "7 or more",
+      nRes: "{n} services", nada: "No services match these filters.", limpar: "Clear filters",
+      b_espera: "{n} h waiting", b_fronteira: "Border", b_hora: "Hourly", b_dia: "Full day", b_ida: "One way", b_iv: "Round trip",
+      calcTit: "Can't find your route?", calcDesc: "Coming soon: price by pick-up and drop-off address. For now, ask for a quote on WhatsApp.", calcBtn: "Quote on WhatsApp",
+      comoTit: "How it works", faqTit: "FAQ",
+      faq: [["How do I pay?", "Once we confirm availability, we send a payment link on WhatsApp: Pix, card or PayPal. Standard and 7-seater pay 100% at booking; Executive and SUV can pay a 50% deposit."], ["How far in advance can I book?", "Online, from 1 hour before (Standard) and 5 hours before (other vehicles). Trips to other cities: 5 hours."], ["What if my flight is delayed?", "Add your flight number: we follow the arrival time. The first hour of waiting after landing is free."], ["Can I cancel?", "Yes. Cancellation is free up to {h} hours before. After that, {d}% is refunded."], ["Which document do I need for Argentina or Paraguay?", "Foreign visitors: passport. Brazilians: original ID card (issued less than 10 years ago) or passport. Minors need their own documents."], ["Is the price per person?", "No. All prices are per vehicle, for the whole group, within the vehicle capacity."]],
+      waAjuda: "Rather talk to us?", waBtn: "Chat on WhatsApp", seg: "Fixed price calculated instantly · data protected", cob: "Prices in Brazilian reais (R$), per vehicle.",
       h1: "Book your transfer in Foz do Iguaçu", sub: "Choose your route and vehicle. Fixed price calculated instantly, no meter.",
       trust: ["Fixed price", "Free cancellation up to {h} h before", "24h transfers with advance booking", "Argentina & Paraguay"],
       g_todos: "All", g_aeroporto: "Airports", g_passeios: "Falls & tours", g_motorista: "Driver at your disposal", g_viagens: "Other cities",
@@ -81,6 +103,17 @@
       e_generico: "Could not send. Please try again or contact us on WhatsApp.",
     },
     es: {
+      eyebrow: "Reserva online · Precio cerrado al instante",
+      passos: ["Elija el servicio", "Fecha, pasajeros y vehículo", "Envíe y confirmamos por WhatsApp"],
+      benef: [["Precio cerrado", "Ve el valor antes de reservar. Sin taxímetro ni sorpresas."], ["Chofer profesional", "Atención discreta, auto limpio y puntualidad acordada."], ["Cancelación gratis", "Hasta {h} h antes del viaje, sin costo."], ["3 países", "Brasil, Argentina y Paraguay con cruce de frontera."]],
+      busca: "Buscar servicio, ciudad o paseo", ordem: "Ordenar", o_rec: "Recomendados", o_menor: "Menor precio", o_maior: "Mayor precio", o_az: "Nombre (A–Z)",
+      paxF: "Personas", p_any: "Cualquiera", p_4: "Hasta 4", p_6: "5 o 6", p_7: "7 o más",
+      nRes: "{n} servicios", nada: "Ningún servicio coincide con estos filtros.", limpar: "Limpiar filtros",
+      b_espera: "Espera {n} h", b_fronteira: "Frontera", b_hora: "Por hora", b_dia: "Día completo", b_ida: "Solo ida", b_iv: "Ida y vuelta",
+      calcTit: "¿No encontró su trayecto?", calcDesc: "Próximamente: precio por dirección de salida y destino. Por ahora, pida la cotización por WhatsApp.", calcBtn: "Cotizar por WhatsApp",
+      comoTit: "Cómo funciona", faqTit: "Preguntas frecuentes",
+      faq: [["¿Cómo pago?", "Cuando confirmamos la disponibilidad, enviamos el link de pago por WhatsApp: Pix, tarjeta o PayPal. Estándar y 7 plazas pagan el 100% al reservar; Ejecutivo y SUV pueden pagar una seña del 50%."], ["¿Con cuánta anticipación puedo reservar?", "Online, desde 1 hora antes (Estándar) y 5 horas antes (demás vehículos). Viajes a otras ciudades: 5 horas."], ["¿Y si mi vuelo se atrasa?", "Indique el número de vuelo: seguimos el horario de llegada. La primera hora de espera tras el aterrizaje es gratis."], ["¿Puedo cancelar?", "Sí. La cancelación es gratis hasta {h} horas antes. Después, devolvemos el {d}% del valor."], ["¿Qué documento necesito para Argentina o Paraguay?", "Argentinos: DNI físico vigente o pasaporte. Otros extranjeros: pasaporte. Los menores necesitan documentación propia."], ["¿El precio es por persona?", "No. Todos los valores son por vehículo, para todo el grupo, dentro de la capacidad del vehículo."]],
+      waAjuda: "¿Prefiere hablar con nosotros?", waBtn: "Escribir por WhatsApp", seg: "Precio cerrado calculado al instante · datos protegidos", cob: "Valores en reales (R$), por vehículo.",
       h1: "Reserve su traslado en Foz do Iguaçu", sub: "Elija el trayecto y la categoría del vehículo. Precio cerrado al instante, sin taxímetro.",
       trust: ["Precio cerrado", "Cancelación gratis hasta {h} h antes", "Traslados 24 h con reserva", "Argentina y Paraguay"],
       g_todos: "Todos", g_aeroporto: "Aeropuertos", g_passeios: "Cataratas y paseos", g_motorista: "Chofer a disposición", g_viagens: "Otras ciudades",
@@ -126,7 +159,7 @@
   };
   var qs = new URLSearchParams(location.search);
   var htmlLang = (document.documentElement.lang || "pt").slice(0, 2);
-  var S = { lang: qs.get("lang") || store.get("lang", htmlLang), grupo: qs.get("g") || "todos", cart: store.get("cart2", []) };
+  var S = { lang: qs.get("lang") || store.get("lang", htmlLang), grupo: qs.get("g") || "todos", cart: store.get("cart2", []), q: "", sort: "rec", pax: "any" };
   if (!T[S.lang]) S.lang = "pt";
   var CAT = null; // catálogo vindo da API
   function t(k, v) {
@@ -151,39 +184,110 @@
   }
 
   /* ---------- textos fixos ---------- */
+  var ICO = {
+    preco: '<path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>',
+    motorista: '<circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0113 0"/>',
+    cancel: '<path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
+    mundo: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20 15 15 0 010-20"/>',
+  };
+  function ico(k) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICO[k] + "</svg>"; }
+  function txt(sel, v) { var el = $(sel); if (el) el.textContent = v; }
   function renderStatic() {
+    var cfg = CAT.config, h = cfg.cancelamento.gratisAteHoras, d = cfg.cancelamento.devolveDepoisPct;
     document.documentElement.lang = S.lang === "pt" ? "pt-BR" : S.lang;
-    $("#r-h1").textContent = t("h1"); $("#r-sub").textContent = t("sub");
-    $("#r-trust").innerHTML = t("trust").map(function (x) { return "<li>" + esc(x.replace("{h}", CAT.config.cancelamento.gratisAteHoras)) + "</li>"; }).join("");
+    txt("#r-eyebrow", t("eyebrow")); txt("#r-h1", t("h1")); txt("#r-sub", t("sub"));
+    $("#r-steps").innerHTML = t("passos").map(function (x, i) { return '<li><b>' + (i + 1) + "</b><span>" + esc(x) + "</span></li>"; }).join("");
+    var ik = ["preco", "motorista", "cancel", "mundo"];
+    $("#r-benef").innerHTML = t("benef").map(function (x, i) {
+      return '<div class="r-bf reveal"><i>' + ico(ik[i]) + "</i><div><b>" + esc(x[0]) + "</b><span>" + esc(x[1].replace("{h}", h)) + "</span></div></div>";
+    }).join("");
+    $("#r-q").placeholder = t("busca"); txt("#r-sort-l", t("ordem")); txt("#r-pax-l", t("paxF"));
+    $("#r-sort").innerHTML = ["rec", "menor", "maior", "az"].map(function (k) { return '<option value="' + k + '"' + (S.sort === k ? " selected" : "") + ">" + esc(t("o_" + k)) + "</option>"; }).join("");
+    $("#r-pax").innerHTML = [["any", "p_any"], ["4", "p_4"], ["6", "p_6"], ["7", "p_7"]].map(function (k) { return '<option value="' + k[0] + '"' + (S.pax === k[0] ? " selected" : "") + ">" + esc(t(k[1])) + "</option>"; }).join("");
+    txt("#r-como-t", t("comoTit")); txt("#r-faq-t", t("faqTit"));
+    $("#r-como").innerHTML = t("passos").map(function (x, i) { return '<li class="reveal"><b>' + (i + 1) + "</b><span>" + esc(x) + "</span></li>"; }).join("");
+    $("#r-faq").innerHTML = t("faq").map(function (x) {
+      return '<details class="reveal"><summary>' + esc(x[0]) + "</summary><p>" + esc(x[1].replace("{h}", h).replace("{d}", d)) + "</p></details>";
+    }).join("");
+    txt("#r-wa-t", t("waAjuda")); txt("#r-seg", t("seg")); txt("#r-cob", t("cob")); var wb = $("#r-wa-b"); if (wb) { wb.textContent = t("waBtn"); wb.href = waLink(t("waAjuda")); }
     $$("[data-lang]").forEach(function (b) { b.classList.toggle("on", b.dataset.lang === S.lang); });
+    observe();
   }
 
   /* ---------- lista ---------- */
-  function minPrice(s) {
-    var v = Object.keys(s.precos).map(function (k) { return s.precos[k]; }).filter(function (x) { return x != null; });
+  function paxMin() { return S.pax === "any" ? 1 : S.pax === "4" ? 1 : S.pax === "6" ? 5 : 7; }
+  function minPrice(s, pmin) {
+    pmin = pmin || 1;
+    var v = Object.keys(s.precos).filter(function (k) { return s.precos[k] != null && CAT.categorias[k] && CAT.categorias[k].pax >= pmin; })
+      .map(function (k) { return s.precos[k]; });
     if (!v.length) return null;
     var m = Math.min.apply(null, v);
     return s.tipo === "hora" ? m * CAT.config.porHora.minimoHoras : m;
   }
+  function norm(x) { return String(x || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
+  function badges(s) {
+    var b = [];
+    if (s.tipo === "transfer" || s.tipo === "viagem") b.push(t("b_ida"));
+    if (s.tipo === "passeio") b.push(t("b_iv"));
+    if (s.tipo === "hora") b.push(t("b_hora"));
+    if (s.tipo === "diaria") b.push(t("b_dia"));
+    if (s.espera) b.push(t("b_espera", { n: s.espera }));
+    if (s.fronteira) b.push(t("b_fronteira"));
+    return b.map(function (x) { return "<span>" + esc(x) + "</span>"; }).join("");
+  }
+  function filtered() {
+    var q = norm(S.q), pm = paxMin();
+    var list = CAT.servicos.filter(function (s) {
+      if (S.grupo !== "todos" && s.grupo !== S.grupo) return false;
+      if (q && norm(L(s.nome) + " " + L(s.desc)).indexOf(q) < 0) return false;
+      if (S.pax !== "any" && minPrice(s, pm) == null) return false;
+      return true;
+    });
+    if (S.sort !== "rec") {
+      list = list.slice().sort(function (a, b) {
+        if (S.sort === "az") return L(a.nome).localeCompare(L(b.nome));
+        var pa = minPrice(a, pm), pb = minPrice(b, pm);
+        if (pa == null) return 1; if (pb == null) return -1;
+        return S.sort === "menor" ? pa - pb : pb - pa;
+      });
+    }
+    return list;
+  }
   function renderList() {
     var grupos = ["todos", "aeroporto", "passeios", "motorista", "viagens"];
     $("#r-chips").innerHTML = grupos.map(function (g) {
-      return '<button type="button" class="r-chip' + (S.grupo === g ? " on" : "") + '" data-g="' + g + '">' + esc(t("g_" + g)) + "</button>";
+      var n = CAT.servicos.filter(function (s) { return g === "todos" || s.grupo === g; }).length;
+      return '<button type="button" class="r-chip' + (S.grupo === g ? " on" : "") + '" data-g="' + g + '">' + esc(t("g_" + g)) + " <i>" + n + "</i></button>";
     }).join("");
-    var list = CAT.servicos.filter(function (s) { return S.grupo === "todos" || s.grupo === S.grupo; });
-    var html = list.map(function (s) {
-      var mp = minPrice(s);
-      return '<article class="r-card"><img src="/img/' + s.foto + '-900.webp" alt="' + esc(L(s.nome)) + '" loading="lazy" width="900" height="506">' +
-        '<div class="r-card-b"><h3>' + esc(L(s.nome)) + "</h3><p>" + esc(L(s.desc)) + "</p>" +
+    var list = filtered(), pm = paxMin();
+    txt("#r-count", t("nRes", { n: list.length }));
+    var html = list.map(function (s, i) {
+      var mp = minPrice(s, pm);
+      return '<article class="r-card reveal" style="--d:' + Math.min(i, 8) * 40 + 'ms"><div class="r-img"><img src="/img/' + s.foto + '-900.webp" alt="' + esc(L(s.nome)) + '" loading="lazy" width="900" height="506">' +
+        '<div class="r-badges">' + badges(s) + "</div></div>" +
+        '<div class="r-card-b"><span class="r-grp">' + esc(t("g_" + s.grupo)) + "</span><h3>" + esc(L(s.nome)) + "</h3><p>" + esc(L(s.desc)) + "</p>" +
         '<div class="r-card-f"><span><small>' + esc(t("apartir")) + "</small> <b>" + (mp == null ? esc(t("consulta")) : brl(mp)) + "</b> <small>" + esc(t("porveiculo")) + "</small></span>" +
-        '<button type="button" class="r-btn" data-sel="' + s.id + '">' + esc(t("escolher")) + "</button></div></div></article>";
+        '<button type="button" class="r-btn" data-sel="' + s.id + '">' + esc(t("escolher")) + ' <span aria-hidden="true">→</span></button></div></div></article>';
     }).join("");
+    if (!list.length) html = '<div class="r-none"><p>' + esc(t("nada")) + '</p><button type="button" class="r-btn r-ghost" id="r-clear">' + esc(t("limpar")) + "</button></div>";
+    if (S.grupo === "todos" || S.grupo === "viagens") {
+      html += '<article class="r-card r-card-calc reveal"><div class="r-card-b"><span class="r-grp">' + esc(t("g_viagens")) + "</span><h3>" + esc(t("calcTit")) + "</h3><p>" + esc(t("calcDesc")) + "</p>" +
+        '<a class="r-btn r-btn-wa" target="_blank" rel="noopener" href="' + waLink(t("calcTit")) + '">' + esc(t("calcBtn")) + "</a></div></article>";
+    }
     if (S.grupo === "todos") {
-      html += '<article class="r-card r-card-cons"><div class="r-card-b"><h3>' + esc(t("consTit")) + "</h3><p>" + esc(t("consDesc")) + "</p><ul>" +
+      html += '<article class="r-card r-card-cons reveal"><div class="r-card-b"><span class="r-grp">' + esc(t("consulta")) + "</span><h3>" + esc(t("consTit")) + "</h3><p>" + esc(t("consDesc")) + "</p><ul>" +
         CAT.consulta.map(function (c) { return "<li>" + esc(L(c.nome)) + "</li>"; }).join("") + "</ul>" +
         '<a class="r-btn r-btn-wa" target="_blank" rel="noopener" href="' + waLink(t("pedir") + ": " + CAT.consulta.map(function (c) { return L(c.nome); }).join(" / ")) + '">' + esc(t("pedir")) + "</a></div></article>";
     }
     $("#r-grid").innerHTML = html;
+    observe();
+  }
+  var io = null;
+  function observe() {
+    var els = $$(".reveal:not(.in)");
+    if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) { els.forEach(function (e) { e.classList.add("in"); }); return; }
+    if (!io) io = new IntersectionObserver(function (en) { en.forEach(function (x) { if (x.isIntersecting) { x.target.classList.add("in"); io.unobserve(x.target); } }); }, { rootMargin: "0px 0px -40px 0px" });
+    els.forEach(function (e) { io.observe(e); });
   }
 
   /* ---------- modal ---------- */
@@ -200,7 +304,7 @@
   function hoje() { var d = new Date(Date.now() - 3 * 3600e3); return d.toISOString().slice(0, 10); } // horário de Foz (UTC-3)
   function renderModal() {
     var s = svc(cur.servico), m = $("#r-modal-b"), cfg = CAT.config;
-    var f = "<h3>" + esc(L(s.nome)) + "</h3><p class=\"r-sm\">" + esc(L(s.desc)) + "</p>";
+    var f = '<button type="button" class="r-x" data-close aria-label="' + esc(t("cancelar")) + '">×</button><h3>' + esc(L(s.nome)) + "</h3><p class=\"r-sm\">" + esc(L(s.desc)) + "</p>";
     if (s.sentido) f += field(t("sentido"), '<select name="sentido"><option value="chegada">' + esc(t("chegada")) + '</option><option value="saida">' + esc(t("saida")) + "</option></select>");
     f += '<div class="r-row">' + field(t("data") + " *", '<input type="date" name="data" min="' + hoje() + '" required>') +
       field((s.voo ? t("horaVoo") : t("hora")) + " *", '<input type="time" name="hora" required>') + "</div>";
@@ -383,7 +487,11 @@
     else if (b.dataset.lang) { S.lang = b.dataset.lang; store.set("lang", S.lang); all(); }
     else if (b.id === "r-go" || b.id === "r-bar-go") { $("#r-checkout").hidden = false; renderCheckout(); $("#r-checkout").scrollIntoView({ behavior: "smooth" }); }
     else if (b.id === "r-novo") { $("#r-checkout").hidden = true; scrollTo({ top: 0, behavior: "smooth" }); }
+    else if (b.id === "r-clear") { S.grupo = "todos"; S.q = ""; S.pax = "any"; S.sort = "rec"; $("#r-q").value = ""; renderStatic(); renderList(); }
   });
+  var qT; $("#r-q").addEventListener("input", function () { var v = this.value; clearTimeout(qT); qT = setTimeout(function () { S.q = v; renderList(); }, 150); });
+  $("#r-sort").addEventListener("change", function () { S.sort = this.value; renderList(); });
+  $("#r-pax").addEventListener("change", function () { S.pax = this.value; renderList(); });
   $("#r-modal-b").addEventListener("change", function (e) {
     if (e.target.name === "categoria") {
       cur.categoria = e.target.value;
@@ -404,6 +512,7 @@
     if (!q || !q.ok) { er.textContent = t("e_cat"); return; }
     var item = JSON.parse(JSON.stringify(cur)); item.cot = { valor: q.valor, modos: q.modos };
     S.cart.push(item); saveCart(); closeModal();
+    ["#r-cart", "#r-bar"].forEach(function (sel) { var el = $(sel); if (el) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); } });
     track("add_to_cart", { value: q.valor, currency: "BRL", items: [{ item_id: item.servico, item_variant: item.categoria }] });
     $("#r-cart").scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
@@ -413,11 +522,11 @@
   function all() { renderStatic(); renderList(); renderCart(); if (!$("#r-checkout").hidden) renderCheckout(); }
 
   api("/api/catalogo").then(function (c) {
-    CAT = c;
+    CAT = c; $("#r-grid").classList.remove("loading");
     S.cart = S.cart.filter(function (it) { return it && it.cot && svc(it.servico) && CAT.categorias[it.categoria]; });
     all(); track("view_item_list", { item_list_name: "reservas" });
     if (qs.get("s") && svc(qs.get("s"))) openSvc(qs.get("s"));
   }).catch(function () {
-    $("#r-grid").innerHTML = '<p class="r-err">' + esc(T[S.lang].e_rede) + ' <a class="r-btn r-btn-wa" href="https://wa.me/5545991185798">WhatsApp</a></p>';
+    $("#r-grid").classList.remove("loading"); $("#r-grid").innerHTML = '<p class="r-err">' + esc(T[S.lang].e_rede) + ' <a class="r-btn r-btn-wa" href="https://wa.me/5545991185798">WhatsApp</a></p>';
   });
 })();
