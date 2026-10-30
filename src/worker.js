@@ -132,7 +132,7 @@ function resumoTexto(p, itens, comLinks, origem) {
     if (it.destino) linhas.push(`   Levar para: ${it.destino}`);
     linhas.push(`   Passageiros: ${it.pax} · Malas: ${it.malas}` + (it.cadeirinhas ? ` · Cadeirinhas: ${it.cadeirinhas}` : "") + (it.pet ? " · Com pet" : ""));
     if (it.horas_extras) linhas.push(`   Horas extras: ${it.horas_extras}`);
-    if (it.km) linhas.push(`   Distância: ${it.km} km por trecho` + (it.km_fora ? " (inclui taxa de fronteira)" : ""));
+    if (it.km && comLinks) linhas.push(`   Distância (só para a equipe): ${it.km} km por trecho` + (it.km_fora ? " · com taxa de fronteira" : ""));
     if (servico(it.servico_id)?.tipo === "hora") linhas.push(`   Horas contratadas: ${it.horas}`);
     if (servico(it.servico_id)?.tipo === "diaria") linhas.push(`   Diárias: ${it.dias}`);
     if (it.data_especial) linhas.push(`   Data especial: +${CONFIG.feriadoAcrescimoPct}%`);

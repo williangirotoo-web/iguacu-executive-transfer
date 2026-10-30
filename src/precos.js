@@ -189,8 +189,8 @@ export const POR_KM = {
   regiaoFoz: { lat: -25.5163, lon: -54.5854, raioKm: 60 },
 };
 SERVICOS.push({ id: "km", grupo: "viagens", tipo: "km", oculto: true, foto: "suv-executivo-corolla-cross-preto",
-  nome: N("Viagem sob medida (preço por km)", "Custom trip (price per km)", "Viaje a medida (precio por km)"),
-  desc: N("Digite a origem e o destino: calculamos a distância e o preço na hora.", "Enter pickup and destination: we calculate distance and price instantly.", "Ingrese origen y destino: calculamos la distancia y el precio al instante."),
+  nome: N("Viagem sob medida", "Custom trip", "Viaje a medida"),
+  desc: N("Digite a origem e o destino: o preço fechado aparece na hora.", "Enter pickup and destination: the fixed price shows up instantly.", "Ingrese origen y destino: el precio cerrado aparece al instante."),
   precos: { ...POR_KM.valorKm } });
 
 /* Países envolvidos em cada serviço (filtro "Para onde você vai?" da página de reservas) */
