@@ -337,6 +337,29 @@ async function admin(req, env, url) {
   return erro("rota", 404);
 }
 
+/* ---------------- câmbio (só para mostrar valor aproximado em dólar e euro; a cobrança é em reais) ---------------- */
+async function cotacaoCambio(env) {
+  if (env.ORS_MOCK === "1") return { ok: true, usd: 0.18, eur: 0.16, data: "teste" };
+  const url = "https://cache.iet.internal/cambio-brl";
+  const cache = typeof caches !== "undefined" ? caches.default : null;
+  if (cache) { const hit = await cache.match(url); if (hit) return hit.json(); }
+  const fontes = [
+    async () => { const r = await fetch("https://api.frankfurter.dev/v1/latest?base=BRL&symbols=USD,EUR", { signal: AbortSignal.timeout(5000) }); const d = await r.json(); return { usd: d.rates.USD, eur: d.rates.EUR, data: d.date }; },
+    async () => { const r = await fetch("https://open.er-api.com/v6/latest/BRL", { signal: AbortSignal.timeout(5000) }); const d = await r.json(); return { usd: d.rates.USD, eur: d.rates.EUR, data: (d.time_last_update_utc || "").slice(5, 16) }; },
+  ];
+  for (const f of fontes) {
+    try {
+      const v = await f();
+      if (v.usd > 0 && v.eur > 0) {
+        const out = { ok: true, usd: v.usd, eur: v.eur, data: v.data };
+        if (cache) await cache.put(url, new Response(JSON.stringify(out), { headers: { "content-type": "application/json", "cache-control": "public, max-age=21600" } }));
+        return out;
+      }
+    } catch (e) { console.error("cambio", e && e.message); }
+  }
+  return { ok: false, erro: "cambio_indisponivel" };
+}
+
 /* ---------------- roteador ---------------- */
 async function api(req, env, ctx, url) {
   const p = url.pathname, m = req.method;
@@ -351,6 +374,10 @@ async function api(req, env, ctx, url) {
     const it = normalizarItem(b);
     await prepararKm(env, it);
     return json(b.categoria ? cotar(it) : cotarTodas(it));
+  }
+  if (p === "/api/cambio" && m === "GET") {
+    const r = await cotacaoCambio(env);
+    return json(r, r.ok ? 200 : 503, r.ok ? { "cache-control": "public, max-age=3600" } : {});
   }
   if (p === "/api/lugares" && m === "GET") {
     let r; try { r = await buscarLugares(env, url.searchParams.get("q"), url.searchParams.get("lang")); } catch (e) { console.error("lugares", e && e.message); r = { ok: false, erro: "calc_indisponivel", ors: e && e.name === "TimeoutError" ? "tempo" : "falha" }; }

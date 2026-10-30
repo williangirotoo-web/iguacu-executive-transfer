@@ -139,3 +139,8 @@ h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;line-hei
 .a-inc span a{color:var(--gold)}
 @media(max-width:1000px){.a-rotas3{grid-template-columns:1fr 1fr}}
 @media(max-width:640px){.a-rotas3,.a-inc2{grid-template-columns:1fr}}
+/* valor aproximado em dólar e euro */
+.a-fx{display:block;font-family:'Montserrat',system-ui,sans-serif;font-size:.68rem;font-weight:500;letter-spacing:.02em;color:var(--mut);margin-top:2px;white-space:nowrap}
+.a-hero-card .a-fx{font-size:.78rem;margin:2px 0 4px}
+.a-cat-f .a-fx{margin-top:-8px}
+.a-fx-nota{margin-top:-4px!important;font-size:.7rem!important;opacity:.85}
