@@ -32,7 +32,7 @@
       inclui: "Espera incluída: {n} h", fronteira: "Leve documento original (RG ou passaporte) para cruzar a fronteira.",
       espAero: "1 hora de espera grátis após o pouso. Depois, R$ {v} por hora.",
       add: "Adicionar à reserva", cancelar: "Cancelar", calculando: "Calculando…",
-      carrinho: "Sua reserva", vazio: "Nenhum serviço adicionado ainda.", vazioTit: "Seu carrinho está vazio", vazioTxt: "Clique em Escolher num serviço e ele aparece aqui, com o preço.", vazioDica: "Dá para juntar vários num pedido só: chegada do aeroporto, passeios e a volta.", total: "Total", remover: "Remover", continuar: "Continuar", verReserva: "Finalizar →",
+      carrinho: "Sua reserva", vazio: "Nenhum serviço adicionado ainda.", moedaTit: "Ver também em:", moedaBrl: "Só R$", fxPag: "A cobrança é em reais. No PayPal ou no cartão internacional, o seu banco converte pela cotação do dia.", vazioTit: "Seu carrinho está vazio", vazioTxt: "Clique em Escolher num serviço e ele aparece aqui, com o preço.", vazioDica: "Dá para juntar vários num pedido só: chegada do aeroporto, passeios e a volta.", total: "Total", remover: "Remover", continuar: "Continuar", verReserva: "Finalizar →",
       dados: "Seus dados", nome: "Nome completo", email: "E-mail", tel: "WhatsApp com DDD/código do país", pais: "País", obs: "Observações (opcional)",
       pagar: "Pagamento na reserva", pSinal: "Pagar {p}% de sinal na reserva e o restante ao motorista no dia",
       pTotal: "Pagar 100% na reserva", aPagar: "A pagar na reserva", restante: "Restante no dia",
@@ -80,7 +80,7 @@
       inclui: "Waiting included: {n} h", fronteira: "Bring your original passport or ID to cross the border.",
       espAero: "1 hour free waiting after landing. After that, R$ {v} per hour.",
       add: "Add to booking", cancelar: "Cancel", calculando: "Calculating…",
-      carrinho: "Your booking", vazio: "No services added yet.", vazioTit: "Your cart is empty", vazioTxt: "Click Choose on a service and it shows up here, with the price.", vazioDica: "You can combine several in one booking: airport arrival, tours and the return.", total: "Total", remover: "Remove", continuar: "Continue", verReserva: "Checkout →",
+      carrinho: "Your booking", vazio: "No services added yet.", moedaTit: "Also show in:", moedaBrl: "R$ only", fxPag: "You are charged in Brazilian reais. With PayPal or an international card, your bank converts at the day's rate.", vazioTit: "Your cart is empty", vazioTxt: "Click Choose on a service and it shows up here, with the price.", vazioDica: "You can combine several in one booking: airport arrival, tours and the return.", total: "Total", remover: "Remove", continuar: "Continue", verReserva: "Checkout →",
       dados: "Your details", nome: "Full name", email: "Email", tel: "WhatsApp with country code", pais: "Country", obs: "Notes (optional)",
       pagar: "Payment at booking", pSinal: "Pay a {p}% deposit at booking and the rest to the driver on the day",
       pTotal: "Pay 100% at booking", aPagar: "Due at booking", restante: "Due on the day",
@@ -128,7 +128,7 @@
       inclui: "Espera incluida: {n} h", fronteira: "Lleve su documento original (DNI o pasaporte) para cruzar la frontera.",
       espAero: "1 hora de espera gratis tras el aterrizaje. Después, R$ {v} por hora.",
       add: "Agregar a la reserva", cancelar: "Cancelar", calculando: "Calculando…",
-      carrinho: "Su reserva", vazio: "Todavía no agregó servicios.", vazioTit: "Su carrito está vacío", vazioTxt: "Haga clic en Elegir en un servicio y aparece aquí, con el precio.", vazioDica: "Puede juntar varios en un solo pedido: llegada al aeropuerto, paseos y el regreso.", total: "Total", remover: "Quitar", continuar: "Continuar", verReserva: "Finalizar →",
+      carrinho: "Su reserva", vazio: "Todavía no agregó servicios.", moedaTit: "Ver también en:", moedaBrl: "Solo R$", fxPag: "El cobro es en reales. Con PayPal o tarjeta internacional, su banco convierte a la cotización del día.", vazioTit: "Su carrito está vacío", vazioTxt: "Haga clic en Elegir en un servicio y aparece aquí, con el precio.", vazioDica: "Puede juntar varios en un solo pedido: llegada al aeropuerto, paseos y el regreso.", total: "Total", remover: "Quitar", continuar: "Continuar", verReserva: "Finalizar →",
       dados: "Sus datos", nome: "Nombre completo", email: "Email", tel: "WhatsApp con código de país", pais: "País", obs: "Observaciones (opcional)",
       pagar: "Pago en la reserva", pSinal: "Pagar una seña del {p}% en la reserva y el resto al chofer el día del viaje",
       pTotal: "Pagar el 100% en la reserva", aPagar: "A pagar en la reserva", restante: "Resto el día del viaje",
@@ -161,6 +161,8 @@
   var htmlLang = (document.documentElement.lang || "pt").slice(0, 2);
   var S = { lang: qs.get("lang") || store.get("lang", htmlLang), grupo: qs.get("g") || "todos", pais: /^(br|ar|py)$/.test(qs.get("p") || "") ? qs.get("p") : "todos", cart: store.get("cart2", []), q: "", sort: "rec", pax: "any" };
   if (!T[S.lang]) S.lang = "pt";
+  function moedaPadrao() { return S.lang === "pt" ? "brl" : "usd"; }
+  S.moeda = /^(brl|usd|eur)$/.test(store.get("moeda", "")) ? store.get("moeda", "") : moedaPadrao();
   var CAT = null; // catálogo vindo da API
   function t(k, v) {
     var s = T[S.lang][k]; if (s === undefined) s = T.pt[k]; if (s === undefined) return k;
@@ -211,6 +213,13 @@
     }).join("");
     txt("#r-wa-t", t("waAjuda")); txt("#r-seg", t("seg")); txt("#r-cob", t("cob")); var wb = $("#r-wa-b"); if (wb) { wb.textContent = t("waBtn"); wb.href = waLink(t("waAjuda")); }
     $$("[data-lang]").forEach(function (b) { b.classList.toggle("on", b.dataset.lang === S.lang); });
+    var mo = $("#r-moedas");
+    if (mo) {
+      mo.hidden = !FX;
+      mo.innerHTML = "<span>" + esc(t("moedaTit")) + "</span>" + [["brl", t("moedaBrl")], ["usd", "US$"], ["eur", "€"]].map(function (x) {
+        return '<button type="button" data-moeda="' + x[0] + '" class="' + (S.moeda === x[0] ? "on" : "") + '" aria-pressed="' + (S.moeda === x[0]) + '">' + esc(x[1]) + "</button>";
+      }).join("");
+    }
     observe();
   }
 
@@ -521,13 +530,13 @@
     if (!S.cart.length) box.innerHTML = '<div class="r-empty"><span class="r-empty-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3.5h2.6l2.4 11.2a1.6 1.6 0 001.6 1.3h8.6a1.6 1.6 0 001.6-1.2L21 8H6.1"/></svg></span><b>' + esc(t("vazioTit")) + "</b><p>" + esc(t("vazioTxt")) + '</p><p class="r-empty-dica">' + esc(t("vazioDica")) + "</p></div>";
     else box.innerHTML = S.cart.map(function (it, i) {
       var s = svc(it.servico); if (!s) return "";
-      return '<div class="r-ci"><b>' + esc(L(s.nome)) + "</b><span>" + itemDesc(it).map(esc).join("<br>") + '</span><div class="r-ci-f"><em>' + brl(it.cot.valor) +
+      return '<div class="r-ci"><b>' + esc(L(s.nome)) + "</b><span>" + itemDesc(it).map(esc).join("<br>") + '</span><div class="r-ci-f"><em>' + brl(it.cot.valor) + fxTxt(it.cot.valor) +
         '</em><button type="button" class="r-link" data-rm="' + i + '">' + esc(t("remover")) + "</button></div></div>";
     }).join("");
     var tot = S.cart.reduce(function (a, it) { return a + it.cot.valor; }, 0);
-    $("#r-cart-tot").innerHTML = S.cart.length ? "<div><span>" + esc(t("total")) + "</span><b>" + brl(tot) + "</b></div>" : "";
+    $("#r-cart-tot").innerHTML = S.cart.length ? "<div><span>" + esc(t("total")) + "</span><b>" + brl(tot) + fxTxt(tot) + "</b></div>" : "";
     $("#r-go").disabled = !S.cart.length; $("#r-go").hidden = !S.cart.length; $("#r-go").textContent = t("continuar");
-    $("#r-bar-n").textContent = S.cart.length; $("#r-bar-v").textContent = S.cart.length ? brl(tot) : "";
+    $("#r-bar-n").textContent = S.cart.length; $("#r-bar-v").textContent = S.cart.length ? brl(tot) + (fxStr(tot) ? " (" + fxStr(tot) + ")" : "") : "";
     $("#r-bar").hidden = !S.cart.length; $("#r-bar-go").textContent = t("verReserva");
     if (!$("#r-checkout").hidden) updatePay();
   }
@@ -565,8 +574,9 @@
   function updatePay() {
     var box = $("#r-paybox"); if (!box) return;
     var p = pagamento(escolhaAtual());
-    box.innerHTML = "<div><span>" + esc(t("total")) + "</span><b>" + brl(p.total) + "</b></div><div><span>" + esc(t("aPagar")) + "</span><b>" + brl(p.agora) + "</b></div>" +
-      (p.total - p.agora > 0.001 ? '<div class="r-sm"><span>' + esc(t("restante")) + "</span><span>" + brl(p.total - p.agora) + "</span></div>" : "");
+    box.innerHTML = "<div><span>" + esc(t("total")) + "</span><b>" + brl(p.total) + fxTxt(p.total) + "</b></div><div><span>" + esc(t("aPagar")) + "</span><b>" + brl(p.agora) + fxTxt(p.agora) + "</b></div>" +
+      (p.total - p.agora > 0.001 ? '<div class="r-sm"><span>' + esc(t("restante")) + "</span><span>" + brl(p.total - p.agora) + "</span></div>" : "") +
+      (fxStr(p.total) ? '<p class="r-fxpag">' + esc(t("fxPag")) + "</p>" : "");
   }
   function submitCheckout(e) {
     e.preventDefault();
@@ -615,7 +625,12 @@
     else if (b.dataset.sel) openSvc(b.dataset.sel);
     else if (b.hasAttribute("data-close")) closeModal();
     else if (b.dataset.rm !== undefined) { S.cart.splice(+b.dataset.rm, 1); saveCart(); }
-    else if (b.dataset.lang) { S.lang = b.dataset.lang; store.set("lang", S.lang); all(); }
+    else if (b.dataset.lang) { S.lang = b.dataset.lang; store.set("lang", S.lang); if (!store.get("moeda", "")) S.moeda = moedaPadrao(); all(); }
+    else if (b.dataset.moeda) {
+      S.moeda = b.dataset.moeda; store.set("moeda", S.moeda); renderStatic(); renderList(); renderCart();
+      if (cur) renderCats();
+      track("select_content", { content_type: "moeda", item_id: S.moeda });
+    }
     else if (b.id === "r-go" || b.id === "r-bar-go") { $("#r-checkout").hidden = false; renderCheckout(); $("#r-checkout").scrollIntoView({ behavior: "smooth" }); }
     else if (b.id === "r-novo") { $("#r-checkout").hidden = true; scrollTo({ top: 0, behavior: "smooth" }); }
     else if (b.id === "r-clear") { S.grupo = "todos"; S.pais = "todos"; S.q = ""; S.pax = "any"; S.sort = "rec"; $("#r-q").value = ""; renderStatic(); renderList(); }
@@ -658,11 +673,14 @@
 
   var FX = null;
   function fxTxt(v) {
-    if (!FX || S.lang === "pt" || v == null) return "";
-    var n = function (x) { return Math.round(x).toLocaleString("en-US"); };
-    return '<small class="r-fx">≈ US$ ' + n(v * FX.usd) + " · € " + n(v * FX.eur) + "</small>";
+    var s2 = fxStr(v); return s2 ? '<small class="r-fx">' + s2 + "</small>" : "";
   }
-  fetch("/api/cambio").then(function (r) { return r.json(); }).then(function (r) { if (r && r.ok) { FX = r; if (CAT && S.lang !== "pt") renderList(); } }).catch(function () {});
+  function fxStr(v) {
+    if (!FX || S.moeda === "brl" || v == null) return "";
+    var n = Math.round(v * (S.moeda === "eur" ? FX.eur : FX.usd)).toLocaleString("en-US");
+    return "≈ " + (S.moeda === "eur" ? "€ " : "US$ ") + n;
+  }
+  fetch("/api/cambio").then(function (r) { return r.json(); }).then(function (r) { if (r && r.ok) { FX = r; if (CAT) { renderStatic(); renderList(); renderCart(); } } }).catch(function () {});
   api("/api/catalogo").then(function (c) {
     CAT = c; $("#r-grid").classList.remove("loading");
     S.cart = S.cart.filter(function (it) { return it && it.cot && svc(it.servico) && CAT.categorias[it.categoria]; });

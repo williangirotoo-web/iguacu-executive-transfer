@@ -98,6 +98,15 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:'Montserrat',sys
 @keyframes rRot{to{rotate:360deg}}
 .r-fx{display:block;font-size:.66rem;font-weight:500;color:var(--mut,#9a9a9a);margin-top:2px;letter-spacing:.02em}
 .r-price .r-fx{text-align:right}
+.r-moedas{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;margin:12px auto 0;font-size:.72rem;color:var(--mut)}
+.r-moedas span{margin-right:2px}
+.r-moedas button{background:rgba(16,17,19,.7);border:1px solid var(--line2);color:var(--txt);padding:5px 12px;border-radius:20px;font:inherit;font-size:.7rem;font-weight:600;cursor:pointer;transition:all .25s}
+.r-moedas button:hover{border-color:var(--gold)}
+.r-moedas button.on{background:rgba(212,175,55,.16);border-color:var(--gold);color:var(--gold)}
+.r-moedas[hidden]{display:none}
+#r-cart-tot .r-fx,.r-paybox .r-fx{text-align:right}
+.r-ci-f em .r-fx{display:block}
+.r-fxpag{margin:8px 0 0;font-size:.72rem;color:var(--gold);line-height:1.5}
 .r-paises-w{margin:0 0 18px}
 .r-paises-t{margin:0 0 10px;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
 .r-paises{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
@@ -298,6 +307,7 @@ dialog#r-modal::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
   <div class="r-tools" aria-label="Idioma">
     <button type="button" data-lang="pt">PT</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="es">ES</button>
   </div>
+  <div class="r-moedas" id="r-moedas" hidden></div>
 </section>
 <div class="r-benef" id="r-benef"></div>
 <div class="r-wrap" id="r-lista">
@@ -338,7 +348,7 @@ dialog#r-modal::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
 <dialog id="r-modal"><form id="r-modal-b" novalidate></form></dialog>
 <div class="r-bar" id="r-bar" hidden><span><b id="r-bar-n">0</b> · <span id="r-bar-v"></span></span><button type="button" class="r-btn" id="r-bar-go">→</button></div>
 <p class="r-legal">Iguaçu Executive Transfer · CNPJ 57.169.205/0001-12 · CNPJ 57.168.941/0001-56 · Foz do Iguaçu, PR, Brasil · +55 45 99118-5798</p>
-<script src="/reservar/app.js?v=11"></script>
+<script src="/reservar/app.js?v=12"></script>
 <script>(function(){var n=document.getElementById("nav"),m=document.getElementById("mobileMenu");addEventListener("scroll",function(){n.classList.toggle("scrolled",scrollY>40)},{passive:true});document.getElementById("hamburger").addEventListener("click",function(){m.classList.toggle("open")})})();</script>
 </body>
 </html>
