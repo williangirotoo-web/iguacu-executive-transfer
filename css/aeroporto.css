@@ -168,3 +168,5 @@ h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;line-hei
 .a-list a{color:var(--gold)}
 @media(max-width:1000px){.a-redes{grid-template-columns:1fr 1fr}}
 @media(max-width:640px){.a-redes,.a-inc-mini{grid-template-columns:1fr}.a-stats b{font-size:1.9rem}}
+.a-fig-retrato{max-width:460px;justify-self:center}
+.a-fig-retrato img{aspect-ratio:3/4;object-fit:cover;object-position:center 55%}
