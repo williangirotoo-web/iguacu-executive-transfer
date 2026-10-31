@@ -54,6 +54,8 @@ export const CATEGORIAS = {
 // hora extra (passeios com espera e diária)
 export const HORA_EXTRA = { comum: 100, exec: 125, suv: 140, sete: 150, luxo: 750, van: null };
 // motorista por hora (mínimo 8 h)
+// dia inteiro (diária): 10 horas e 200 km por dia; km excedente pelo valor por km da calculadora (POR_KM.valorKm); combustível, pedágio, estacionamento e alimentação do motorista inclusos (01/11/2026)
+export const DIARIA = { horas: 10, km: 200 };
 // pacote de 5 horas = 10× o valor da hora; depois disso, cada hora extra no valor da hora (aprovado em 01/11/2026)
 export const POR_HORA = { valor: { comum: 100, exec: 125, suv: 140, sete: 150, luxo: 750, van: null }, pacoteHoras: 5, pacoteMult: 10, minimoHoras: 5, maximoHoras: 12 };
 
@@ -136,13 +138,13 @@ export const SERVICOS = [
 
   // ---------- Motorista à disposição ----------
   { id: "por-hora", grupo: "motorista", tipo: "hora", fronteira: true, foto: "motorista-executivo-suv-preto",
-    nome: N("Motorista por hora (pacote de 5 horas)", "Driver by the hour (5-hour package)", "Chofer por hora (paquete de 5 horas)"),
+    nome: N("Meio período com motorista (5 horas)", "Half day with driver (5 hours)", "Medio día con chofer (5 horas)"),
     desc: N("Motorista à sua disposição por até 5 horas; depois, cobrança por hora extra. Pode cruzar para Argentina e Paraguai.", "Driver at your disposal for up to 5 hours; extra hours charged after that. Border crossings to Argentina and Paraguay allowed.", "Chofer a su disposición hasta 5 horas; después, se cobra la hora extra. Puede cruzar a Argentina y Paraguay."),
     precos: POR_HORA.valor },
   { id: "diaria", grupo: "motorista", tipo: "diaria", fronteira: true, foto: "suv-executivo-corolla-cross-preto",
-    nome: N("Diária de motorista com carro (12 h, 200 km)", "Full day with driver (12 h, 200 km)", "Día completo con chofer (12 h, 200 km)"),
-    desc: N("12 horas e 200 km por dia. Pode cruzar para Argentina e Paraguai.", "12 hours and 200 km per day. Border crossings allowed.", "12 horas y 200 km por día. Puede cruzar fronteras."),
-    precos: P(1200, 1500, 1700, 1800, 9000, 5000) },
+    nome: N("Dia inteiro com motorista (10 h, 200 km)", "Full day with driver (10 h, 200 km)", "Día completo con chofer (10 h, 200 km)"),
+    desc: N("10 horas e 200 km por dia, com combustível, pedágio e estacionamento. Pode cruzar para Argentina e Paraguai.", "10 hours and 200 km per day, fuel, tolls and parking included. Border crossings allowed.", "10 horas y 200 km por día, con combustible, peajes y estacionamiento. Puede cruzar fronteras."),
+    precos: P(1400, 1700, 1900, 2000, 9200, 5200) },
 ];
 
 /* ---------- Viagens para outras cidades (só ida, pedágio incluso) ---------- */

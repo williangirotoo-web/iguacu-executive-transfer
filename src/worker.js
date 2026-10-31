@@ -1,5 +1,5 @@
 /* Iguaçu Executive Transfer — Worker (API de reservas + site estático) */
-import { CONFIG, CATEGORIAS, SERVICOS, CONSULTA, HORA_EXTRA, POR_HORA, POR_KM, datasEspeciais } from "./precos.js";
+import { CONFIG, CATEGORIAS, SERVICOS, CONSULTA, HORA_EXTRA, POR_HORA, POR_KM, DIARIA, datasEspeciais } from "./precos.js";
 import { normalizarItem, cotar, cotarTodas, valorAgora, servico } from "./cotacao.js";
 import { buscarLugares, resolverRota } from "./rota.js";
 import { EmailMessage } from "cloudflare:email";
@@ -67,7 +67,7 @@ function catalogo(env) {
       cadeirinha: CONFIG.cadeirinha, pet: CONFIG.pet, sinalPct: CONFIG.sinalPct, pagamento: CONFIG.pagamento,
       pagamentoViagens: CONFIG.pagamentoViagens, horaExtra: HORA_EXTRA, porHora: { minimoHoras: POR_HORA.minimoHoras, maximoHoras: POR_HORA.maximoHoras, pacoteHoras: POR_HORA.pacoteHoras, pacoteMult: POR_HORA.pacoteMult },
       turnstileSiteKey: env.TURNSTILE_SITEKEY || "", pagamentoOnline: false,
-      porKm: { ...POR_KM, ativo: true },
+      porKm: { ...POR_KM, ativo: true }, diaria: DIARIA,
     },
     categorias: CATEGORIAS, servicos: SERVICOS, consulta: CONSULTA,
     datasEspeciais: [...datasEspeciais(ano), ...datasEspeciais(ano + 1)],
