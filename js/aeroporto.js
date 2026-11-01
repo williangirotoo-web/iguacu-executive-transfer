@@ -51,6 +51,30 @@
     cnt.forEach(function (el) { ioC.observe(el); });
   }
 
+  // botão "Compartilhar este pacote": compartilha o endereço canônico da página (sem parâmetros)
+  var shTxt = { pt: { t: "Mandar este pacote", wa: "WhatsApp", cp: "Copiar link", ok: "Link copiado" }, en: { t: "Send this package", wa: "WhatsApp", cp: "Copy link", ok: "Link copied" }, es: { t: "Enviar este paquete", wa: "WhatsApp", cp: "Copiar enlace", ok: "Enlace copiado" } }[lang] || null;
+  if (!shTxt) shTxt = { t: "Mandar este pacote", wa: "WhatsApp", cp: "Copiar link", ok: "Link copiado" };
+  $$("[data-share]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var c = document.querySelector('link[rel="canonical"]'), url = c ? c.href : location.origin + location.pathname;
+      var txt = b.getAttribute("data-share-t") || document.title;
+      if (typeof gtag === "function") gtag("event", "share", { method: navigator.share ? "nativo" : "caixa", item_id: location.pathname });
+      if (navigator.share) { navigator.share({ title: document.title, text: txt, url: url }).catch(function () {}); return; }
+      var old = document.querySelector(".a-sharebox"); if (old) old.remove();
+      var box = document.createElement("div"); box.className = "a-sharebox"; box.setAttribute("role", "dialog");
+      box.innerHTML = '<p></p><a class="a-btn a-wa" target="_blank" rel="noopener"></a><button type="button" class="a-btn a-ghost a-cp"></button><button type="button" class="a-x" aria-label="Fechar">×</button>';
+      box.querySelector("p").textContent = shTxt.t;
+      var w = box.querySelector("a"); w.textContent = shTxt.wa; w.href = "https://wa.me/?text=" + encodeURIComponent(txt + "\n" + url);
+      var cp = box.querySelector(".a-cp"); cp.textContent = shTxt.cp;
+      cp.addEventListener("click", function () {
+        var ok = function () { cp.textContent = shTxt.ok; };
+        if (navigator.clipboard) navigator.clipboard.writeText(url).then(ok, function () { prompt("", url); }); else prompt("", url);
+      });
+      box.querySelector(".a-x").addEventListener("click", function () { box.remove(); });
+      document.body.appendChild(box);
+    });
+  });
+
   var bar = document.querySelector(".a-mbar");
   addEventListener("scroll", function () { if (bar) bar.classList.toggle("on", scrollY > innerHeight * 0.7); }, { passive: true });
 
