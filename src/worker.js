@@ -48,6 +48,9 @@ async function prepararBanco(env) {
     env.DB.prepare(`CREATE TABLE IF NOT EXISTS eventos (
       id INTEGER PRIMARY KEY AUTOINCREMENT, pedido_id INTEGER NOT NULL REFERENCES pedidos(id),
       em TEXT NOT NULL, tipo TEXT NOT NULL, status_de TEXT, status_para TEXT, autor TEXT, texto TEXT)`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS pacotes (
+      codigo TEXT PRIMARY KEY, criado_em TEXT NOT NULL, itens_json TEXT NOT NULL, ip_hash TEXT, idioma TEXT, aberturas INTEGER DEFAULT 0)`),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_pacotes_ip ON pacotes(ip_hash, criado_em)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_pedidos_status ON pedidos(status, criado_em)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_pedidos_ip ON pedidos(ip_hash, criado_em)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_itens_pedido ON itens(pedido_id)`),
@@ -238,6 +241,48 @@ async function criarPedido(req, env, ctx) {
     whatsapp: "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(msgWa) });
 }
 
+/* ---------------- pacote compartilhado (link curto com os itens do carrinho, sem dados pessoais) ---------------- */
+const CAMPOS_PACOTE = ["servico", "categoria", "data", "hora", "sentido", "voo", "origem", "destino", "pax", "malas", "cadeirinhas", "pet", "horasExtras", "horas", "dias", "idaVolta", "dataVolta", "horaVolta", "de", "para"];
+async function criarPacote(req, env) {
+  let body;
+  try { body = await lerJson(req, 12000); } catch { return erro("json_invalido"); }
+  const brutos = Array.isArray(body.itens) ? body.itens : [];
+  if (!brutos.length || brutos.length > 6) return erro("sem_itens");
+  const itens = [];
+  for (const b of brutos) {
+    const it = normalizarItem(b || {});
+    if (!servico(it.servico)) return erro("item_invalido");
+    const x = {};
+    for (const k of CAMPOS_PACOTE) { const v = it[k]; if (v !== "" && v !== null && v !== undefined && v !== false) x[k] = v; }
+    itens.push(x);
+  }
+  await prepararBanco(env);
+  const ip = req.headers.get("cf-connecting-ip") || "";
+  const ipHash = ip ? await sha256(ip + (env.IP_SALT || "iet")) : null;
+  const agora = Date.now();
+  if (ipHash) {
+    const r = await env.DB.prepare("SELECT COUNT(*) n FROM pacotes WHERE ip_hash = ? AND criado_em > ?").bind(ipHash, new Date(agora - 3600e3).toISOString()).first();
+    if (r && r.n >= 30) return erro("muitas_tentativas", 429);
+  }
+  const idioma = ["pt", "en", "es"].includes(body.idioma) ? body.idioma : "pt";
+  for (let t = 0; t < 5; t++) {
+    const codigo = aleatorio(7);
+    try {
+      await env.DB.prepare("INSERT INTO pacotes (codigo, criado_em, itens_json, ip_hash, idioma) VALUES (?,?,?,?,?)").bind(codigo, agoraIso(), JSON.stringify(itens), ipHash, idioma).run();
+      return json({ ok: true, codigo, url: new URL(req.url).origin + "/reservar/?pacote=" + codigo });
+    } catch (e) { if (!String(e.message).includes("UNIQUE")) throw e; }
+  }
+  return erro("falha_codigo", 500);
+}
+async function verPacote(env, codigo) {
+  await prepararBanco(env);
+  const p = await env.DB.prepare("SELECT itens_json, criado_em, idioma FROM pacotes WHERE codigo = ?").bind(codigo).first();
+  if (!p) return erro("nao_encontrado", 404);
+  if (Date.parse(p.criado_em) < Date.now() - 120 * 864e5) return erro("expirado", 410);
+  await env.DB.prepare("UPDATE pacotes SET aberturas = aberturas + 1 WHERE codigo = ?").bind(codigo).run();
+  return json({ ok: true, itens: JSON.parse(p.itens_json), idioma: p.idioma, criado_em: p.criado_em });
+}
+
 /* ---------------- consulta do cliente ---------------- */
 async function verPedidoCliente(env, codigo, token) {
   await prepararBanco(env);
@@ -384,6 +429,9 @@ async function api(req, env, ctx, url) {
     return json(r, r.ok ? 200 : 503, r.ok ? { "cache-control": "public, max-age=3600" } : {});
   }
   if (p === "/api/pedidos" && m === "POST") return criarPedido(req, env, ctx);
+  if (p === "/api/pacotes" && m === "POST") return criarPacote(req, env);
+  const mp = p.match(/^\/api\/pacotes\/([A-Z0-9]{7})$/);
+  if (mp && m === "GET") return verPacote(env, mp[1]);
   const mm = p.match(/^\/api\/pedidos\/(IET-[A-Z0-9]{6})$/);
   if (mm && m === "GET") return verPedidoCliente(env, mm[1], url.searchParams.get("t"));
   if (p.startsWith("/api/admin")) return admin(req, env, url);

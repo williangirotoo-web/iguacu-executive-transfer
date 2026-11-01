@@ -32,7 +32,7 @@
       inclui: "Espera incluída: {n} h", fronteira: "Leve documento original (RG ou passaporte) para cruzar a fronteira.",
       espAero: "1 hora de espera grátis após o pouso. Depois, R$ {v} por hora.",
       add: "Adicionar à reserva", cancelar: "Cancelar", calculando: "Calculando…",
-      carrinho: "Sua reserva", vazio: "Nenhum serviço adicionado ainda.", diariaNota: "Cada dia inclui {h} horas e {km} km, com combustível, pedágio, estacionamento e alimentação do motorista. Km além de {km} no dia: {v} por km nesta categoria, acertado no fim do dia.", moedaTit: "Ver também em:", moedaBrl: "Só R$", fxPag: "A cobrança é em reais. No PayPal ou no cartão internacional, o seu banco converte pela cotação do dia.", vazioTit: "Seu carrinho está vazio", vazioTxt: "Clique em Escolher num serviço e ele aparece aqui, com o preço.", vazioDica: "Dá para juntar vários num pedido só: chegada do aeroporto, passeios e a volta.", total: "Total", remover: "Remover", continuar: "Continuar", verReserva: "Finalizar →",
+      carrinho: "Sua reserva", vazio: "Nenhum serviço adicionado ainda.", compartilhar: "Compartilhar este pacote", shareTit: "Link do seu pacote", shareWa: "Enviar no WhatsApp", shareEq: "Mandar para a nossa equipe", shareCopy: "Copiar link", shareCopiado: "Copiado!", shareMais: "Mais opções", shareTxt: "Montei este pacote de transfer em Foz do Iguaçu: {u}", shareEqTxt: "Olá! Montei este pacote no site e quero reservar: {u}", shareDica: "Quem abrir o link vê o mesmo pacote, com o preço recalculado na hora.", shareGerando: "Gerando link…", pacoteOk: "Pacote compartilhado: {n} serviço(s) no seu carrinho. Confira e finalize a reserva.", pacoteFalha: "Precisa de nova data ou ajuste: {l}", pacoteDesfazer: "Desfazer", pacoteErro: "Não foi possível abrir este pacote. O link pode ter expirado.", diariaNota: "Cada dia inclui {h} horas e {km} km, com combustível, pedágio, estacionamento e alimentação do motorista. Km além de {km} no dia: {v} por km nesta categoria, acertado no fim do dia.", moedaTit: "Ver também em:", moedaBrl: "Só R$", fxPag: "A cobrança é em reais. No PayPal ou no cartão internacional, o seu banco converte pela cotação do dia.", vazioTit: "Seu carrinho está vazio", vazioTxt: "Clique em Escolher num serviço e ele aparece aqui, com o preço.", vazioDica: "Dá para juntar vários num pedido só: chegada do aeroporto, passeios e a volta.", total: "Total", remover: "Remover", continuar: "Continuar", verReserva: "Finalizar →",
       dados: "Seus dados", nome: "Nome completo", email: "E-mail", tel: "WhatsApp com DDD/código do país", pais: "País", obs: "Observações (opcional)",
       pagar: "Pagamento na reserva", pSinal: "Pagar {p}% de sinal na reserva e o restante ao motorista no dia",
       pTotal: "Pagar 100% na reserva", aPagar: "A pagar na reserva", restante: "Restante no dia",
@@ -80,7 +80,7 @@
       inclui: "Waiting included: {n} h", fronteira: "Bring your original passport or ID to cross the border.",
       espAero: "1 hour free waiting after landing. After that, R$ {v} per hour.",
       add: "Add to booking", cancelar: "Cancel", calculando: "Calculating…",
-      carrinho: "Your booking", vazio: "No services added yet.", diariaNota: "Each day includes {h} hours and {km} km, with fuel, tolls, parking and the driver's meals. Km beyond {km} in a day: {v} per km in this vehicle, settled at the end of the day.", moedaTit: "Also show in:", moedaBrl: "R$ only", fxPag: "You are charged in Brazilian reais. With PayPal or an international card, your bank converts at the day's rate.", vazioTit: "Your cart is empty", vazioTxt: "Click Choose on a service and it shows up here, with the price.", vazioDica: "You can combine several in one booking: airport arrival, tours and the return.", total: "Total", remover: "Remove", continuar: "Continue", verReserva: "Checkout →",
+      carrinho: "Your booking", vazio: "No services added yet.", compartilhar: "Share this package", shareTit: "Your package link", shareWa: "Send on WhatsApp", shareEq: "Send to our team", shareCopy: "Copy link", shareCopiado: "Copied!", shareMais: "More options", shareTxt: "I put together this transfer package in Foz do Iguaçu: {u}", shareEqTxt: "Hello! I put together this package on the website and want to book it: {u}", shareDica: "Anyone who opens the link sees the same package, with the price recalculated instantly.", shareGerando: "Creating link…", pacoteOk: "Shared package: {n} service(s) in your cart. Review and complete your booking.", pacoteFalha: "Needs a new date or a change: {l}", pacoteDesfazer: "Undo", pacoteErro: "This package could not be opened. The link may have expired.", diariaNota: "Each day includes {h} hours and {km} km, with fuel, tolls, parking and the driver's meals. Km beyond {km} in a day: {v} per km in this vehicle, settled at the end of the day.", moedaTit: "Also show in:", moedaBrl: "R$ only", fxPag: "You are charged in Brazilian reais. With PayPal or an international card, your bank converts at the day's rate.", vazioTit: "Your cart is empty", vazioTxt: "Click Choose on a service and it shows up here, with the price.", vazioDica: "You can combine several in one booking: airport arrival, tours and the return.", total: "Total", remover: "Remove", continuar: "Continue", verReserva: "Checkout →",
       dados: "Your details", nome: "Full name", email: "Email", tel: "WhatsApp with country code", pais: "Country", obs: "Notes (optional)",
       pagar: "Payment at booking", pSinal: "Pay a {p}% deposit at booking and the rest to the driver on the day",
       pTotal: "Pay 100% at booking", aPagar: "Due at booking", restante: "Due on the day",
@@ -128,7 +128,7 @@
       inclui: "Espera incluida: {n} h", fronteira: "Lleve su documento original (DNI o pasaporte) para cruzar la frontera.",
       espAero: "1 hora de espera gratis tras el aterrizaje. Después, R$ {v} por hora.",
       add: "Agregar a la reserva", cancelar: "Cancelar", calculando: "Calculando…",
-      carrinho: "Su reserva", vazio: "Todavía no agregó servicios.", diariaNota: "Cada día incluye {h} horas y {km} km, con combustible, peajes, estacionamiento y comidas del chofer. Km por encima de {km} en el día: {v} por km en este vehículo, se paga al final del día.", moedaTit: "Ver también en:", moedaBrl: "Solo R$", fxPag: "El cobro es en reales. Con PayPal o tarjeta internacional, su banco convierte a la cotización del día.", vazioTit: "Su carrito está vacío", vazioTxt: "Haga clic en Elegir en un servicio y aparece aquí, con el precio.", vazioDica: "Puede juntar varios en un solo pedido: llegada al aeropuerto, paseos y el regreso.", total: "Total", remover: "Quitar", continuar: "Continuar", verReserva: "Finalizar →",
+      carrinho: "Su reserva", vazio: "Todavía no agregó servicios.", compartilhar: "Compartir este paquete", shareTit: "Link de su paquete", shareWa: "Enviar por WhatsApp", shareEq: "Enviar a nuestro equipo", shareCopy: "Copiar link", shareCopiado: "¡Copiado!", shareMais: "Más opciones", shareTxt: "Armé este paquete de traslados en Foz do Iguaçu: {u}", shareEqTxt: "¡Hola! Armé este paquete en el sitio y quiero reservarlo: {u}", shareDica: "Quien abra el link ve el mismo paquete, con el precio recalculado al instante.", shareGerando: "Generando link…", pacoteOk: "Paquete compartido: {n} servicio(s) en su carrito. Revise y finalice la reserva.", pacoteFalha: "Necesita nueva fecha o ajuste: {l}", pacoteDesfazer: "Deshacer", pacoteErro: "No se pudo abrir este paquete. El link puede haber expirado.", diariaNota: "Cada día incluye {h} horas y {km} km, con combustible, peajes, estacionamiento y comidas del chofer. Km por encima de {km} en el día: {v} por km en este vehículo, se paga al final del día.", moedaTit: "Ver también en:", moedaBrl: "Solo R$", fxPag: "El cobro es en reales. Con PayPal o tarjeta internacional, su banco convierte a la cotización del día.", vazioTit: "Su carrito está vacío", vazioTxt: "Haga clic en Elegir en un servicio y aparece aquí, con el precio.", vazioDica: "Puede juntar varios en un solo pedido: llegada al aeropuerto, paseos y el regreso.", total: "Total", remover: "Quitar", continuar: "Continuar", verReserva: "Finalizar →",
       dados: "Sus datos", nome: "Nombre completo", email: "Email", tel: "WhatsApp con código de país", pais: "País", obs: "Observaciones (opcional)",
       pagar: "Pago en la reserva", pSinal: "Pagar una seña del {p}% en la reserva y el resto al chofer el día del viaje",
       pTotal: "Pagar el 100% en la reserva", aPagar: "A pagar en la reserva", restante: "Resto el día del viaje",
@@ -504,7 +504,7 @@
   function closeModal() { var m = $("#r-modal"); if (m.close) m.close(); else m.removeAttribute("open"); cur = null; }
 
   /* ---------- carrinho ---------- */
-  function saveCart() { store.set("cart2", S.cart); renderCart(); }
+  function saveCart() { store.set("cart2", S.cart); var bx = $("#r-sharebox"); if (bx) bx.hidden = true; renderCart(); }
   function fmtDate(d) { var p = String(d).split("-"); return p[2] + "/" + p[1] + "/" + p[0]; }
   function itemDesc(it) {
     var s = svc(it.servico), c = CAT.categorias[it.categoria], parts = [L(c.nome) + " · " + fmtDate(it.data) + " " + it.hora];
@@ -537,6 +537,8 @@
     var tot = S.cart.reduce(function (a, it) { return a + it.cot.valor; }, 0);
     $("#r-cart-tot").innerHTML = S.cart.length ? "<div><span>" + esc(t("total")) + "</span><b>" + brl(tot) + fxTxt(tot) + "</b></div>" : "";
     $("#r-go").disabled = !S.cart.length; $("#r-go").hidden = !S.cart.length; $("#r-go").textContent = t("continuar");
+    var sb = $("#r-share"); if (sb) { sb.hidden = !S.cart.length; sb.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>' + esc(t("compartilhar")); }
+    if (!S.cart.length) { var bx = $("#r-sharebox"); if (bx) bx.hidden = true; }
     $("#r-bar-n").textContent = S.cart.length; $("#r-bar-v").textContent = S.cart.length ? brl(tot) + (fxStr(tot) ? " (" + fxStr(tot) + ")" : "") : "";
     $("#r-bar").hidden = !S.cart.length; $("#r-bar-go").textContent = t("verReserva");
     if (!$("#r-checkout").hidden) updatePay();
@@ -612,6 +614,61 @@
     }).catch(function () { btn.disabled = false; btn.textContent = t("enviar"); err.textContent = t("e_rede"); });
   }
 
+  /* ---------- pacote compartilhado ---------- */
+  var pacoteLink = null, cartAntes = null;
+  function itensParaEnvio() { return S.cart.map(function (it) { var x = JSON.parse(JSON.stringify(it)); delete x.cot; return x; }); }
+  function abrirShare() {
+    var box = $("#r-sharebox"); if (!box) return;
+    box.hidden = false; box.innerHTML = "<b>" + esc(t("shareGerando")) + "</b>";
+    api("/api/pacotes", { itens: itensParaEnvio(), idioma: S.lang }).then(function (r) {
+      if (!r || !r.ok) { box.innerHTML = "<b>" + esc(errTxt(r)) + "</b>"; return; }
+      pacoteLink = r.url;
+      var wa = "https://wa.me/?text=" + encodeURIComponent(t("shareTxt", { u: r.url }));
+      var waEq = "https://wa.me/" + CAT.config.whatsapp + "?text=" + encodeURIComponent(t("shareEqTxt", { u: r.url }));
+      box.innerHTML = "<b>" + esc(t("shareTit")) + '</b><input id="r-sh-url" readonly value="' + esc(r.url) + '"><div class="r-sh-acts">' +
+        '<a class="r-sh-wa" target="_blank" rel="noopener" href="' + esc(wa) + '">' + esc(t("shareWa")) + "</a>" +
+        '<button type="button" id="r-sh-copy">' + esc(t("shareCopy")) + "</button>" +
+        (navigator.share ? '<button type="button" id="r-sh-nat">' + esc(t("shareMais")) + "</button>" : "") +
+        '<a class="r-sh-eq" target="_blank" rel="noopener" href="' + esc(waEq) + '">' + esc(t("shareEq")) + "</a></div><small>" + esc(t("shareDica")) + "</small>";
+      track("share", { method: "link", content_type: "pacote", item_id: r.codigo });
+    }).catch(function () { box.innerHTML = "<b>" + esc(t("e_rede")) + "</b>"; });
+  }
+  function copiarLink(btn) {
+    var i = $("#r-sh-url"); if (!i) return;
+    var ok = function () { btn.textContent = t("shareCopiado"); setTimeout(function () { btn.textContent = t("shareCopy"); }, 1800); };
+    if (navigator.clipboard) navigator.clipboard.writeText(i.value).then(ok, function () { i.select(); try { document.execCommand("copy"); ok(); } catch (e) {} });
+    else { i.select(); try { document.execCommand("copy"); ok(); } catch (e) {} }
+  }
+  var ICO_PAC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>';
+  function carregarPacote(codigo) {
+    var el = $("#r-pacote");
+    fetch("/api/pacotes/" + encodeURIComponent(codigo)).then(function (r) { return r.json(); }).then(function (r) {
+      if (!r || !r.ok) throw new Error("pacote");
+      if (r.idioma && !store.get("lang", "") && T[r.idioma] && r.idioma !== S.lang) { S.lang = r.idioma; if (!store.get("moeda", "")) S.moeda = moedaPadrao(); all(); }
+      return Promise.all(r.itens.map(function (it) {
+        return api("/api/cotacao", it).then(function (q) { return { it: it, q: q }; }).catch(function () { return { it: it, q: null }; });
+      }));
+    }).then(function (res) {
+      var bons = [], ruins = [];
+      res.forEach(function (x) {
+        var s2 = svc(x.it.servico); if (!s2) return;
+        if (x.q && x.q.ok) { var item = JSON.parse(JSON.stringify(x.it)); item.cot = { valor: x.q.valor, modos: x.q.modos, km: x.q.km }; bons.push(item); }
+        else ruins.push(L(s2.nome) + (x.q ? " (" + errTxt(x.q) + ")" : ""));
+      });
+      cartAntes = S.cart.slice();
+      if (bons.length) { S.cart = bons; saveCart(); }
+      el.className = "r-pacote" + (bons.length ? "" : " r-pac-err"); el.hidden = false;
+      el.innerHTML = ICO_PAC + "<div>" + (bons.length ? esc(t("pacoteOk", { n: bons.length })) : "") + (ruins.length ? "<small>" + esc(t("pacoteFalha", { l: ruins.join("; ") })) + "</small>" : "") + "</div>" +
+        (bons.length && cartAntes.length ? '<button type="button" id="r-pac-undo">' + esc(t("pacoteDesfazer")) + "</button>" : "");
+      track("view_promotion", { promotion_name: "pacote_compartilhado", items: bons.length });
+      setTimeout(function () { el.scrollIntoView({ behavior: "smooth", block: "center" }); }, 250);
+      var c = $("#r-cart"); if (c && bons.length) setTimeout(function () { c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump"); }, 300);
+    }).catch(function () {
+      el.className = "r-pacote r-pac-err"; el.hidden = false; el.innerHTML = ICO_PAC + "<div>" + esc(t("pacoteErro")) + "</div>";
+    });
+    try { var u = new URL(location.href); u.searchParams.delete("pacote"); history.replaceState(null, "", u); } catch (e) {}
+  }
+
   /* ---------- eventos ---------- */
   document.addEventListener("click", function (e) {
     var li = e.target.closest("[data-aci]"); if (li) { acPick(li.dataset.acn, +li.dataset.aci); return; }
@@ -632,6 +689,10 @@
       if (cur) renderCats();
       track("select_content", { content_type: "moeda", item_id: S.moeda });
     }
+    else if (b.id === "r-share") abrirShare();
+    else if (b.id === "r-sh-copy") copiarLink(b);
+    else if (b.id === "r-sh-nat") { try { navigator.share({ title: document.title, text: t("shareTxt", { u: "" }).trim(), url: pacoteLink }); } catch (x) {} }
+    else if (b.id === "r-pac-undo") { S.cart = cartAntes || []; saveCart(); $("#r-pacote").hidden = true; }
     else if (b.id === "r-go" || b.id === "r-bar-go") { $("#r-checkout").hidden = false; renderCheckout(); $("#r-checkout").scrollIntoView({ behavior: "smooth" }); }
     else if (b.id === "r-novo") { $("#r-checkout").hidden = true; scrollTo({ top: 0, behavior: "smooth" }); }
     else if (b.id === "r-clear") { S.grupo = "todos"; S.pais = "todos"; S.q = ""; S.pax = "any"; S.sort = "rec"; $("#r-q").value = ""; renderStatic(); renderList(); }
@@ -688,6 +749,7 @@
     S.cart = S.cart.filter(function (it) { return it && it.cot && svc(it.servico) && CAT.categorias[it.categoria]; });
     all(); track("view_item_list", { item_list_name: "reservas" });
     if (qs.get("s") && svc(qs.get("s"))) openSvc(qs.get("s"));
+    if (/^[A-Z0-9]{7}$/.test(qs.get("pacote") || "")) carregarPacote(qs.get("pacote"));
   }).catch(function () {
     $("#r-grid").classList.remove("loading"); $("#r-grid").innerHTML = '<p class="r-err">' + esc(T[S.lang].e_rede) + ' <a class="r-btn r-btn-wa" href="https://wa.me/5545991185798">WhatsApp</a></p>';
   });
