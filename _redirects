@@ -77,11 +77,11 @@
 /cms/transfer-executivo-foz-do-iguacu.html / 301
 /cms/transfer-foz-aeroporto-puerto-iguazu.html /argentina/transfer-aeroporto-puerto-iguazu-igr.html 301
 /cms/transfer-foz-ciudad-del-este.html /passeios/passeio-compras-ciudad-del-este.html 301
-/cms/transfer-foz-iguacu-missiones-argentina.html /cms/transfer-foz-argentina-misiones.html 301
+/cms/transfer-foz-iguacu-missiones-argentina.html /cms/transfer-foz-aeroporto-posadas.html 301
 /cms/transfer-foz-para-assuncao-paraguai.html /argentina/transfer-foz-para-assuncao.html 301
 /cms/transfer-foz-puerto-iguazu-argentina.html /ar-pt/taxi-puerto-iguazu-argentina.html 301
 /cms/transfer-itaipu-foz.html /pt/transfer-itaipu-foz-do-iguacu.html 301
-/cms/transfer-missiones-argentina-foz-iguacu.html /cms/transfer-foz-argentina-misiones.html 301
+/cms/transfer-missiones-argentina-foz-iguacu.html /cms/transfer-foz-aeroporto-posadas.html 301
 /cms/transporte-executivo-foz-do-iguacu.html / 301
 /cms/transporte-executivo-por-hora-foz.html /servicos/transfer-por-hora-foz-do-iguacu.html 301
 /cms/vip-transfer-foz-do-iguacu.html /pt/transfer-vip-foz-do-iguacu.html 301
@@ -111,3 +111,33 @@
 /pl/iguazu-falls-transfer.html /en/airport-transfer.html 301
 /ru/airport-transfer.html /en/airport-transfer.html 301
 /ru/vip-taxi-foz-do-iguacu.html /en/airport-transfer.html 301
+
+# Páginas curtas juntadas com a página principal do assunto (nov/2026, conferido no Search Console)
+/cms/melhor-transfer-executivo-foz-do-iguacu.html / 301
+/cms/motorista-disposicao-foz-eventos.html /servicos/transfer-diaria-motorista-foz.html 301
+/cms/receptivo-congresso-foz-do-iguacu.html /pt/taxi-corporativo-foz-do-iguacu.html 301
+/cms/transfer-aniversario-vip-foz.html /pt/transfer-vip-foz-do-iguacu.html 301
+/cms/transfer-eventos-feiras-foz-do-iguacu.html /pt/taxi-corporativo-foz-do-iguacu.html 301
+/cms/transfer-formatura-foz-do-iguacu.html /pt/transfer-vip-foz-do-iguacu.html 301
+/cms/transfer-foz-aceitamos-dolar.html / 301
+/cms/transfer-foz-argentina-misiones.html /cms/transfer-foz-aeroporto-posadas.html 301
+/cms/transfer-grupos-foz-do-iguacu.html /pt/carro-7-lugares-foz-do-iguacu.html 301
+/cms/transfer-iguazu-argentina-foz-aceita-peso.html /ar-pt/taxi-puerto-iguazu-argentina.html 301
+/cms/transfer-jantar-executivo-foz.html /pt/taxi-corporativo-foz-do-iguacu.html 301
+/cms/transfer-lua-de-mel-foz-do-iguacu.html /pt/transfer-vip-foz-do-iguacu.html 301
+/cms/transfer-reuniao-negocios-foz.html /pt/taxi-corporativo-foz-do-iguacu.html 301
+/cms/transfer-voo-azul-foz-do-iguacu.html /pt/transfer-aeroporto-foz-do-iguacu.html 301
+/cms/transfer-voo-gol-foz-do-iguacu.html /pt/transfer-aeroporto-foz-do-iguacu.html 301
+/cms/transfer-voo-latam-foz-do-iguacu.html /pt/transfer-aeroporto-foz-do-iguacu.html 301
+/orcamento.html /reservar/ 301
+/pt/taxi-corolla-foz-do-iguacu.html /servicos/frota-foz-do-iguacu.html 301
+/pt/taxi-haval-executivo-foz-do-iguacu.html /servicos/frota-foz-do-iguacu.html 301
+/pt/taxi-para-turistas-foz-do-iguacu.html /pages/passeios.html 301
+/pt/taxi-sw4-executivo-foz-do-iguacu.html /servicos/frota-foz-do-iguacu.html 301
+/zh/airport-transfer.html /en/airport-transfer.html 301
+/zh/ciudad-del-este-shopping.html /en/ciudad-del-este-shopping-tour.html 301
+/zh/iguazu-falls-transfer.html /en/iguazu-falls-transfer.html 301
+/zh/itaipu-dam-transfer.html /en/itaipu-dam-tour-transfer.html 301
+/zh/private-driver.html /en/private-driver-foz-do-iguacu.html 301
+/zh/puerto-iguazu-transfer.html /ar-en/taxi-puerto-iguazu-argentina.html 301
+/zh/three-countries-one-day.html /en/three-countries-one-day-tour.html 301
