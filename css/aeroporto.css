@@ -228,3 +228,38 @@ h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;line-hei
 .a-pr li::before{content:"";position:absolute;left:4px;top:.7em;width:7px;height:7px;border-radius:50%;background:var(--gold);opacity:.8}
 .a-por::before{background-image:url(/img/sedan-executivo-corolla-preto-avenida-1376.webp);background-position:center 55%}
 .a-cas::before{background-image:url(/img/motorista-executivo-suv-preto-1600.webp);background-position:center 45%}
+/* catálogos (Passeios, Internacional) */
+.h-hero{min-height:62vh;grid-template-columns:1fr}
+.h-hero .a-hero-in{max-width:760px}
+.h-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.h-card{display:flex;flex-direction:column;border:1px solid var(--line2);border-radius:18px;background:linear-gradient(180deg,var(--bg3),var(--bg2));overflow:hidden;transition:border-color .35s,box-shadow .35s,translate .35s var(--ease)}
+.h-card:hover{border-color:var(--line);box-shadow:0 18px 40px -24px rgba(212,175,55,.35);translate:0 -2px}
+.h-img{display:block;aspect-ratio:16/9;overflow:hidden;background:var(--bg3)}
+.h-img img{width:100%;height:100%;object-fit:cover;display:block;transition:scale .6s var(--ease)}
+.h-card:hover .h-img img{scale:1.04}
+.h-b{display:flex;flex-direction:column;gap:8px;padding:18px 20px 20px;flex:1}
+.h-tag{font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.h-b h3{font-size:1.4rem}
+.h-b h3 a{color:var(--txt);text-decoration:none}
+.h-b h3 a:hover{color:var(--gold2)}
+.h-b p{margin:0;color:var(--mut);font-size:.86rem;flex:1}
+.h-f{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:8px;padding-top:14px;border-top:1px solid var(--line2)}
+.h-p{font-size:.76rem;color:var(--mut);display:flex;flex-direction:column}
+.h-p b{font-size:1.15rem;color:var(--gold);font-weight:700}
+.h-p .a-fx{margin:0;text-align:left}
+.h-bt{display:flex;gap:8px}
+.h-bt .a-btn{padding:10px 14px;font-size:.68rem}
+.h-det{border-color:var(--line)!important}
+.h-det:hover{background:rgba(212,175,55,.08)!important}
+.h-nota{max-width:1192px;margin:0 auto;padding:0 max(24px,calc((100% - 1192px)/2))}
+.h-cids{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.h-cid{display:grid;grid-template-columns:1fr auto;grid-template-areas:"n p" "d p";gap:2px 12px;align-items:center;padding:14px 16px;border:1px solid var(--line2);border-radius:14px;background:var(--bg2);text-decoration:none;color:var(--txt);transition:border-color .3s,background .3s}
+.h-cid:hover{border-color:var(--line);background:var(--bg3)}
+.h-cid-n{grid-area:n;font-weight:600;font-size:.92rem}
+.h-cid-n small{color:var(--mut);font-weight:400}
+.h-cid-d{grid-area:d;color:var(--mut);font-size:.74rem}
+.h-cid-p{grid-area:p;text-align:right;font-size:.66rem;color:var(--mut);display:flex;flex-direction:column}
+.h-cid-p b{color:var(--gold);font-size:.98rem}
+.h-cid-p .a-fx{display:none}
+@media(max-width:1000px){.h-grid,.h-cids{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.h-grid,.h-cids{grid-template-columns:1fr}.h-hero{min-height:auto}}
