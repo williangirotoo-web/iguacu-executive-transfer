@@ -226,3 +226,5 @@ h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;line-hei
 .a-pr ul{margin:0 0 14px;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
 .a-pr li{color:var(--mut);padding-left:22px;position:relative}
 .a-pr li::before{content:"";position:absolute;left:4px;top:.7em;width:7px;height:7px;border-radius:50%;background:var(--gold);opacity:.8}
+.a-por::before{background-image:url(/img/sedan-executivo-corolla-preto-avenida-1376.webp);background-position:center 55%}
+.a-cas::before{background-image:url(/img/motorista-executivo-suv-preto-1600.webp);background-position:center 45%}
