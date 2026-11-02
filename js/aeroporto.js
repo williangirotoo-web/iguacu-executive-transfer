@@ -75,6 +75,15 @@
     });
   });
 
+  // conversões: clique no WhatsApp ou no telefone vira "generate_lead" no Google Analytics (igual às páginas antigas)
+  if (!document.getElementById("iet-track")) document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest("a"); if (!a || typeof gtag !== "function") return;
+    var h = a.getAttribute("href") || "", t = h.indexOf("wa.me") > -1 ? "whatsapp" : (h.indexOf("tel:") === 0 ? "telefone" : "");
+    if (!t) return;
+    gtag("event", "generate_lead", { method: t, page_path: location.pathname, link_text: (a.textContent || "").trim().slice(0, 60) });
+    gtag("event", "clique_" + t, { page_path: location.pathname });
+  });
+
   var bar = document.querySelector(".a-mbar");
   addEventListener("scroll", function () { if (bar) bar.classList.toggle("on", scrollY > innerHeight * 0.7); }, { passive: true });
 
