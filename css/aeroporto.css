@@ -286,3 +286,24 @@ h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;line-hei
 .sv-tab td b{color:var(--gold);font-weight:700;white-space:nowrap}
 .sv-tab td .a-fx{text-align:left}
 .sv-tab td:first-child a{text-decoration:underline;text-decoration-color:rgba(212,175,55,.35);text-underline-offset:3px}
+/* rodapé completo */
+.a-foot{text-align:left;padding:56px max(24px,calc((100% - 1192px)/2)) 28px;border-top:1px solid var(--line);background:linear-gradient(180deg,var(--bg2),#060708);font-size:.8rem;color:var(--mut)}
+.a-foot a{color:var(--mut);text-decoration:none;transition:color .2s}
+.a-foot a:hover{color:var(--gold2)}
+.f-top{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:48px}
+.f-logo{display:inline-flex;flex-direction:column;margin-bottom:14px}
+.f-logo span{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.7rem;letter-spacing:.18em;color:var(--gold)!important;line-height:1}
+.f-logo small{font-size:.58rem;letter-spacing:.32em;text-transform:uppercase;color:var(--txt)}
+.f-brand p{margin:0 0 12px;line-height:1.7}
+.f-ct a{color:var(--txt)!important;font-weight:600;font-size:1rem}
+.f-bt{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.f-bt .a-btn{padding:10px 14px;font-size:.66rem;color:#0a0a0a!important}
+.f-bt .a-wa{color:#fff!important}
+.f-cols{display:grid;grid-template-columns:repeat(5,1fr);gap:28px}
+.f-col{display:flex;flex-direction:column;gap:9px}
+.f-col h4{font-family:'Montserrat',system-ui,sans-serif;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 6px;font-weight:600}
+.f-col a{font-size:.8rem;line-height:1.35}
+.f-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:40px;padding-top:20px;border-top:1px solid var(--line2);font-size:.7rem}
+.f-bottom p{margin:0}
+@media(max-width:1100px){.f-top{grid-template-columns:1fr}.f-cols{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:640px){.a-foot{padding:40px 20px 96px}.f-cols{grid-template-columns:1fr 1fr;gap:24px 16px}.f-bottom{flex-direction:column}}
