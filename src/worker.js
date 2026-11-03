@@ -438,6 +438,41 @@ async function api(req, env, ctx, url) {
   return erro("rota", 404);
 }
 
+/* Prévia do link (WhatsApp, Facebook etc.): /reservar/?s=SERVICO mostra a foto, o nome e o preço "a partir de" do serviço */
+const OG_FOTOS = new Set(["transfer-aeroporto-suv-executivo-corolla-cross", "marco-das-tres-fronteiras", "cataratas-do-iguacu-arco-iris", "cataratas-do-iguacu-vista-do-rio",
+  "foz-do-iguacu-cidade-rio-parana", "cataratas-do-iguacu-vista-aerea", "passarela-garganta-do-diabo", "itaipu-binacional-vista-aerea", "templo-budista-foz-do-iguacu",
+  "suv-executivo-corolla-cross-preto", "frota-suv-executivo-corolla-cross", "sedan-executivo-corolla-preto-avenida", "motorista-executivo-corolla-cross-cinza"]);
+const OG_TXT = {
+  pt: { de: "a partir de", carro: "por carro, preço fechado na reserva", pacote: "Pacote de viagem em Foz do Iguaçu", pacoteD: "Abra o link para ver o pacote montado para você, com o preço fechado de cada serviço." },
+  en: { de: "from", carro: "per vehicle, fixed price when you book", pacote: "Your Foz do Iguaçu trip package", pacoteD: "Open the link to see the package prepared for you, with a fixed price for each service." },
+  es: { de: "desde", carro: "por vehículo, precio cerrado al reservar", pacote: "Paquete de viaje en Foz do Iguaçu", pacoteD: "Abra el enlace para ver el paquete armado para usted, con precio cerrado de cada servicio." },
+};
+function previaReserva(res, url) {
+  const lang = ["en", "es"].includes(url.searchParams.get("lang")) ? url.searchParams.get("lang") : "pt";
+  const tx = OG_TXT[lang], id = url.searchParams.get("s"), pac = url.searchParams.get("pacote");
+  let titulo, desc, foto;
+  const s = id && SERVICOS.find((x) => x.id === id && !x.oculto);
+  if (s) {
+    const precos = Object.values(s.precos || {}).filter((v) => v != null);
+    let min = precos.length ? Math.min(...precos) : 0;
+    if (s.tipo === "hora") min = min * POR_HORA.pacoteMult;
+    const nome = (s.nome && (s.nome[lang] || s.nome.pt)) || "";
+    titulo = min ? nome + " · " + tx.de + " R$ " + min.toLocaleString("pt-BR") : nome;
+    desc = ((s.desc && (s.desc[lang] || s.desc.pt)) || "") + " " + (min ? tx.de.charAt(0).toUpperCase() + tx.de.slice(1) + " R$ " + min.toLocaleString("pt-BR") + " " + tx.carro + "." : "");
+    foto = OG_FOTOS.has(s.foto) ? s.foto : "suv-executivo-corolla-cross-preto";
+  } else if (pac && /^[A-Z0-9]{7}$/.test(pac)) {
+    titulo = tx.pacote; desc = tx.pacoteD; foto = "cataratas-do-iguacu-vista-aerea";
+  } else return res;
+  const img = "https://iguacuexecutivetransfer.com.br/img/og-" + foto + ".jpg";
+  const set = (v) => ({ element(el) { el.setAttribute("content", v); } });
+  return new HTMLRewriter()
+    .on('meta[property="og:title"]', set(titulo))
+    .on('meta[property="og:description"]', set(desc.trim()))
+    .on('meta[property="og:image"]', set(img))
+    .on('meta[property="og:url"]', set(url.origin + url.pathname + url.search))
+    .transform(res);
+}
+
 export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
@@ -447,6 +482,7 @@ export default {
       catch (e) { console.error("api", e && e.stack); res = erro("interno", 500); }
     } else {
       res = await env.ASSETS.fetch(req);
+      if ((url.pathname === "/reservar/" || url.pathname === "/reservar/index.html") && req.method === "GET" && res.ok) res = previaReserva(res, url);
     }
     // endereços de teste (*.workers.dev) nunca entram no Google
     if (url.hostname.endsWith(".workers.dev")) {
