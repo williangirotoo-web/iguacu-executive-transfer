@@ -280,3 +280,9 @@ h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;line-hei
 .a-tags a small{color:var(--mut);margin-left:4px}
 @media(max-width:1000px){.hm-cats{grid-template-columns:1fr 1fr}}
 @media(max-width:640px){.hm-cats{grid-template-columns:1fr}}
+/* tabela de preços por serviço */
+.sv-tab td a{color:var(--txt);text-decoration:none}
+.sv-tab td a:hover{color:var(--gold2)}
+.sv-tab td b{color:var(--gold);font-weight:700;white-space:nowrap}
+.sv-tab td .a-fx{text-align:left}
+.sv-tab td:first-child a{text-decoration:underline;text-decoration-color:rgba(212,175,55,.35);text-underline-offset:3px}
