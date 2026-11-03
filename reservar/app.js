@@ -756,3 +756,14 @@
     $("#r-grid").classList.remove("loading"); $("#r-grid").innerHTML = '<p class="r-err">' + esc(T[S.lang].e_rede) + ' <a class="r-btn r-btn-wa" href="https://wa.me/5545991185798">WhatsApp</a></p>';
   });
 })();
+
+/* Data e horário: no celular e no tablet, um toque em qualquer parte do campo já abre o calendário/relógio
+   (em alguns aparelhos o seletor só abria tocando no ícone). */
+(function () {
+  "use strict";
+  document.addEventListener("click", function (e) {
+    var el = e.target;
+    if (!el || el.tagName !== "INPUT" || (el.type !== "date" && el.type !== "time") || el.disabled || el.readOnly) return;
+    if (typeof el.showPicker === "function") { try { el.showPicker(); } catch (_) { /* já aberto ou sem permissão: segue o padrão do navegador */ } }
+  }, true);
+})();
