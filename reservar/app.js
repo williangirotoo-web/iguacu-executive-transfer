@@ -176,9 +176,13 @@
   function track(ev, p) { try { if (typeof gtag === "function") gtag("event", ev, p || {}); } catch (e) {} }
   function waLink(text) { return "https://wa.me/" + CAT.config.whatsapp + "?text=" + encodeURIComponent(text); }
   function api(path, body) {
-    return fetch(path, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : {})
+    var h = body ? { "content-type": "application/json" } : {};
+    var pc = parceiroAtual(); if (pc && (path === "/api/pedidos" || path.indexOf("/api/parceiro/") === 0)) h["x-parceiro"] = pc.chave;
+    return fetch(path, body ? { method: "POST", headers: h, body: JSON.stringify(body) } : { headers: h })
       .then(function (r) { return r.json(); });
   }
+  /* parceiro (hotel, agência, guia): a chave fica no navegador depois que ele abre o link de acesso em /parceiro/ */
+  function parceiroAtual() { var p = store.get("parceiro", null); return p && /^[a-f0-9]{32}$/.test(p.chave || "") ? p : null; }
   function errTxt(r) {
     if (!r || !r.erro) return t("e_generico");
     var k = "e_" + r.erro; var s = T[S.lang][k] || T.pt[k];
@@ -551,7 +555,9 @@
   function renderCheckout() {
     var temEscolha = S.cart.some(function (it) { return modosDe(it).length > 1; });
     var cfg = CAT.config;
-    var h = "<h2>" + esc(t("dados")) + '</h2><div class="r-row">' + field(t("nome") + " *", '<input name="nome" required autocomplete="name" maxlength="120">') +
+    var pc = parceiroAtual();
+    var h = (pc ? '<div class="r-parc"><b>Reserva de parceiro: ' + esc(pc.nome || "") + '</b><span>Preencha os dados do passageiro. A reserva aparece na sua <a href="/parceiro/">área de parceiro</a> com a comissão.</span></div>' : "") +
+      "<h2>" + esc(pc ? "Dados do passageiro" : t("dados")) + '</h2><div class="r-row">' + field(t("nome") + " *", '<input name="nome" required autocomplete="name" maxlength="120">') +
       field(t("tel") + " *", '<input name="telefone" type="tel" required autocomplete="tel" maxlength="40" placeholder="+55 45 99999-9999">') + '</div><div class="r-row">' +
       field(t("email") + " *", '<input name="email" type="email" required autocomplete="email" maxlength="160">') + field(t("pais"), '<input name="pais" autocomplete="country-name" maxlength="60">') + "</div>" +
       field(t("obs"), '<textarea name="observacoes" rows="2" maxlength="1000"></textarea>') +
@@ -564,6 +570,7 @@
       (cfg.turnstileSiteKey ? '<div id="r-ts"></div>' : "") +
       '<p class="r-err" id="r-cerr" role="alert"></p><button type="submit" class="r-btn r-big" id="r-send">' + esc(t("enviar")) + '</button><div id="r-done"></div>';
     $("#r-checkout-f").innerHTML = h;
+    if (pc) api("/api/parceiro/eu").then(function (r) { if (!r || !r.ok) { store.set("parceiro", null); var b = $(".r-parc"); if (b) b.remove(); } }).catch(function () {});
     updatePay();
     if (cfg.turnstileSiteKey) loadTurnstile();
   }

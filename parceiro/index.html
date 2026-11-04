@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Área do Parceiro | Iguaçu Executive Transfer</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+:root{--gold:#d4af37;--bg:#0b0b0b;--bg2:#141414;--line:rgba(212,175,55,.22);--txt:#f0ede8;--mut:rgba(240,237,232,.6)}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--bg2)}
+header a{color:var(--gold);text-decoration:none;font-weight:700;letter-spacing:.08em}header small{color:var(--mut)}
+main{max-width:1000px;margin:0 auto;padding:22px 16px 60px}
+h1{font-size:1.6rem;margin:0 0 4px}.mut{color:var(--mut)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:14px}.card span{display:block;color:var(--mut);font-size:.8rem}.card b{font-size:1.3rem;color:var(--gold)}
+.btn{display:inline-block;background:var(--gold);color:#000;border:0;border-radius:8px;padding:11px 18px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+.btn.gh{background:transparent;color:var(--txt);border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;background:var(--bg2);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.88rem}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid rgba(240,237,232,.08)}th{color:var(--gold);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
+.tw{overflow-x:auto}.st{display:inline-block;border-radius:12px;padding:2px 10px;font-size:.72rem;font-weight:600;background:#333}
+.st-confirmada,.st-concluida{background:#1b4a20;color:#a5d6a7}.st-cancelada{background:#4a1b1b;color:#ef9a9a}.st-solicitacao,.st-pagamento_pendente,.st-aguardando_confirmacao,.st-aprovado{background:#4a3b00;color:#ffe08a}
+.box{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:22px;max-width:560px}
+@media(max-width:700px){.cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><a href="/">IGUAÇU</a><small id="who"></small></header>
+<main>
+  <section id="sem" hidden>
+    <div class="box"><h1>Área do parceiro</h1>
+    <p class="mut">Para entrar, abra o link de acesso que enviamos pelo WhatsApp. Se perdeu o link, peça um novo.</p>
+    <p><a class="btn" href="https://wa.me/5545991185798?text=Ol%C3%A1!%20Sou%20parceiro%20e%20preciso%20do%20link%20de%20acesso." target="_blank" rel="noopener">Pedir pelo WhatsApp</a> <a class="btn gh" href="/parceiros/">Quero ser parceiro</a></p></div>
+  </section>
+  <section id="area" hidden>
+    <h1 id="nome"></h1><p class="mut" id="sub"></p>
+    <p><a class="btn" href="/reservar/">Fazer reserva para um cliente</a> <button class="btn gh" id="sair" type="button">Sair deste aparelho</button></p>
+    <div class="cards">
+      <div class="card"><span>Reservas</span><b id="c-n">0</b></div>
+      <div class="card"><span>Valor das reservas ativas</span><b id="c-v">R$ 0</b></div>
+      <div class="card"><span>Comissão estimada</span><b id="c-c">R$ 0</b></div>
+    </div>
+    <p class="mut" style="font-size:.82rem">A comissão é calculada sobre o valor da corrida e paga no fechamento combinado, sobre as corridas realizadas. Reservas canceladas não geram comissão.</p>
+    <div class="tw"><table><thead><tr><th>Código</th><th>Viagem</th><th>Passageiro</th><th>Serviço</th><th>Valor</th><th>Comissão</th><th>Status</th></tr></thead><tbody id="rows"><tr><td colspan="7" class="mut">Carregando…</td></tr></tbody></table></div>
+  </section>
+</main>
+<script>
+(function(){
+  var ST={solicitacao:"Recebida",pagamento_pendente:"Aguardando pagamento",aprovado:"Aprovada",aguardando_confirmacao:"Aguardando confirmação",confirmada:"Confirmada",concluida:"Realizada",cancelada:"Cancelada"};
+  function $(s){return document.querySelector(s)}
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function brl(v){return "R$ "+Number(v||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})}
+  function get(){try{var v=localStorage.getItem("iet_parceiro");return v?JSON.parse(v):null}catch(e){return null}}
+  function set(v){try{if(v)localStorage.setItem("iet_parceiro",JSON.stringify(v));else localStorage.removeItem("iet_parceiro")}catch(e){}}
+  var m=location.hash.match(/chave=([a-f0-9]{32})/);
+  if(m){set({chave:m[1]});history.replaceState(null,"",location.pathname)}
+  var p=get();
+  function sem(){set(null);$("#sem").hidden=false;$("#area").hidden=true}
+  if(!p||!/^[a-f0-9]{32}$/.test(p.chave||"")) return sem();
+  function api(path){return fetch(path,{headers:{"x-parceiro":p.chave}}).then(function(r){if(r.status===401)throw new Error("401");return r.json()})}
+  api("/api/parceiro/eu").then(function(r){
+    var x=r.parceiro;p.nome=x.empresa||x.responsavel;set(p);
+    $("#nome").textContent=p.nome;$("#who").textContent=x.codigo;$("#sub").textContent="Comissão combinada: "+String(x.comissao_pct||0).replace(".",",")+"% · Responsável: "+x.responsavel;
+    $("#area").hidden=false;
+    return api("/api/parceiro/pedidos");
+  }).then(function(r){
+    var ativos=r.pedidos.filter(function(x){return x.status!=="cancelada"});
+    $("#c-n").textContent=r.pedidos.length;
+    $("#c-v").textContent=brl(ativos.reduce(function(a,x){return a+x.total},0));
+    $("#c-c").textContent=brl(ativos.reduce(function(a,x){return a+x.comissao},0));
+    $("#rows").innerHTML=r.pedidos.length?r.pedidos.map(function(x){var d=(x.primeira||"").split(" ");
+      return "<tr><td>"+esc(x.codigo)+"</td><td>"+esc((d[0]||"").split("-").reverse().join("/")+" "+(d[1]||""))+"</td><td>"+esc(x.nome)+"</td><td>"+esc(x.servicos)+"</td><td>"+brl(x.total)+"</td><td>"+brl(x.comissao)+'</td><td><span class="st st-'+esc(x.status)+'">'+esc(ST[x.status]||x.status)+"</span></td></tr>"}).join(""):'<tr><td colspan="7" class="mut">Nenhuma reserva ainda. Clique em "Fazer reserva para um cliente".</td></tr>';
+  }).catch(function(e){if(e.message==="401")sem();else $("#rows").innerHTML='<tr><td colspan="7" class="mut">Erro ao carregar. Atualize a página.</td></tr>'});
+  $("#sair").onclick=function(){set(null);location.reload()};
+})();
+</script>
+</body>
+</html>

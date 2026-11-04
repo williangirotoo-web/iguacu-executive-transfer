@@ -36,7 +36,7 @@
       if (!r.pedidos.length) { $("#rows").innerHTML = '<p class="empty">Nenhum pedido aqui.</p>'; return; }
       $("#rows").innerHTML = r.pedidos.map(function (x) {
         return '<div class="row" data-cod="' + esc(x.codigo) + '"><div class="when"><b>' + esc(quando(x.primeiro_inicio)) + "</b><small>" + esc(x.codigo) + "</small></div>" +
-          "<div><b>" + esc(x.nome) + '</b><div class="svc">' + esc(x.servicos) + "</div></div><div>" + esc(x.telefone) + "</div><div><b>" + brl(x.total) + "</b></div><div>" + badge(x.status) + "</div></div>";
+          "<div><b>" + esc(x.nome) + '</b><div class="svc">' + (x.parceiro ? "Parceiro: " + esc(x.parceiro) + " · " : "") + esc(x.servicos) + "</div></div><div>" + esc(x.telefone) + "</div><div><b>" + brl(x.total) + "</b></div><div>" + badge(x.status) + "</div></div>";
       }).join("");
     }).catch(function (e) { if (e.message === "401") semAcesso(); else $("#rows").innerHTML = '<p class="msg">Erro ao carregar. Tente de novo.</p>'; });
   }
@@ -53,7 +53,7 @@
       h += '<p><button class="btn gh" id="voltar" type="button">← Voltar</button></p><div class="det">';
       h += "<h2>" + esc(p.codigo) + " · " + esc(p.nome) + "</h2><p>" + badge(p.status) + ' <small style="color:var(--mut)">feito em ' + esc(quando(p.criado_em)) + " · idioma " + esc(p.idioma) + "</small></p>";
       h += '<div class="grid2"><div><h3>Cliente</h3><div class="kv"><span>WhatsApp</span><span>' + esc(p.telefone) + "</span><span>E-mail</span><span>" + esc(p.email) + "</span>" +
-        (p.pais ? "<span>País</span><span>" + esc(p.pais) + "</span>" : "") + (p.observacoes ? "<span>Observações</span><span>" + esc(p.observacoes) + "</span>" : "") + "</div>" +
+        (p.pais ? "<span>País</span><span>" + esc(p.pais) + "</span>" : "") + (r.parceiro ? '<span>Parceiro</span><span><a style="color:var(--gold)" href="/admin/parceiros.html#' + esc(r.parceiro.codigo) + '">' + esc(r.parceiro.empresa || r.parceiro.responsavel) + "</a> · comissão " + String(r.parceiro.comissao_pct || 0).replace(".", ",") + "% = " + brl(p.total * (r.parceiro.comissao_pct || 0) / 100) + "</span>" : "") + (p.observacoes ? "<span>Observações</span><span>" + esc(p.observacoes) + "</span>" : "") + "</div>" +
         '<p style="margin-top:12px"><a class="btn wa" target="_blank" rel="noopener" href="' + esc(waCliente(p, "Olá, " + p.nome.split(" ")[0] + "! Aqui é da Iguaçu Executive Transfer, sobre o seu pedido " + p.codigo + ".")) + '">Falar no WhatsApp</a> ' +
         '<a class="btn gh" href="mailto:' + esc(p.email) + "?subject=" + encodeURIComponent("Seu pedido " + p.codigo + " — Iguaçu Executive Transfer") + '">E-mail</a></p></div>';
       h += '<div><h3>Valores</h3><p class="tot">Total <b>' + brl(p.total) + "</b></p><p>A pagar na reserva: <b>" + brl(p.valor_agora) + "</b><br>Restante no dia: <b>" + brl(p.total - p.valor_agora) + "</b></p>";

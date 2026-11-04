@@ -4,6 +4,10 @@
 /en/ /en/index.html 200
 /es/ /es/index.html 200
 /fr/ /fr/index.html 200
+/parceiros/ /parceiros/index.html 200
+/parceiro/ /parceiro/index.html 200
+/parceiros /parceiros/ 301
+/parceiro /parceiro/ 301
 /ja/ /ja/index.html 200
 /zh/ /zh/index.html 200
 /reservar/ /reservar/index.html 200

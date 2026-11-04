@@ -55,7 +55,17 @@ async function prepararBanco(env) {
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_pedidos_ip ON pedidos(ip_hash, criado_em)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_itens_pedido ON itens(pedido_id)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_itens_inicio ON itens(inicio_utc)`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS parceiros (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, codigo TEXT UNIQUE NOT NULL, criado_em TEXT NOT NULL, atualizado_em TEXT NOT NULL,
+      tipo TEXT NOT NULL, status TEXT NOT NULL, categoria TEXT, empresa TEXT, responsavel TEXT NOT NULL, email TEXT NOT NULL,
+      telefone TEXT NOT NULL, cidade TEXT, documento TEXT, veiculo TEXT, autorizacao TEXT, mensagem TEXT,
+      comissao_pct REAL DEFAULT 0, chave_hash TEXT, chave_em TEXT, consentimento_em TEXT NOT NULL, ip_hash TEXT, origem TEXT, notas TEXT)`),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_parceiros_status ON parceiros(tipo, status, criado_em)`),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_parceiros_chave ON parceiros(chave_hash)`),
   ]);
+  // coluna nova em tabela antiga: só cria se ainda não existir
+  const cols = (await env.DB.prepare("PRAGMA table_info(pedidos)").all()).results.map((c) => c.name);
+  if (!cols.includes("parceiro_id")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN parceiro_id INTEGER").run();
   schemaPronto = true;
 }
 
@@ -191,6 +201,7 @@ async function criarPedido(req, env, ctx) {
     if (!it.origem) return erro("item_invalido", 422, { item: i, motivo: "origem" });
     itens.push({ it, cot, svc: servico(it.servico) });
   }
+  const parceiro = await parceiroDaChave(req, env);
   const escolha = body.modoPagamento === "total" ? "total" : "sinal";
   const pag = valorAgora(itens, escolha);
 
@@ -199,7 +210,7 @@ async function criarPedido(req, env, ctx) {
   if (ipHash) {
     const desde = new Date(agora - 15 * 60e3).toISOString();
     const r = await env.DB.prepare("SELECT COUNT(*) n FROM pedidos WHERE ip_hash = ? AND criado_em > ?").bind(ipHash, desde).first();
-    if (r && r.n >= 5) return erro("muitas_tentativas", 429);
+    if (r && r.n >= (parceiro ? 30 : 5)) return erro("muitas_tentativas", 429);
   }
 
   const now = agoraIso();
@@ -209,9 +220,9 @@ async function criarPedido(req, env, ctx) {
     codigo = "IET-" + aleatorio(6);
     try {
       const r = await env.DB.prepare(`INSERT INTO pedidos (codigo, token, criado_em, atualizado_em, status, idioma, nome, email, telefone, pais, observacoes,
-        consentimento_em, total, valor_agora, modo_pagamento, ip_hash, origem) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+        consentimento_em, total, valor_agora, modo_pagamento, ip_hash, origem, parceiro_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
         .bind(codigo, token, now, now, "solicitacao", idioma, cliente.nome, cliente.email, cliente.telefone, cliente.pais || null,
-          cliente.observacoes || null, now, pag.total, pag.agora, escolha, ipHash, new URL(req.url).hostname).run();
+          cliente.observacoes || null, now, pag.total, pag.agora, escolha, ipHash, new URL(req.url).hostname, parceiro ? parceiro.id : null).run();
       pedidoId = r.meta.last_row_id;
     } catch (e) { if (!String(e.message).includes("UNIQUE")) throw e; }
   }
@@ -224,7 +235,7 @@ async function criarPedido(req, env, ctx) {
     it.horasExtras, svc.tipo === "hora" ? it.horas : null, svc.tipo === "diaria" ? it.dias : null, cot.dataEspecial ? 1 : 0,
     cot.valor, pag.detalhes[i].modo, pag.detalhes[i].due, JSON.stringify(cot.linhas)));
   stmts.push(env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, status_para, autor, texto) VALUES (?,?,?,?,?,?)")
-    .bind(pedidoId, now, "criado", "solicitacao", "cliente", "Pedido feito pelo site"));
+    .bind(pedidoId, now, "criado", "solicitacao", parceiro ? "parceiro " + parceiro.codigo : "cliente", parceiro ? `Reserva feita pelo parceiro ${parceiro.empresa || parceiro.responsavel} (${parceiro.codigo})` : "Pedido feito pelo site"));
   await env.DB.batch(stmts);
 
   const pedido = { codigo, ...cliente, total: pag.total, valor_agora: pag.agora };
@@ -233,7 +244,8 @@ async function criarPedido(req, env, ctx) {
     horas_extras: it.horasExtras, horas: it.horas, dias: it.dias, data_especial: cot.dataEspecial, valor: cot.valor, modo: pag.detalhes[i].modo,
     km: cot.km || null, km_fora: it.rota ? !!it.rota.fora : false }));
   const origem = new URL(req.url).origin;
-  ctx.waitUntil(enviarAviso(env, `Nova reserva ${codigo} — ${cliente.nome} — ${brl(pag.total)}`, resumoTexto(pedido, itensDb, true, origem)));
+  const txtParc = parceiro ? `Reserva feita pelo parceiro: ${parceiro.empresa || parceiro.responsavel} (${parceiro.codigo}) · comissão ${Number(parceiro.comissao_pct) || 0}%\n\n` : "";
+  ctx.waitUntil(enviarAviso(env, `Nova reserva ${codigo} — ${cliente.nome} — ${brl(pag.total)}` + (parceiro ? ` — parceiro ${parceiro.codigo}` : ""), txtParc + resumoTexto(pedido, itensDb, true, origem)));
 
   const msgWa = (idioma === "en" ? "Hello! I just booked on the website." : idioma === "es" ? "¡Hola! Acabo de reservar en el sitio." : "Olá! Acabei de fazer uma reserva pelo site.") +
     "\n\n" + resumoTexto(pedido, itensDb, false);
@@ -293,6 +305,79 @@ async function verPedidoCliente(env, codigo, token) {
   return json({ ok: true, pedido: p, itens: results });
 }
 
+/* ---------------- parceiros ----------------
+   tipo "indica": hotéis, agências, guias e empresas que reservam em nome do cliente e recebem comissão (%).
+   tipo "atende": táxis, motoristas particulares, 7 lugares e vans que atendem quando a frota lota.
+   O parceiro aprovado recebe um link de acesso pessoal (gerado no painel); no banco fica só o hash da chave. */
+const PARC_TIPOS = { indica: ["hotel", "agencia", "guia", "empresa", "outro"], atende: ["taxi", "particular", "sete", "van"] };
+const PARC_STATUS = ["novo", "aprovado", "pausado", "recusado"];
+async function cadastrarParceiro(req, env, ctx) {
+  let b; try { b = await lerJson(req, 8000); } catch { return erro("json_invalido"); }
+  if (b.website) return json({ ok: true, codigo: "P-OK" });
+  const ip = req.headers.get("cf-connecting-ip") || "";
+  if (!(await verificarTurnstile(env, b.turnstile, ip))) return erro("verificacao", 403);
+  const s = (v, n) => String(v == null ? "" : v).trim().slice(0, n);
+  const tipo = b.tipo === "atende" ? "atende" : b.tipo === "indica" ? "indica" : "";
+  if (!tipo) return erro("tipo");
+  const d = { categoria: s(b.categoria, 20), empresa: s(b.empresa, 120), responsavel: s(b.responsavel, 120), email: s(b.email, 160).toLowerCase(),
+    telefone: s(b.telefone, 40), cidade: s(b.cidade, 80), documento: s(b.documento, 40), veiculo: s(b.veiculo, 120), autorizacao: s(b.autorizacao, 20), mensagem: s(b.mensagem, 1000) };
+  if (!PARC_TIPOS[tipo].includes(d.categoria)) return erro("categoria");
+  if (d.responsavel.length < 3) return erro("nome");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)) return erro("email");
+  if (d.telefone.replace(/\D/g, "").length < 8) return erro("telefone");
+  if (tipo === "indica" && d.empresa.length < 2) return erro("empresa");
+  if (tipo === "atende" && d.veiculo.length < 2) return erro("veiculo");
+  if (b.consentimento !== true) return erro("consentimento");
+  await prepararBanco(env);
+  const ipHash = ip ? await sha256(ip + (env.IP_SALT || "iet")) : null;
+  if (ipHash) {
+    const r = await env.DB.prepare("SELECT COUNT(*) n FROM parceiros WHERE ip_hash = ? AND criado_em > ?").bind(ipHash, new Date(Date.now() - 3600e3).toISOString()).first();
+    if (r && r.n >= 5) return erro("muitas_tentativas", 429);
+  }
+  const now = agoraIso();
+  let codigo;
+  for (let t = 0; t < 5 && !codigo; t++) {
+    const c = "P-" + aleatorio(5);
+    try {
+      await env.DB.prepare(`INSERT INTO parceiros (codigo, criado_em, atualizado_em, tipo, status, categoria, empresa, responsavel, email, telefone, cidade, documento, veiculo, autorizacao, mensagem, consentimento_em, ip_hash, origem)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(c, now, now, tipo, "novo", d.categoria, d.empresa || null, d.responsavel, d.email, d.telefone, d.cidade || null,
+        d.documento || null, d.veiculo || null, d.autorizacao || null, d.mensagem || null, now, ipHash, new URL(req.url).hostname).run();
+      codigo = c;
+    } catch (e) { if (!String(e.message).includes("UNIQUE")) throw e; }
+  }
+  if (!codigo) return erro("falha_codigo", 500);
+  const nomes = { hotel: "Hotel ou pousada", agencia: "Agência", guia: "Guia", empresa: "Empresa", outro: "Outro", taxi: "Táxi", particular: "Motorista particular", sete: "7 lugares", van: "Van" };
+  const linhas = [`Cadastro ${codigo} — ${tipo === "indica" ? "parceiro que indica clientes" : "parceiro que atende corridas"}`, `Tipo: ${nomes[d.categoria]}`,
+    d.empresa ? `Empresa: ${d.empresa}` : "", `Responsável: ${d.responsavel}`, `WhatsApp: ${d.telefone}`, `E-mail: ${d.email}`, d.cidade ? `Cidade: ${d.cidade}` : "",
+    d.documento ? `CNPJ/Cadastur: ${d.documento}` : "", d.veiculo ? `Veículo: ${d.veiculo}` : "", d.autorizacao ? `Autorização para transporte: ${d.autorizacao}` : "",
+    d.mensagem ? `\nMensagem: ${d.mensagem}` : "", "", `Painel: ${new URL(req.url).origin}/admin/parceiros.html#${codigo}`].filter((x) => x !== "");
+  ctx.waitUntil(enviarAviso(env, `Novo parceiro ${codigo} — ${d.empresa || d.responsavel}`, linhas.join("\n")));
+  return json({ ok: true, codigo });
+}
+async function parceiroDaChave(req, env) {
+  const chave = (req.headers.get("x-parceiro") || "").trim();
+  if (!/^[a-f0-9]{32}$/.test(chave)) return null;
+  await prepararBanco(env);
+  const p = await env.DB.prepare("SELECT * FROM parceiros WHERE chave_hash = ?").bind(await sha256("parceiro:" + chave)).first();
+  return p && p.status === "aprovado" && p.tipo === "indica" ? p : null;
+}
+async function areaParceiro(req, env, url) {
+  const p = await parceiroDaChave(req, env);
+  if (!p) return erro("nao_autorizado", 401);
+  const rota = url.pathname.replace(/^\/api\/parceiro\/?/, "");
+  if (rota === "eu") return json({ ok: true, parceiro: { codigo: p.codigo, empresa: p.empresa, responsavel: p.responsavel, comissao_pct: p.comissao_pct } });
+  if (rota === "pedidos") {
+    const { results } = await env.DB.prepare(`SELECT p.codigo, p.status, p.criado_em, p.nome, p.total,
+      (SELECT MIN(data || ' ' || hora) FROM itens i WHERE i.pedido_id = p.id) AS primeira,
+      (SELECT group_concat(servico_nome, ' + ') FROM itens i WHERE i.pedido_id = p.id) AS servicos
+      FROM pedidos p WHERE p.parceiro_id = ? ORDER BY p.criado_em DESC LIMIT 300`).bind(p.id).all();
+    const pct = Number(p.comissao_pct) || 0;
+    const pedidos = results.map((x) => ({ ...x, comissao: x.status === "cancelada" ? 0 : Math.round(x.total * pct) / 100 }));
+    return json({ ok: true, comissao_pct: pct, pedidos });
+  }
+  return erro("rota", 404);
+}
+
 /* ---------------- admin (protegido pelo Cloudflare Access) ---------------- */
 const b64urlBytes = (s) => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((s.length + 3) % 4)), (c) => c.charCodeAt(0));
 let certsCache = { at: 0, keys: [] };
@@ -333,6 +418,44 @@ async function admin(req, env, url) {
 
   if (partes[0] === "eu") return json({ ok: true, email: user.email });
 
+  if (partes[0] === "parceiros") {
+    if (partes.length === 1 && req.method === "GET") {
+      const tipo = url.searchParams.get("tipo"), st = url.searchParams.get("status");
+      const where = [], args = [];
+      if (tipo === "indica" || tipo === "atende") { where.push("tipo = ?"); args.push(tipo); }
+      if (PARC_STATUS.includes(st)) { where.push("status = ?"); args.push(st); }
+      const { results } = await env.DB.prepare(`SELECT id, codigo, criado_em, tipo, status, categoria, empresa, responsavel, telefone, cidade, comissao_pct,
+        (chave_hash IS NOT NULL) AS tem_acesso, (SELECT COUNT(*) FROM pedidos WHERE parceiro_id = parceiros.id) AS n_pedidos
+        FROM parceiros ${where.length ? "WHERE " + where.join(" AND ") : ""} ORDER BY criado_em DESC LIMIT 500`).bind(...args).all();
+      const cont = (await env.DB.prepare("SELECT tipo, status, COUNT(*) n FROM parceiros GROUP BY tipo, status").all()).results;
+      return json({ ok: true, parceiros: results, contagem: cont });
+    }
+    const p = partes[1] && await env.DB.prepare("SELECT * FROM parceiros WHERE codigo = ?").bind(partes[1]).first();
+    if (!p) return erro("nao_encontrado", 404);
+    if (req.method === "GET" && partes.length === 2) {
+      const { results } = await env.DB.prepare(`SELECT codigo, status, criado_em, nome, total FROM pedidos WHERE parceiro_id = ? ORDER BY criado_em DESC LIMIT 300`).bind(p.id).all();
+      const tem_acesso = !!p.chave_hash; delete p.chave_hash; delete p.ip_hash;
+      return json({ ok: true, parceiro: { ...p, tem_acesso }, pedidos: results });
+    }
+    if (req.method === "POST" && partes.length === 2) {
+      let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
+      const status = PARC_STATUS.includes(b.status) ? b.status : p.status;
+      let pct = b.comissao_pct == null || b.comissao_pct === "" ? p.comissao_pct : Number(b.comissao_pct);
+      if (!(pct >= 0 && pct <= 50)) return erro("comissao");
+      const nota = String(b.nota || "").trim().slice(0, 500);
+      const notas = nota ? ((p.notas ? p.notas + "\n" : "") + new Date().toISOString().slice(0, 10) + " " + user.email + ": " + nota).slice(-6000) : p.notas;
+      await env.DB.prepare("UPDATE parceiros SET status = ?, comissao_pct = ?, notas = ?, atualizado_em = ? WHERE id = ?").bind(status, pct, notas, agoraIso(), p.id).run();
+      return json({ ok: true });
+    }
+    if (req.method === "POST" && partes[2] === "acesso") {
+      if (p.tipo !== "indica" || p.status !== "aprovado") return erro("aprove_primeiro");
+      const chave = tokenHex();
+      await env.DB.prepare("UPDATE parceiros SET chave_hash = ?, chave_em = ?, atualizado_em = ? WHERE id = ?").bind(await sha256("parceiro:" + chave), agoraIso(), agoraIso(), p.id).run();
+      return json({ ok: true, link: url.origin + "/parceiro/#chave=" + chave });
+    }
+    return erro("rota", 404);
+  }
+
   if (partes[0] === "pedidos" && partes.length === 1 && req.method === "GET") {
     const st = url.searchParams.get("status"), q = (url.searchParams.get("q") || "").trim();
     const per = url.searchParams.get("periodo") || "proximos";
@@ -341,6 +464,7 @@ async function admin(req, env, url) {
     if (q) { where.push("(p.codigo LIKE ? OR p.nome LIKE ? OR p.email LIKE ? OR p.telefone LIKE ?)"); const l = "%" + q + "%"; args.push(l, l, l, l); }
     if (per === "proximos") { where.push("(SELECT MAX(inicio_utc) FROM itens i WHERE i.pedido_id = p.id) >= ?"); args.push(new Date(Date.now() - 12 * 3600e3).toISOString()); }
     const sql = `SELECT p.id, p.codigo, p.status, p.criado_em, p.nome, p.telefone, p.email, p.total, p.valor_agora, p.idioma,
+      (SELECT COALESCE(empresa, responsavel) FROM parceiros pa WHERE pa.id = p.parceiro_id) AS parceiro,
       (SELECT MIN(inicio_utc) FROM itens i WHERE i.pedido_id = p.id) AS primeiro_inicio,
       (SELECT COUNT(*) FROM itens i WHERE i.pedido_id = p.id) AS n_itens,
       (SELECT group_concat(servico_nome, ' + ') FROM itens i WHERE i.pedido_id = p.id) AS servicos
@@ -357,8 +481,9 @@ async function admin(req, env, url) {
     if (req.method === "GET" && partes.length === 2) {
       const itens = (await env.DB.prepare("SELECT * FROM itens WHERE pedido_id = ? ORDER BY ordem").bind(p.id).all()).results;
       const eventos = (await env.DB.prepare("SELECT * FROM eventos WHERE pedido_id = ? ORDER BY id").bind(p.id).all()).results;
+      const parc = p.parceiro_id ? await env.DB.prepare("SELECT codigo, empresa, responsavel, comissao_pct FROM parceiros WHERE id = ?").bind(p.parceiro_id).first() : null;
       delete p.token; delete p.ip_hash;
-      return json({ ok: true, pedido: p, itens, eventos });
+      return json({ ok: true, pedido: p, itens, eventos, parceiro: parc });
     }
     if (req.method === "POST" && partes[2] === "status") {
       let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
@@ -429,6 +554,8 @@ async function api(req, env, ctx, url) {
     return json(r, r.ok ? 200 : 503, r.ok ? { "cache-control": "public, max-age=3600" } : {});
   }
   if (p === "/api/pedidos" && m === "POST") return criarPedido(req, env, ctx);
+  if (p === "/api/parceiros" && m === "POST") return cadastrarParceiro(req, env, ctx);
+  if (p.startsWith("/api/parceiro/") && m === "GET") return areaParceiro(req, env, url);
   if (p === "/api/pacotes" && m === "POST") return criarPacote(req, env);
   const mp = p.match(/^\/api\/pacotes\/([A-Z0-9]{7})$/);
   if (mp && m === "GET") return verPacote(env, mp[1]);
