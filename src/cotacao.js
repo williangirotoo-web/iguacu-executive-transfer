@@ -3,6 +3,17 @@
 import { CONFIG, CATEGORIAS, SERVICOS, HORA_EXTRA, POR_HORA, POR_KM, datasEspeciais } from "./precos.js";
 
 const SVC = Object.fromEntries(SERVICOS.map((s) => [s.id, s]));
+/* Preços-padrão (do precos.js). O painel pode trocar valores; aqui guardamos o original para poder voltar. */
+export const PRECOS_PADRAO = Object.fromEntries(SERVICOS.map((s) => [s.id, { ...s.precos }]));
+/* Aplica os valores editados no painel (vindos do banco, só no servidor): { servico: { categoria: valor } }.
+   Só troca categorias que o serviço já atende; o que não estiver no mapa volta ao padrão. */
+export function aplicarPrecos(mapa) {
+  for (const s of SERVICOS) {
+    const base = PRECOS_PADRAO[s.id], novo = { ...base }, m = (mapa && mapa[s.id]) || {};
+    for (const cat of Object.keys(m)) if (cat in base && Number.isFinite(m[cat]) && m[cat] > 0) novo[cat] = m[cat];
+    s.precos = novo;
+  }
+}
 const centavos = (v) => Math.round(v * 100) / 100;
 const int = (v, d = 0) => { const n = parseInt(v, 10); return Number.isFinite(n) ? n : d; };
 const especiais = new Map(); // cache por ano

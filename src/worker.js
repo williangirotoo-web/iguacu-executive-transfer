@@ -1,6 +1,6 @@
 /* Iguaçu Executive Transfer — Worker (API de reservas + site estático) */
 import { CONFIG, CATEGORIAS, SERVICOS, CONSULTA, HORA_EXTRA, POR_HORA, POR_KM, DIARIA, datasEspeciais } from "./precos.js";
-import { normalizarItem, cotar, cotarTodas, valorAgora, servico } from "./cotacao.js";
+import { normalizarItem, cotar, cotarTodas, valorAgora, servico, aplicarPrecos, PRECOS_PADRAO } from "./cotacao.js";
 import { buscarLugares, resolverRota } from "./rota.js";
 import { EmailMessage } from "cloudflare:email";
 
@@ -62,11 +62,46 @@ async function prepararBanco(env) {
       comissao_pct REAL DEFAULT 0, chave_hash TEXT, chave_em TEXT, consentimento_em TEXT NOT NULL, ip_hash TEXT, origem TEXT, notas TEXT)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_parceiros_status ON parceiros(tipo, status, criado_em)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_parceiros_chave ON parceiros(chave_hash)`),
+    // preços trocados pelo painel (o padrão continua no precos.js; apagar a linha volta ao padrão)
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS precos_editados (
+      servico_id TEXT NOT NULL, categoria TEXT NOT NULL, valor REAL NOT NULL, atualizado_em TEXT NOT NULL, autor TEXT,
+      PRIMARY KEY (servico_id, categoria))`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS precos_hist (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, em TEXT NOT NULL, autor TEXT, servico_id TEXT NOT NULL, categoria TEXT NOT NULL, de REAL, para REAL)`),
+    // pagamentos de comissão a parceiros que indicam clientes
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS comissoes_pagas (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, ref TEXT UNIQUE NOT NULL, parceiro_id INTEGER NOT NULL REFERENCES parceiros(id), mes TEXT NOT NULL,
+      valor REAL NOT NULL, n_pedidos INTEGER NOT NULL, pct REAL, pago_em TEXT NOT NULL, autor TEXT, obs TEXT)`),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_comissoes_parc ON comissoes_pagas(parceiro_id, mes)`),
+    // corridas oferecidas a motoristas parceiros (um item de um pedido, um motorista por vez)
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS corridas (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, pedido_id INTEGER NOT NULL REFERENCES pedidos(id), item_id INTEGER NOT NULL REFERENCES itens(id),
+      parceiro_id INTEGER NOT NULL REFERENCES parceiros(id), status TEXT NOT NULL, repasse REAL, obs TEXT,
+      criado_em TEXT NOT NULL, respondido_em TEXT, autor TEXT, motivo TEXT)`),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_corridas_parc ON corridas(parceiro_id, status)`),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_corridas_item ON corridas(item_id)`),
   ]);
   // coluna nova em tabela antiga: só cria se ainda não existir
   const cols = (await env.DB.prepare("PRAGMA table_info(pedidos)").all()).results.map((c) => c.name);
   if (!cols.includes("parceiro_id")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN parceiro_id INTEGER").run();
+  if (!cols.includes("comissao_paga_id")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN comissao_paga_id INTEGER").run();
+  if (!cols.includes("comissao_valor")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN comissao_valor REAL").run();
   schemaPronto = true;
+}
+
+/* ---------------- preços editados no painel ----------------
+   Lidos do banco a cada 30 s (por instância) e aplicados por cima do precos.js. Cotação, reserva e catálogo usam o mesmo valor. */
+let precosLidosEm = 0;
+async function carregarPrecos(env, forcar = false) {
+  if (!forcar && Date.now() - precosLidosEm < 30e3) return;
+  try {
+    await prepararBanco(env);
+    const { results } = await env.DB.prepare("SELECT servico_id, categoria, valor FROM precos_editados").all();
+    const m = {};
+    for (const r of results) (m[r.servico_id] ||= {})[r.categoria] = r.valor;
+    aplicarPrecos(m);
+    precosLidosEm = Date.now();
+  } catch (e) { console.error("precos", e && e.message); }
 }
 
 /* ---------------- catálogo público ---------------- */
@@ -354,12 +389,12 @@ async function cadastrarParceiro(req, env, ctx) {
   ctx.waitUntil(enviarAviso(env, `Novo parceiro ${codigo} — ${d.empresa || d.responsavel}`, linhas.join("\n")));
   return json({ ok: true, codigo });
 }
-async function parceiroDaChave(req, env) {
+async function parceiroDaChave(req, env, tipo = "indica") {
   const chave = (req.headers.get("x-parceiro") || "").trim();
   if (!/^[a-f0-9]{32}$/.test(chave)) return null;
   await prepararBanco(env);
   const p = await env.DB.prepare("SELECT * FROM parceiros WHERE chave_hash = ?").bind(await sha256("parceiro:" + chave)).first();
-  return p && p.status === "aprovado" && p.tipo === "indica" ? p : null;
+  return p && p.status === "aprovado" && p.tipo === tipo ? p : null;
 }
 async function areaParceiro(req, env, url) {
   const p = await parceiroDaChave(req, env);
@@ -367,13 +402,61 @@ async function areaParceiro(req, env, url) {
   const rota = url.pathname.replace(/^\/api\/parceiro\/?/, "");
   if (rota === "eu") return json({ ok: true, parceiro: { codigo: p.codigo, empresa: p.empresa, responsavel: p.responsavel, comissao_pct: p.comissao_pct } });
   if (rota === "pedidos") {
-    const { results } = await env.DB.prepare(`SELECT p.codigo, p.status, p.criado_em, p.nome, p.total,
+    const { results } = await env.DB.prepare(`SELECT p.codigo, p.status, p.criado_em, p.nome, p.total, p.comissao_valor,
+      (SELECT pago_em FROM comissoes_pagas c WHERE c.id = p.comissao_paga_id) AS comissao_paga_em,
       (SELECT MIN(data || ' ' || hora) FROM itens i WHERE i.pedido_id = p.id) AS primeira,
       (SELECT group_concat(servico_nome, ' + ') FROM itens i WHERE i.pedido_id = p.id) AS servicos
       FROM pedidos p WHERE p.parceiro_id = ? ORDER BY p.criado_em DESC LIMIT 300`).bind(p.id).all();
     const pct = Number(p.comissao_pct) || 0;
-    const pedidos = results.map((x) => ({ ...x, comissao: x.status === "cancelada" ? 0 : Math.round(x.total * pct) / 100 }));
-    return json({ ok: true, comissao_pct: pct, pedidos });
+    const pedidos = results.map((x) => ({ ...x, comissao: x.comissao_paga_em ? x.comissao_valor : x.status === "cancelada" ? 0 : Math.round(x.total * pct) / 100 }));
+    const pagamentos = (await env.DB.prepare("SELECT mes, valor, n_pedidos, pago_em FROM comissoes_pagas WHERE parceiro_id = ? ORDER BY pago_em DESC LIMIT 60").bind(p.id).all()).results;
+    return json({ ok: true, comissao_pct: pct, pedidos, pagamentos });
+  }
+  return erro("rota", 404);
+}
+
+/* ---------------- área do motorista parceiro (tipo "atende") ----------------
+   O motorista vê só as corridas oferecidas a ele. Nome, telefone do passageiro e voo aparecem depois que ele aceita. */
+const CORRIDA_ST = ["ofertada", "aceita", "recusada", "cancelada"];
+function corridaParaMotorista(c) {
+  const aceita = c.status === "aceita";
+  return {
+    id: c.id, status: c.status, repasse: c.repasse, obs: c.obs, criado_em: c.criado_em, respondido_em: c.respondido_em,
+    pedido: c.pedido_codigo, pedido_status: c.pedido_status, servico: c.servico_nome, categoria: c.categoria, data: c.data, hora: c.hora, inicio: c.inicio_utc,
+    sentido: c.sentido, origem: c.origem, destino: c.destino, pax: c.pax, malas: c.malas, cadeirinhas: c.cadeirinhas, pet: !!c.pet, horas: c.horas, dias: c.dias, horas_extras: c.horas_extras,
+    ...(aceita ? { passageiro: c.nome, telefone: c.telefone, voo: c.voo, observacoes: c.observacoes } : {}),
+  };
+}
+const SQL_CORRIDA = `SELECT c.*, p.codigo AS pedido_codigo, p.status AS pedido_status, p.nome, p.telefone, p.observacoes,
+  i.servico_nome, i.categoria, i.data, i.hora, i.inicio_utc, i.sentido, i.voo, i.origem, i.destino, i.pax, i.malas, i.cadeirinhas, i.pet, i.horas, i.dias, i.horas_extras
+  FROM corridas c JOIN pedidos p ON p.id = c.pedido_id JOIN itens i ON i.id = c.item_id`;
+async function areaMotorista(req, env, url) {
+  const mot = await parceiroDaChave(req, env, "atende");
+  if (!mot) return erro("nao_autorizado", 401);
+  const partes = url.pathname.replace(/^\/api\/motorista\/?/, "").split("/").filter(Boolean);
+  if (partes[0] === "eu" && req.method === "GET") return json({ ok: true, motorista: { codigo: mot.codigo, nome: mot.empresa || mot.responsavel, responsavel: mot.responsavel, veiculo: mot.veiculo } });
+  if (partes[0] === "corridas" && partes.length === 1 && req.method === "GET") {
+    const { results } = await env.DB.prepare(SQL_CORRIDA + " WHERE c.parceiro_id = ? AND c.status != 'cancelada' ORDER BY i.inicio_utc DESC LIMIT 200").bind(mot.id).all();
+    return json({ ok: true, corridas: results.map(corridaParaMotorista) });
+  }
+  if (partes[0] === "corridas" && /^\d+$/.test(partes[1] || "") && req.method === "POST") {
+    let b; try { b = await lerJson(req, 2000); } catch { return erro("json_invalido"); }
+    const c = await env.DB.prepare(SQL_CORRIDA + " WHERE c.id = ? AND c.parceiro_id = ?").bind(+partes[1], mot.id).first();
+    if (!c) return erro("nao_encontrado", 404);
+    if (c.status !== "ofertada") return erro("ja_respondida");
+    if (c.pedido_status === "cancelada") return erro("pedido_cancelado");
+    if (Date.parse(c.inicio_utc) < Date.now()) return erro("passou");
+    const acao = b.acao === "aceitar" ? "aceita" : b.acao === "recusar" ? "recusada" : "";
+    if (!acao) return erro("acao");
+    const motivo = String(b.motivo || "").trim().slice(0, 300) || null, now = agoraIso();
+    const r = await env.DB.prepare("UPDATE corridas SET status = ?, respondido_em = ?, motivo = ? WHERE id = ? AND status = 'ofertada'").bind(acao, now, motivo, c.id).run();
+    if (!r.meta || !r.meta.changes) return erro("ja_respondida");
+    const quem = (mot.empresa || mot.responsavel) + " (" + mot.codigo + ")";
+    const texto = (acao === "aceita" ? "Motorista aceitou: " : "Motorista recusou: ") + quem + " · " + c.servico_nome + " " + c.data + " " + c.hora + (motivo ? " · " + motivo : "");
+    await env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, autor, texto) VALUES (?,?,?,?,?)").bind(c.pedido_id, now, "corrida", "motorista " + mot.codigo, texto).run();
+    try { await enviarAviso(env, (acao === "aceita" ? "Corrida ACEITA " : "Corrida RECUSADA ") + c.pedido_codigo, texto + "\n\nPainel: " + url.origin + "/admin/#" + c.pedido_codigo); } catch (e) { console.error("aviso corrida", e && e.message); }
+    const nova = await env.DB.prepare(SQL_CORRIDA + " WHERE c.id = ?").bind(c.id).first();
+    return json({ ok: true, corrida: corridaParaMotorista(nova) });
   }
   return erro("rota", 404);
 }
@@ -410,6 +493,96 @@ async function verificarAccess(req, env) {
   } catch (e) { console.error("access", e && e.message); return null; }
 }
 
+/* Preços: lista de serviços com o padrão e o valor atual; salvar troca um ou vários valores de uma vez */
+async function adminPrecos(req, env, user) {
+  if (req.method === "GET") {
+    const editados = (await env.DB.prepare("SELECT servico_id, categoria, valor, atualizado_em, autor FROM precos_editados").all()).results;
+    const hist = (await env.DB.prepare("SELECT em, autor, servico_id, categoria, de, para FROM precos_hist ORDER BY id DESC LIMIT 60").all()).results;
+    const servicos = SERVICOS.filter((s) => s.tipo !== "km").map((s) => ({ id: s.id, nome: s.nome && s.nome.pt, grupo: s.grupo, tipo: s.tipo, oculto: !!s.oculto, padrao: PRECOS_PADRAO[s.id], atual: s.precos }));
+    return json({ ok: true, categorias: Object.fromEntries(Object.entries(CATEGORIAS).map(([k, v]) => [k, (v.nome && v.nome.pt) || k])), servicos, editados, hist });
+  }
+  if (req.method !== "POST") return erro("rota", 404);
+  let b; try { b = await lerJson(req, 40000); } catch { return erro("json_invalido"); }
+  const lista = Array.isArray(b.mudancas) ? b.mudancas.slice(0, 400) : [];
+  if (!lista.length) return erro("nada_mudou");
+  const atuais = Object.fromEntries((await env.DB.prepare("SELECT servico_id, categoria, valor FROM precos_editados").all()).results.map((r) => [r.servico_id + "|" + r.categoria, r.valor]));
+  const ops = [], now = agoraIso();
+  for (const x of lista) {
+    const sid = String(x.servico || ""), cat = String(x.categoria || ""), pad = PRECOS_PADRAO[sid];
+    if (!pad || !(cat in pad)) return erro("servico_invalido", 400, { servico: sid, categoria: cat });
+    const antes = atuais[sid + "|" + cat] ?? pad[cat];
+    const voltar = x.valor === "" || x.valor == null || x.padrao === true;
+    const v = voltar ? null : Math.round(Number(String(x.valor).replace(",", ".")) * 100) / 100;
+    if (!voltar && !(v >= 1 && v <= 200000)) return erro("valor_invalido", 400, { servico: sid, categoria: cat });
+    const depois = voltar ? pad[cat] : v;
+    if (depois === antes) continue;
+    if (voltar || v === pad[cat]) ops.push(env.DB.prepare("DELETE FROM precos_editados WHERE servico_id = ? AND categoria = ?").bind(sid, cat));
+    else ops.push(env.DB.prepare(`INSERT INTO precos_editados (servico_id, categoria, valor, atualizado_em, autor) VALUES (?,?,?,?,?)
+      ON CONFLICT(servico_id, categoria) DO UPDATE SET valor = excluded.valor, atualizado_em = excluded.atualizado_em, autor = excluded.autor`).bind(sid, cat, v, now, user.email));
+    ops.push(env.DB.prepare("INSERT INTO precos_hist (em, autor, servico_id, categoria, de, para) VALUES (?,?,?,?,?,?)").bind(now, user.email, sid, cat, antes, depois));
+  }
+  if (!ops.length) return json({ ok: true, alterados: 0 });
+  await env.DB.batch(ops);
+  await carregarPrecos(env, true);
+  return json({ ok: true, alterados: ops.length / 2 });
+}
+
+/* Comissões: o mês conta pela data da viagem. Entram só reservas "concluídas" (realizadas).
+   Marcar como pago guarda o valor de cada reserva naquele momento; desfazer apaga o pagamento. */
+const mesValido = (m) => /^\d{4}-(0[1-9]|1[0-2])$/.test(m || "");
+const comissaoDe = (total, pct) => Math.round(total * pct) / 100;
+async function adminComissoes(req, env, url, user, partes) {
+  if (req.method === "GET" && partes.length === 1) {
+    const mes = mesValido(url.searchParams.get("mes")) ? url.searchParams.get("mes") : new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 7);
+    const { results } = await env.DB.prepare(`SELECT * FROM (SELECT p.codigo, p.status, p.nome, p.total, p.comissao_valor, p.comissao_paga_id, pa.codigo AS pc,
+      (SELECT MIN(data) FROM itens i WHERE i.pedido_id = p.id) AS data
+      FROM pedidos p JOIN parceiros pa ON pa.id = p.parceiro_id WHERE p.status != 'cancelada') WHERE substr(data, 1, 7) = ? ORDER BY data`).bind(mes).all();
+    const pags = (await env.DB.prepare(`SELECT c.id, c.mes, c.valor, c.n_pedidos, c.pct, c.pago_em, c.autor, c.obs, pa.codigo AS pc FROM comissoes_pagas c JOIN parceiros pa ON pa.id = c.parceiro_id WHERE c.mes = ? ORDER BY c.id`).bind(mes).all()).results;
+    const parcs = (await env.DB.prepare("SELECT codigo, COALESCE(empresa, responsavel) AS nome, responsavel, telefone, comissao_pct, status FROM parceiros WHERE tipo = 'indica'").all()).results;
+    const por = {};
+    for (const pa of parcs) por[pa.codigo] = { ...pa, pedidos: [], pagamentos: [], a_pagar: 0, n_a_pagar: 0, pago: 0, previsto: 0, n_previstos: 0 };
+    for (const x of results) {
+      const g = por[x.pc]; if (!g) continue;
+      const pago = !!x.comissao_paga_id, conc = x.status === "concluida";
+      const com = pago ? x.comissao_valor : comissaoDe(x.total, Number(g.comissao_pct) || 0);
+      g.pedidos.push({ codigo: x.codigo, status: x.status, nome: x.nome, total: x.total, data: x.data, comissao: com, paga: pago });
+      if (pago) g.pago += com; else if (conc) { g.a_pagar += com; g.n_a_pagar++; } else { g.previsto += com; g.n_previstos++; }
+    }
+    for (const c of pags) if (por[c.pc]) por[c.pc].pagamentos.push(c);
+    const lista = Object.values(por).filter((g) => g.pedidos.length || g.pagamentos.length).map((g) => ({ ...g, a_pagar: Math.round(g.a_pagar * 100) / 100, pago: Math.round(g.pago * 100) / 100, previsto: Math.round(g.previsto * 100) / 100 }));
+    const soma = (k) => Math.round(lista.reduce((a, g) => a + g[k], 0) * 100) / 100;
+    return json({ ok: true, mes, parceiros: lista, totais: { a_pagar: soma("a_pagar"), pago: soma("pago"), previsto: soma("previsto") } });
+  }
+  if (req.method !== "POST") return erro("rota", 404);
+  let b; try { b = await lerJson(req, 2000); } catch { return erro("json_invalido"); }
+  if (partes[1] === "pagar") {
+    if (!mesValido(b.mes)) return erro("mes");
+    const pa = await env.DB.prepare("SELECT * FROM parceiros WHERE codigo = ? AND tipo = 'indica'").bind(String(b.parceiro || "")).first();
+    if (!pa) return erro("nao_encontrado", 404);
+    const pct = Number(pa.comissao_pct) || 0;
+    const { results } = await env.DB.prepare(`SELECT * FROM (SELECT p.id, p.total, (SELECT MIN(data) FROM itens i WHERE i.pedido_id = p.id) AS data FROM pedidos p
+      WHERE p.parceiro_id = ? AND p.status = 'concluida' AND p.comissao_paga_id IS NULL) WHERE substr(data, 1, 7) = ?`).bind(pa.id, b.mes).all();
+    if (!results.length) return erro("nada_a_pagar");
+    const ref = tokenHex(), now = agoraIso();
+    const valor = Math.round(results.reduce((a, x) => a + comissaoDe(x.total, pct), 0) * 100) / 100;
+    const obs = String(b.obs || "").trim().slice(0, 300) || null;
+    const ops = [env.DB.prepare("INSERT INTO comissoes_pagas (ref, parceiro_id, mes, valor, n_pedidos, pct, pago_em, autor, obs) VALUES (?,?,?,?,?,?,?,?,?)").bind(ref, pa.id, b.mes, valor, results.length, pct, now, user.email, obs)];
+    for (const x of results) ops.push(env.DB.prepare("UPDATE pedidos SET comissao_paga_id = (SELECT id FROM comissoes_pagas WHERE ref = ?), comissao_valor = ? WHERE id = ? AND comissao_paga_id IS NULL").bind(ref, comissaoDe(x.total, pct), x.id));
+    await env.DB.batch(ops);
+    return json({ ok: true, valor, n_pedidos: results.length });
+  }
+  if (partes[1] === "desfazer") {
+    const c = await env.DB.prepare("SELECT id FROM comissoes_pagas WHERE id = ?").bind(+b.id || 0).first();
+    if (!c) return erro("nao_encontrado", 404);
+    await env.DB.batch([
+      env.DB.prepare("UPDATE pedidos SET comissao_paga_id = NULL, comissao_valor = NULL WHERE comissao_paga_id = ?").bind(c.id),
+      env.DB.prepare("DELETE FROM comissoes_pagas WHERE id = ?").bind(c.id),
+    ]);
+    return json({ ok: true });
+  }
+  return erro("rota", 404);
+}
+
 async function admin(req, env, url) {
   const user = await verificarAccess(req, env);
   if (!user) return erro("nao_autorizado", 401);
@@ -417,6 +590,25 @@ async function admin(req, env, url) {
   const partes = url.pathname.replace(/^\/api\/admin\/?/, "").split("/").filter(Boolean);
 
   if (partes[0] === "eu") return json({ ok: true, email: user.email });
+  if (partes[0] === "precos") return adminPrecos(req, env, user);
+  if (partes[0] === "comissoes") return adminComissoes(req, env, url, user, partes);
+  if (partes[0] === "motoristas" && req.method === "GET") {
+    const { results } = await env.DB.prepare(`SELECT codigo, COALESCE(empresa, responsavel) AS nome, responsavel, categoria, veiculo, telefone, cidade, (chave_hash IS NOT NULL) AS tem_acesso,
+      (SELECT COUNT(*) FROM corridas c WHERE c.parceiro_id = parceiros.id AND c.status = 'aceita') AS aceitas
+      FROM parceiros WHERE tipo = 'atende' AND status = 'aprovado' ORDER BY nome`).all();
+    return json({ ok: true, motoristas: results });
+  }
+  if (partes[0] === "corridas" && /^\d+$/.test(partes[1] || "") && partes[2] === "cancelar" && req.method === "POST") {
+    const c = await env.DB.prepare("SELECT c.*, pa.codigo AS pc FROM corridas c JOIN parceiros pa ON pa.id = c.parceiro_id WHERE c.id = ?").bind(+partes[1]).first();
+    if (!c) return erro("nao_encontrado", 404);
+    if (c.status === "cancelada" || c.status === "recusada") return erro("ja_encerrada");
+    const now = agoraIso();
+    await env.DB.batch([
+      env.DB.prepare("UPDATE corridas SET status = 'cancelada', respondido_em = COALESCE(respondido_em, ?) WHERE id = ?").bind(now, c.id),
+      env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, autor, texto) VALUES (?,?,?,?,?)").bind(c.pedido_id, now, "corrida", user.email, "Corrida retirada do motorista " + c.pc + (c.status === "aceita" ? " (já tinha aceitado: avise o motorista)" : "")),
+    ]);
+    return json({ ok: true, avisar: c.status === "aceita" });
+  }
 
   if (partes[0] === "parceiros") {
     if (partes.length === 1 && req.method === "GET") {
@@ -433,9 +625,11 @@ async function admin(req, env, url) {
     const p = partes[1] && await env.DB.prepare("SELECT * FROM parceiros WHERE codigo = ?").bind(partes[1]).first();
     if (!p) return erro("nao_encontrado", 404);
     if (req.method === "GET" && partes.length === 2) {
-      const { results } = await env.DB.prepare(`SELECT codigo, status, criado_em, nome, total FROM pedidos WHERE parceiro_id = ? ORDER BY criado_em DESC LIMIT 300`).bind(p.id).all();
+      const { results } = await env.DB.prepare(`SELECT codigo, status, criado_em, nome, total, comissao_valor, (comissao_paga_id IS NOT NULL) AS comissao_paga FROM pedidos WHERE parceiro_id = ? ORDER BY criado_em DESC LIMIT 300`).bind(p.id).all();
+      const corridas = (await env.DB.prepare(SQL_CORRIDA + " WHERE c.parceiro_id = ? ORDER BY c.criado_em DESC LIMIT 200").bind(p.id).all()).results
+        .map((c) => ({ id: c.id, status: c.status, repasse: c.repasse, pedido: c.pedido_codigo, servico: c.servico_nome, data: c.data, hora: c.hora, motivo: c.motivo }));
       const tem_acesso = !!p.chave_hash; delete p.chave_hash; delete p.ip_hash;
-      return json({ ok: true, parceiro: { ...p, tem_acesso }, pedidos: results });
+      return json({ ok: true, parceiro: { ...p, tem_acesso }, pedidos: results, corridas });
     }
     if (req.method === "POST" && partes.length === 2) {
       let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
@@ -448,10 +642,10 @@ async function admin(req, env, url) {
       return json({ ok: true });
     }
     if (req.method === "POST" && partes[2] === "acesso") {
-      if (p.tipo !== "indica" || p.status !== "aprovado") return erro("aprove_primeiro");
+      if (p.status !== "aprovado") return erro("aprove_primeiro");
       const chave = tokenHex();
       await env.DB.prepare("UPDATE parceiros SET chave_hash = ?, chave_em = ?, atualizado_em = ? WHERE id = ?").bind(await sha256("parceiro:" + chave), agoraIso(), agoraIso(), p.id).run();
-      return json({ ok: true, link: url.origin + "/parceiro/#chave=" + chave });
+      return json({ ok: true, link: url.origin + (p.tipo === "atende" ? "/motorista/#chave=" : "/parceiro/#chave=") + chave });
     }
     return erro("rota", 404);
   }
@@ -482,8 +676,10 @@ async function admin(req, env, url) {
       const itens = (await env.DB.prepare("SELECT * FROM itens WHERE pedido_id = ? ORDER BY ordem").bind(p.id).all()).results;
       const eventos = (await env.DB.prepare("SELECT * FROM eventos WHERE pedido_id = ? ORDER BY id").bind(p.id).all()).results;
       const parc = p.parceiro_id ? await env.DB.prepare("SELECT codigo, empresa, responsavel, comissao_pct FROM parceiros WHERE id = ?").bind(p.parceiro_id).first() : null;
+      const corridas = (await env.DB.prepare(`SELECT c.id, c.item_id, c.status, c.repasse, c.obs, c.motivo, c.criado_em, c.respondido_em, pa.codigo, COALESCE(pa.empresa, pa.responsavel) AS nome, pa.telefone
+        FROM corridas c JOIN parceiros pa ON pa.id = c.parceiro_id WHERE c.pedido_id = ? ORDER BY c.id`).bind(p.id).all()).results;
       delete p.token; delete p.ip_hash;
-      return json({ ok: true, pedido: p, itens, eventos, parceiro: parc });
+      return json({ ok: true, pedido: p, itens, eventos, parceiro: parc, corridas });
     }
     if (req.method === "POST" && partes[2] === "status") {
       let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
@@ -495,6 +691,26 @@ async function admin(req, env, url) {
           .bind(p.id, now, "status", p.status, b.status, user.email, String(b.nota || "").slice(0, 1000) || null),
       ]);
       return json({ ok: true });
+    }
+    if (req.method === "POST" && partes[2] === "corrida") {
+      let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
+      if (p.status === "cancelada") return erro("pedido_cancelado");
+      const item = await env.DB.prepare("SELECT * FROM itens WHERE id = ? AND pedido_id = ?").bind(+b.item_id || 0, p.id).first();
+      if (!item) return erro("item_invalido");
+      const mot = await env.DB.prepare("SELECT * FROM parceiros WHERE codigo = ?").bind(String(b.motorista || "")).first();
+      if (!mot || mot.tipo !== "atende" || mot.status !== "aprovado") return erro("motorista_invalido");
+      if (!mot.chave_hash) return erro("motorista_sem_link");
+      const ativa = await env.DB.prepare("SELECT id FROM corridas WHERE item_id = ? AND status IN ('ofertada','aceita')").bind(item.id).first();
+      if (ativa) return erro("ja_ofertada");
+      let repasse = b.repasse === "" || b.repasse == null ? null : Number(String(b.repasse).replace(",", "."));
+      if (repasse != null && !(repasse >= 0 && repasse <= 100000)) return erro("repasse");
+      const obs = String(b.obs || "").trim().slice(0, 300) || null, now = agoraIso();
+      await env.DB.batch([
+        env.DB.prepare("INSERT INTO corridas (pedido_id, item_id, parceiro_id, status, repasse, obs, criado_em, autor) VALUES (?,?,?,?,?,?,?,?)").bind(p.id, item.id, mot.id, "ofertada", repasse, obs, now, user.email),
+        env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, autor, texto) VALUES (?,?,?,?,?)").bind(p.id, now, "corrida", user.email,
+          "Corrida oferecida a " + (mot.empresa || mot.responsavel) + " (" + mot.codigo + "): " + item.servico_nome + " " + item.data + " " + item.hora + (repasse != null ? " · repasse R$ " + repasse.toLocaleString("pt-BR") : "")),
+      ]);
+      return json({ ok: true, link: url.origin + "/motorista/", telefone: mot.telefone, nome: mot.responsavel });
     }
     if (req.method === "POST" && partes[2] === "nota") {
       let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
@@ -538,7 +754,7 @@ async function api(req, env, ctx, url) {
     const orig = req.headers.get("origin");
     if (orig && orig !== url.origin) return erro("origem", 403);
   }
-  if (p === "/api/catalogo" && m === "GET") return json(catalogo(env), 200, { "cache-control": "public, max-age=300" });
+  if (p === "/api/catalogo" && m === "GET") return json(catalogo(env), 200, { "cache-control": "public, max-age=60" });
   if (p === "/api/cotacao" && m === "POST") {
     let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
     const it = normalizarItem(b);
@@ -556,6 +772,7 @@ async function api(req, env, ctx, url) {
   if (p === "/api/pedidos" && m === "POST") return criarPedido(req, env, ctx);
   if (p === "/api/parceiros" && m === "POST") return cadastrarParceiro(req, env, ctx);
   if (p.startsWith("/api/parceiro/") && m === "GET") return areaParceiro(req, env, url);
+  if (p.startsWith("/api/motorista/")) return areaMotorista(req, env, url);
   if (p === "/api/pacotes" && m === "POST") return criarPacote(req, env);
   const mp = p.match(/^\/api\/pacotes\/([A-Z0-9]{7})$/);
   if (mp && m === "GET") return verPacote(env, mp[1]);
@@ -605,11 +822,11 @@ export default {
     const url = new URL(req.url);
     let res;
     if (url.pathname.startsWith("/api/")) {
-      try { res = await api(req, env, ctx, url); }
+      try { await carregarPrecos(env); res = await api(req, env, ctx, url); }
       catch (e) { console.error("api", e && e.stack); res = erro("interno", 500); }
     } else {
       res = await env.ASSETS.fetch(req);
-      if ((url.pathname === "/reservar/" || url.pathname === "/reservar/index.html") && req.method === "GET" && res.ok) res = previaReserva(res, url);
+      if ((url.pathname === "/reservar/" || url.pathname === "/reservar/index.html") && req.method === "GET" && res.ok) { await carregarPrecos(env); res = previaReserva(res, url); }
     }
     // endereços de teste (*.workers.dev) nunca entram no Google
     if (url.hostname.endsWith(".workers.dev")) {

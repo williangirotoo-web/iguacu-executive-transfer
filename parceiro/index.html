@@ -40,8 +40,8 @@ th,td{padding:10px 12px;text-align:left;border-bottom:1px solid rgba(240,237,232
     <p><a class="btn" href="/reservar/">Fazer reserva para um cliente</a> <button class="btn gh" id="sair" type="button">Sair deste aparelho</button></p>
     <div class="cards">
       <div class="card"><span>Reservas</span><b id="c-n">0</b></div>
-      <div class="card"><span>Valor das reservas ativas</span><b id="c-v">R$ 0</b></div>
-      <div class="card"><span>Comissão estimada</span><b id="c-c">R$ 0</b></div>
+      <div class="card"><span>Comissão a receber</span><b id="c-c">R$ 0</b></div>
+      <div class="card"><span>Comissão já recebida</span><b id="c-p">R$ 0</b></div>
     </div>
     <p class="mut" style="font-size:.82rem">A comissão é calculada sobre o valor da corrida e paga no fechamento combinado, sobre as corridas realizadas. Reservas canceladas não geram comissão.</p>
     <div class="tw"><table><thead><tr><th>Código</th><th>Viagem</th><th>Passageiro</th><th>Serviço</th><th>Valor</th><th>Comissão</th><th>Status</th></tr></thead><tbody id="rows"><tr><td colspan="7" class="mut">Carregando…</td></tr></tbody></table></div>
@@ -69,10 +69,10 @@ th,td{padding:10px 12px;text-align:left;border-bottom:1px solid rgba(240,237,232
   }).then(function(r){
     var ativos=r.pedidos.filter(function(x){return x.status!=="cancelada"});
     $("#c-n").textContent=r.pedidos.length;
-    $("#c-v").textContent=brl(ativos.reduce(function(a,x){return a+x.total},0));
-    $("#c-c").textContent=brl(ativos.reduce(function(a,x){return a+x.comissao},0));
+    $("#c-c").textContent=brl(ativos.filter(function(x){return !x.comissao_paga_em}).reduce(function(a,x){return a+x.comissao},0));
+    $("#c-p").textContent=brl((r.pagamentos||[]).reduce(function(a,x){return a+x.valor},0));
     $("#rows").innerHTML=r.pedidos.length?r.pedidos.map(function(x){var d=(x.primeira||"").split(" ");
-      return "<tr><td>"+esc(x.codigo)+"</td><td>"+esc((d[0]||"").split("-").reverse().join("/")+" "+(d[1]||""))+"</td><td>"+esc(x.nome)+"</td><td>"+esc(x.servicos)+"</td><td>"+brl(x.total)+"</td><td>"+brl(x.comissao)+'</td><td><span class="st st-'+esc(x.status)+'">'+esc(ST[x.status]||x.status)+"</span></td></tr>"}).join(""):'<tr><td colspan="7" class="mut">Nenhuma reserva ainda. Clique em "Fazer reserva para um cliente".</td></tr>';
+      return "<tr><td>"+esc(x.codigo)+"</td><td>"+esc((d[0]||"").split("-").reverse().join("/")+" "+(d[1]||""))+"</td><td>"+esc(x.nome)+"</td><td>"+esc(x.servicos)+"</td><td>"+brl(x.total)+"</td><td>"+brl(x.comissao)+(x.comissao_paga_em?' <small style="color:#a5d6a7">paga</small>':"")+'</td><td><span class="st st-'+esc(x.status)+'">'+esc(ST[x.status]||x.status)+"</span></td></tr>"}).join(""):'<tr><td colspan="7" class="mut">Nenhuma reserva ainda. Clique em "Fazer reserva para um cliente".</td></tr>';
   }).catch(function(e){if(e.message==="401")sem();else $("#rows").innerHTML='<tr><td colspan="7" class="mut">Erro ao carregar. Atualize a página.</td></tr>'});
   $("#sair").onclick=function(){set(null);location.reload()};
 })();

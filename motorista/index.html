@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Área do Motorista | Iguaçu Executive Transfer</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+:root{--gold:#d4af37;--bg:#0b0b0b;--bg2:#141414;--line:rgba(212,175,55,.22);--txt:#f0ede8;--mut:rgba(240,237,232,.6);--ok:#a5d6a7;--bad:#ef9a9a;--wa:#25d366}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);background:var(--bg2)}
+header a{color:var(--gold);text-decoration:none;font-weight:700;letter-spacing:.08em}header small{color:var(--mut)}
+main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:1.4rem;margin:0 0 4px}h2{font-size:.78rem;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin:26px 0 10px}.mut{color:var(--mut)}
+.btn{display:inline-block;background:var(--gold);color:#000;border:0;border-radius:8px;padding:11px 18px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+.btn.gh{background:transparent;color:var(--txt);border:1px solid var(--line)}.btn.wa{background:var(--wa);color:#fff}.btn.no{background:transparent;color:var(--bad);border:1px solid rgba(239,154,154,.4)}
+.box{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:20px}
+.cr{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+.cr.nova{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.cr .q{font-size:1.15rem;font-weight:700}.cr .s{color:var(--gold);font-weight:600}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:3px 10px;font-size:.9rem;margin:10px 0}.kv span:nth-child(odd){color:var(--mut)}
+.rep{font-size:1.05rem}.rep b{color:var(--gold)}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.tag{display:inline-block;border-radius:12px;padding:2px 10px;font-size:.72rem;font-weight:600;background:#333}
+.tag-ofertada{background:#4a3b00;color:#ffe08a}.tag-aceita{background:#1b4a20;color:var(--ok)}.tag-recusada{background:#4a1b1b;color:var(--bad)}
+textarea{width:100%;background:#0f0f0f;border:1px solid rgba(240,237,232,.2);border-radius:8px;color:var(--txt);padding:8px 10px;font:inherit;margin-top:8px}
+@media(max-width:480px){.kv{grid-template-columns:96px 1fr}}
+</style>
+</head>
+<body>
+<header><a href="/">IGUAÇU</a><small id="who"></small></header>
+<main>
+  <section id="sem" hidden>
+    <div class="box"><h1>Área do motorista parceiro</h1>
+    <p class="mut">Para entrar, abra o link de acesso que enviamos pelo WhatsApp. Se perdeu o link, peça um novo.</p>
+    <p><a class="btn" href="https://wa.me/5545991185798?text=Ol%C3%A1!%20Sou%20motorista%20parceiro%20e%20preciso%20do%20link%20de%20acesso." target="_blank" rel="noopener">Pedir pelo WhatsApp</a> <a class="btn gh" href="/parceiros/">Quero ser parceiro</a></p></div>
+  </section>
+  <section id="area" hidden>
+    <h1 id="nome"></h1><p class="mut" id="sub"></p>
+    <p><button class="btn gh" id="atualizar" type="button">Atualizar</button> <button class="btn gh" id="sair" type="button">Sair deste aparelho</button></p>
+    <h2>Esperando sua resposta</h2><div id="novas"></div>
+    <h2>Próximas corridas aceitas</h2><div id="proximas"></div>
+    <h2>Histórico</h2><div id="hist"></div>
+    <p class="mut" style="font-size:.82rem;margin-top:24px">Nome, telefone e voo do passageiro aparecem depois que você aceita. Se surgir qualquer imprevisto, avise a Iguaçu Executive Transfer pelo WhatsApp o quanto antes.</p>
+  </section>
+</main>
+<script>
+(function(){
+  var CAT={comum:"Comum",exec:"Executivo",suv:"Executivo SUV",sete:"7 Lugares",luxo:"Executivo Luxo",van:"Van"};
+  var TAG={ofertada:"Aguardando você",aceita:"Aceita",recusada:"Recusada"};
+  var ERR={ja_respondida:"Esta corrida já foi respondida.",pedido_cancelado:"O cliente cancelou esta reserva.",passou:"O horário desta corrida já passou."};
+  function $(s){return document.querySelector(s)}
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function brl(v){return "R$ "+Number(v||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})}
+  function dataBr(d){var p=String(d||"").split("-");var dt=new Date(Date.UTC(+p[0],+p[1]-1,+p[2]));return ["dom","seg","ter","qua","qui","sex","sáb"][dt.getUTCDay()]+", "+p[2]+"/"+p[1]}
+  function tel(t){var n=String(t||"").replace(/\D/g,"");return n.length>=10&&n.length<=11?"55"+n:n}
+  function get(){try{var v=localStorage.getItem("iet_motorista");return v?JSON.parse(v):null}catch(e){return null}}
+  function set(v){try{if(v)localStorage.setItem("iet_motorista",JSON.stringify(v));else localStorage.removeItem("iet_motorista")}catch(e){}}
+  var m=location.hash.match(/chave=([a-f0-9]{32})/);
+  if(m){set({chave:m[1]});history.replaceState(null,"",location.pathname)}
+  var me=get();
+  function sem(){set(null);$("#sem").hidden=false;$("#area").hidden=true}
+  if(!me||!/^[a-f0-9]{32}$/.test(me.chave||"")) return sem();
+  function api(path,body){return fetch(path,body?{method:"POST",headers:{"x-parceiro":me.chave,"content-type":"application/json"},body:JSON.stringify(body)}:{headers:{"x-parceiro":me.chave}}).then(function(r){if(r.status===401)throw new Error("401");return r.json()})}
+  function cartao(c){
+    var kv=[["Serviço",c.servico+" · "+(CAT[c.categoria]||c.categoria)]];
+    if(c.sentido)kv.push(["Sentido",c.sentido==="saida"?"Saída: hotel → aeroporto":"Chegada: aeroporto → hotel"]);
+    if(c.voo)kv.push(["Voo",c.voo]);
+    kv.push(["Buscar em",c.origem]);if(c.destino)kv.push(["Levar para",c.destino]);
+    kv.push(["Passageiros",c.pax+" · "+c.malas+" mala(s)"+(c.cadeirinhas?" · "+c.cadeirinhas+" cadeirinha(s)":"")+(c.pet?" · com pet":"")]);
+    if(c.horas)kv.push(["Horas",c.horas]);if(c.dias)kv.push(["Diárias",c.dias]);if(c.horas_extras)kv.push(["Horas extras",c.horas_extras]);
+    if(c.passageiro)kv.push(["Passageiro",c.passageiro]);if(c.telefone)kv.push(["Telefone",c.telefone]);if(c.observacoes)kv.push(["Observações",c.observacoes]);
+    if(c.obs)kv.push(["Recado",c.obs]);
+    if(c.pedido_status==="cancelada")kv.push(["Atenção","Reserva cancelada pelo cliente"]);
+    var h='<div class="cr'+(c.status==="ofertada"?" nova":"")+'"><div class="q">'+esc(dataBr(c.data))+" às "+esc(c.hora)+' <span class="tag tag-'+esc(c.status)+'">'+esc(TAG[c.status]||c.status)+'</span></div><div class="mut" style="font-size:.8rem">'+esc(c.pedido)+"</div>";
+    h+='<div class="kv">'+kv.map(function(x){return"<span>"+esc(x[0])+"</span><span>"+esc(x[1])+"</span>"}).join("")+"</div>";
+    h+='<div class="rep">Você recebe: <b>'+(c.repasse!=null?brl(c.repasse):"a combinar")+"</b></div>";
+    if(c.status==="ofertada"&&c.pedido_status!=="cancelada"){
+      h+='<div class="acts"><button class="btn" data-a="aceitar" data-id="'+c.id+'" type="button">Aceitar corrida</button><button class="btn no" data-a="recusar" data-id="'+c.id+'" type="button">Não posso</button></div><div data-msg="'+c.id+'"></div>';
+    }
+    if(c.status==="aceita"&&c.telefone)h+='<div class="acts"><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/'+tel(c.telefone)+'">WhatsApp do passageiro</a></div>';
+    return h+"</div>";
+  }
+  function carregar(){
+    api("/api/motorista/corridas").then(function(r){
+      var agora=Date.now(),cs=r.corridas;
+      var novas=cs.filter(function(c){return c.status==="ofertada"&&Date.parse(c.inicio)>agora});
+      var prox=cs.filter(function(c){return c.status==="aceita"&&Date.parse(c.inicio)>agora-6*3600e3}).reverse();
+      var hist=cs.filter(function(c){return novas.indexOf(c)<0&&prox.indexOf(c)<0});
+      $("#novas").innerHTML=novas.length?novas.reverse().map(cartao).join(""):'<p class="mut">Nenhuma corrida nova no momento.</p>';
+      $("#proximas").innerHTML=prox.length?prox.map(cartao).join(""):'<p class="mut">Nenhuma corrida aceita para os próximos dias.</p>';
+      $("#hist").innerHTML=hist.length?hist.slice(0,30).map(cartao).join(""):'<p class="mut">Ainda sem histórico.</p>';
+    }).catch(function(e){if(e.message==="401")sem();else $("#novas").innerHTML='<p class="mut">Erro ao carregar. Toque em Atualizar.</p>'});
+  }
+  api("/api/motorista/eu").then(function(r){
+    var x=r.motorista;$("#nome").textContent="Olá, "+String(x.responsavel||x.nome).split(" ")[0];$("#who").textContent=x.codigo;$("#sub").textContent=x.nome+(x.veiculo?" · "+x.veiculo:"");
+    $("#area").hidden=false;carregar();
+  }).catch(function(e){if(e.message==="401")sem()});
+  document.addEventListener("click",function(e){
+    var b=e.target.closest("[data-a]");if(!b)return;
+    var id=b.dataset.id,ac=b.dataset.a,box=document.querySelector('[data-msg="'+id+'"]');
+    if(ac==="recusar"&&!box.querySelector("textarea")){box.innerHTML='<textarea rows="2" placeholder="Motivo (opcional)"></textarea><div class="acts"><button class="btn no" data-a="recusar" data-id="'+id+'" type="button">Confirmar: não posso</button></div>';return}
+    if(ac==="aceitar"&&!confirm("Aceitar esta corrida? Você se compromete a fazer o atendimento no dia e horário."))return;
+    b.disabled=true;
+    var t=box.querySelector("textarea");
+    api("/api/motorista/corridas/"+id,{acao:ac,motivo:t?t.value:""}).then(function(x){
+      if(!x.ok){box.innerHTML='<p class="mut">'+esc(ERR[x.erro]||"Não foi possível. Tente de novo.")+"</p>";b.disabled=false;return}
+      carregar();
+    }).catch(function(){b.disabled=false;box.innerHTML='<p class="mut">Sem conexão. Tente de novo.</p>'});
+  });
+  $("#atualizar").onclick=carregar;
+  $("#sair").onclick=function(){set(null);location.reload()};
+})();
+</script>
+</body>
+</html>

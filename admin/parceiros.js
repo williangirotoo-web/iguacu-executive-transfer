@@ -35,7 +35,7 @@
       var p = r.parceiro, ind = p.tipo === "indica";
       $("#lista").hidden = true; $("#detalhe").hidden = false;
       var kv = [["Tipo", (ind ? "Indica clientes · " : "Atende corridas · ") + (CAT[p.categoria] || p.categoria)], ["Empresa", p.empresa], ["Responsável", p.responsavel], ["WhatsApp", p.telefone], ["E-mail", p.email],
-        ["Cidade", p.cidade], ["CNPJ/Cadastur", p.documento], ["Veículo", p.veiculo], ["Autorização", p.autorizacao], ["Mensagem", p.mensagem], ["Cadastro", quando(p.criado_em)], ["Acesso", ind ? (p.tem_acesso ? "Link gerado em " + quando(p.chave_em) : "Sem link") : "—"]]
+        ["Cidade", p.cidade], ["CNPJ/Cadastur", p.documento], ["Veículo", p.veiculo], ["Autorização", p.autorizacao], ["Mensagem", p.mensagem], ["Cadastro", quando(p.criado_em)], ["Acesso", p.tem_acesso ? "Link gerado em " + quando(p.chave_em) : "Sem link"]]
         .filter(function (x) { return x[1]; });
       var h = '<p><button class="btn gh" id="voltar" type="button">← Voltar</button></p><div class="det"><h2>' + esc(p.empresa || p.responsavel) + " " + badge(p.status) + "</h2><p class=\"svc\">" + esc(p.codigo) + "</p>" +
         '<div class="grid2"><div><h3>Dados</h3><div class="kv">' + kv.map(function (x) { return "<span>" + esc(x[0]) + "</span><span>" + esc(x[1]) + "</span>"; }).join("") + "</div>" +
@@ -43,11 +43,13 @@
         "<div><h3>Situação</h3><p><select id=\"st\">" + Object.keys(ST).map(function (k) { return '<option value="' + k + '"' + (k === p.status ? " selected" : "") + ">" + ST[k] + "</option>"; }).join("") + "</select></p>" +
         (ind ? '<p><label>Comissão (%) <input id="pct" type="number" min="0" max="50" step="0.5" value="' + esc(p.comissao_pct || 0) + '" style="width:90px"></label></p>' : "") +
         '<p><input id="nota" placeholder="Anotação (opcional)" style="width:100%"></p><p><button class="btn" id="salvar" type="button">Salvar</button></p>' +
-        (ind ? '<h3>Link de acesso</h3><p class="svc">Gere o link só depois de aprovar. Gerar um novo invalida o anterior.</p><p><button class="btn gh" id="gerar" type="button">' + (p.tem_acesso ? "Gerar novo link" : "Gerar link") + '</button></p><div id="linkbox"></div>' : "") +
+        '<h3>Link de acesso</h3><p class="svc">' + (ind ? "Com o link, o parceiro reserva para os clientes e acompanha a comissão." : "Com o link, o motorista vê as corridas que você oferecer e aceita ou recusa.") + ' Gere só depois de aprovar. Gerar um novo invalida o anterior.</p><p><button class="btn gh" id="gerar" type="button">' + (p.tem_acesso ? "Gerar novo link" : "Gerar link") + '</button></p><div id="linkbox"></div>' +
         (p.notas ? '<h3>Anotações</h3><div class="ev" style="white-space:pre-wrap">' + esc(p.notas) + "</div>" : "") + "</div></div>" +
         (ind ? "<h3>Reservas do parceiro</h3>" + (r.pedidos.length ? r.pedidos.map(function (x) {
-          return '<div class="item"><b><a href="/admin/#' + esc(x.codigo) + '" style="color:var(--gold)">' + esc(x.codigo) + "</a> · " + esc(x.nome) + "</b>" + brl(x.total) + " · comissão " + brl(x.status === "cancelada" ? 0 : x.total * (p.comissao_pct || 0) / 100) + " · " + esc(x.status) + "</div>";
-        }).join("") : '<p class="svc">Nenhuma reserva ainda.</p>') : "") + "</div>";
+          return '<div class="item"><b><a href="/admin/#' + esc(x.codigo) + '" style="color:var(--gold)">' + esc(x.codigo) + "</a> · " + esc(x.nome) + "</b>" + brl(x.total) + " · comissão " + brl(x.comissao_paga ? x.comissao_valor : x.status === "cancelada" ? 0 : x.total * (p.comissao_pct || 0) / 100) + (x.comissao_paga ? " (paga)" : "") + " · " + esc(x.status) + "</div>";
+        }).join("") : '<p class="svc">Nenhuma reserva ainda.</p>') : "<h3>Corridas oferecidas</h3>" + ((r.corridas || []).length ? r.corridas.map(function (c) {
+          return '<div class="item"><b><a href="/admin/#' + esc(c.pedido) + '" style="color:var(--gold)">' + esc(c.pedido) + "</a> · " + esc(c.servico) + "</b>" + esc(String(c.data).split("-").reverse().join("/")) + " " + esc(c.hora) + " · " + esc({ ofertada: "aguardando resposta", aceita: "aceita", recusada: "recusada", cancelada: "retirada" }[c.status] || c.status) + (c.repasse != null ? " · repasse " + brl(c.repasse) : "") + (c.motivo ? " · " + esc(c.motivo) : "") + "</div>";
+        }).join("") : '<p class="svc">Nenhuma corrida oferecida ainda. Ofereça pela tela da reserva.</p>')) + "</div>";
       $("#detalhe").innerHTML = h;
       $("#voltar").onclick = function () { history.replaceState(null, "", location.pathname); fechar(); };
       $("#salvar").onclick = function () {
@@ -57,7 +59,8 @@
       var g = $("#gerar"); if (g) g.onclick = function () {
         api("/api/admin/parceiros/" + p.codigo + "/acesso", {}).then(function (x) {
           if (!x.ok) { $("#linkbox").innerHTML = '<p class="msg">' + (x.erro === "aprove_primeiro" ? "Aprove e salve o parceiro antes de gerar o link." : "Erro: " + esc(x.erro)) + "</p>"; return; }
-          var msg = "Olá, " + (p.responsavel || "") + "! Seu acesso de parceiro da Iguaçu Executive Transfer está liberado. Abra este link no celular ou computador que vai usar para reservar (não compartilhe):\n" + x.link;
+          var msg = ind ? "Olá, " + (p.responsavel || "") + "! Seu acesso de parceiro da Iguaçu Executive Transfer está liberado. Abra este link no celular ou computador que vai usar para reservar (não compartilhe):\n" + x.link
+            : "Olá, " + (p.responsavel || "") + "! Seu acesso de motorista parceiro da Iguaçu Executive Transfer está liberado. Abra este link no seu celular para ver e aceitar as corridas (não compartilhe):\n" + x.link;
           $("#linkbox").innerHTML = '<div class="link">' + esc(x.link) + '</div><p><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/' + tel(p.telefone) + "?text=" + encodeURIComponent(msg) + '">Enviar pelo WhatsApp</a></p><p class="svc">Este link aparece só agora. Se perder, gere outro.</p>';
         });
       };

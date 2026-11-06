@@ -44,11 +44,11 @@ input,select,textarea{background:#0f0f0f;border:1px solid rgba(240,237,232,.2);b
 .rowp{display:grid;grid-template-columns:110px 1fr 170px 120px 110px;gap:12px;align-items:center;background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;cursor:pointer}.rowp:hover{border-color:var(--gold)}
 header nav a{color:var(--txt);margin-left:14px;text-decoration:none}header nav a.on{color:var(--gold)}
 .link{word-break:break-all;background:#0f0f0f;border:1px dashed var(--line);border-radius:6px;padding:10px;margin:8px 0}
-@media(max-width:800px){.rowp{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){.rowp{grid-template-columns:1fr 1fr}header{flex-wrap:wrap}header nav a{margin:0 10px 0 0}}
 </style>
 </head>
 <body>
-<header><div><b>IGUAÇU</b> · Painel <nav style="display:inline"><a href="/admin/">Reservas</a><a class="on" href="/admin/parceiros.html">Parceiros</a></nav></div><small id="who"></small></header>
+<header><div><b>IGUAÇU</b> · Painel <nav style="display:inline"><a href="/admin/">Reservas</a><a class="on" href="/admin/parceiros.html">Parceiros</a><a href="/admin/comissoes.html">Comissões</a><a href="/admin/precos.html">Preços</a></nav></div><small id="who"></small></header>
 <main>
   <section id="lista">
     <div class="bar" id="chips"></div>
@@ -58,6 +58,6 @@ header nav a{color:var(--txt);margin-left:14px;text-decoration:none}header nav a
   </section>
   <section id="detalhe" hidden></section>
 </main>
-<script src="/admin/parceiros.js?v=1"></script>
+<script src="/admin/parceiros.js?v=2"></script>
 </body>
 </html>

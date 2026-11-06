@@ -46,8 +46,28 @@
     if (n.length >= 10 && n.length <= 11) n = "55" + n;
     return "https://wa.me/" + n + (texto ? "?text=" + encodeURIComponent(texto) : "");
   }
+  var CST = { ofertada: "Aguardando resposta", aceita: "Aceita", recusada: "Recusada", cancelada: "Retirada" };
+  function tel55(t) { var n = String(t || "").replace(/\D/g, ""); return n.length >= 10 && n.length <= 11 ? "55" + n : n; }
+  function blocoMotorista(it, corridas, mots, p) {
+    var cs = corridas.filter(function (c) { return c.item_id === it.id; });
+    var ativa = cs.filter(function (c) { return c.status === "ofertada" || c.status === "aceita"; })[0];
+    var h = '<div class="mot"><b style="color:var(--gold)">Motorista parceiro</b>';
+    h += cs.map(function (c) {
+      return '<div class="ev">' + esc(c.nome) + " (" + esc(c.codigo) + ') · <span class="cst cst-' + esc(c.status) + '">' + esc(CST[c.status] || c.status) + "</span>" +
+        (c.repasse != null ? " · repasse " + brl(c.repasse) : "") + (c.motivo ? " · " + esc(c.motivo) : "") +
+        (c.status === "ofertada" || c.status === "aceita" ? ' <a class="btn wa mini" target="_blank" rel="noopener" href="https://wa.me/' + tel55(c.telefone) + '">WhatsApp</a> <button class="btn gh mini" data-cancelar="' + c.id + '" type="button">Retirar</button>' : "") + "</div>";
+    }).join("");
+    if (!ativa && p.status !== "cancelada") {
+      var aptos = mots.filter(function (m) { return m.tem_acesso; });
+      h += aptos.length ? '<div class="ofr"><select data-mot="' + it.id + '">' + aptos.map(function (m) { return '<option value="' + esc(m.codigo) + '">' + esc(m.nome) + " · " + esc(m.veiculo || m.categoria) + "</option>"; }).join("") +
+        '</select> <input data-rep="' + it.id + '" inputmode="decimal" placeholder="Repasse R$ (opcional)" style="width:170px"> <input data-obs="' + it.id + '" placeholder="Recado para o motorista (opcional)" style="width:240px"> <button class="btn mini" data-ofertar="' + it.id + '" type="button">Oferecer corrida</button></div><div data-res="' + it.id + '"></div>'
+        : '<p class="svc">' + (mots.length ? "Gere o link de acesso do motorista em Parceiros antes de oferecer corridas." : "Nenhum motorista parceiro aprovado ainda.") + "</p>";
+    }
+    return h + "</div>";
+  }
   function abrir(cod) {
-    api("/api/admin/pedidos/" + encodeURIComponent(cod)).then(function (r) {
+    Promise.all([api("/api/admin/pedidos/" + encodeURIComponent(cod)), api("/api/admin/motoristas").catch(function () { return { motoristas: [] }; })]).then(function (rr) {
+      var r = rr[0], mots = rr[1].motoristas || [];
       if (!r.ok) { alertMsg("Pedido não encontrado."); return; }
       var p = r.pedido, h = "";
       h += '<p><button class="btn gh" id="voltar" type="button">← Voltar</button></p><div class="det">';
@@ -67,10 +87,10 @@
           "<span>Passageiros / malas</span><span>" + esc(it.pax) + " / " + esc(it.malas) + (it.cadeirinhas ? " · " + it.cadeirinhas + " cadeirinha(s)" : "") + (it.pet ? " · com pet" : "") + "</span>" +
           (it.horas_extras ? "<span>Horas extras</span><span>" + esc(it.horas_extras) + "</span>" : "") + (it.horas ? "<span>Horas</span><span>" + esc(it.horas) + "</span>" : "") +
           (it.dias ? "<span>Diárias</span><span>" + esc(it.dias) + "</span>" : "") + (it.data_especial ? "<span>Data especial</span><span>sim (+5%)</span>" : "") +
-          "<span>Valor</span><span><b>" + brl(it.valor) + "</b> · " + (it.modo === "total" ? "100% na reserva" : "sinal: " + brl(it.valor_agora)) + "</span></div></div>";
+          "<span>Valor</span><span><b>" + brl(it.valor) + "</b> · " + (it.modo === "total" ? "100% na reserva" : "sinal: " + brl(it.valor_agora)) + "</span></div>" + blocoMotorista(it, r.corridas || [], mots, p) + "</div>";
       }).join("");
       h += '<h3>Histórico</h3>' + r.eventos.map(function (e) {
-        return '<div class="ev"><b>' + esc(quando(e.em)) + "</b> · " + esc(e.autor || "") + " · " + (e.tipo === "status" ? esc(STATUS[e.status_de] || e.status_de) + " → " + esc(STATUS[e.status_para] || e.status_para) : esc(e.tipo === "criado" ? "Pedido criado" : "Nota")) +
+        return '<div class="ev"><b>' + esc(quando(e.em)) + "</b> · " + esc(e.autor || "") + " · " + (e.tipo === "status" ? esc(STATUS[e.status_de] || e.status_de) + " → " + esc(STATUS[e.status_para] || e.status_para) : esc(e.tipo === "criado" ? "Pedido criado" : e.tipo === "corrida" ? "Motorista" : "Nota")) +
           (e.texto ? "<br>" + esc(e.texto) : "") + "</div>";
       }).join("") + '<p><input id="nota" placeholder="Adicionar nota interna" style="width:70%"> <button class="btn gh" id="salvarNota" type="button">Adicionar</button></p></div>';
       $("#lista").hidden = true; var d = $("#detalhe"); d.hidden = false; d.innerHTML = h; scrollTo(0, 0);
@@ -79,6 +99,26 @@
         this.disabled = true;
         api("/api/admin/pedidos/" + p.codigo + "/status", { status: $("#novoSt").value, nota: $("#notaSt").value }).then(function () { abrir(p.codigo); });
       };
+      d.querySelectorAll("[data-ofertar]").forEach(function (b) {
+        b.onclick = function () {
+          var id = b.dataset.ofertar, q = function (a) { return d.querySelector("[" + a + '="' + id + '"]'); };
+          var it = r.itens.filter(function (x) { return String(x.id) === id; })[0];
+          b.disabled = true;
+          api("/api/admin/pedidos/" + p.codigo + "/corrida", { item_id: +id, motorista: q("data-mot").value, repasse: q("data-rep").value.trim(), obs: q("data-obs").value }).then(function (x) {
+            b.disabled = false;
+            if (!x.ok) { q("data-res").innerHTML = '<p class="msg">' + esc({ ja_ofertada: "Este serviço já está com um motorista.", motorista_sem_link: "Esse motorista ainda não tem link de acesso.", repasse: "Valor de repasse inválido.", pedido_cancelado: "Pedido cancelado." }[x.erro] || "Erro: " + x.erro) + "</p>"; return; }
+            var msg = "Olá, " + String(x.nome || "").split(" ")[0] + "! Tem uma corrida para você na Iguaçu Executive Transfer: " + it.servico_nome + ", dia " + dataBr(it.data) + " às " + it.hora + ". Veja os detalhes e aceite ou recuse por aqui:\n" + x.link;
+            q("data-res").innerHTML = '<p><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/' + tel55(x.telefone) + "?text=" + encodeURIComponent(msg) + '">Avisar motorista no WhatsApp</a> <button class="btn gh" type="button" data-recarregar>Atualizar</button></p>';
+            q("data-res").querySelector("[data-recarregar]").onclick = function () { abrir(p.codigo); };
+          });
+        };
+      });
+      d.querySelectorAll("[data-cancelar]").forEach(function (b) {
+        b.onclick = function () {
+          if (!confirm("Retirar esta corrida do motorista?")) return;
+          api("/api/admin/corridas/" + b.dataset.cancelar + "/cancelar", {}).then(function (x) { if (x.ok && x.avisar) alert("O motorista já tinha aceitado. Avise ele pelo WhatsApp."); abrir(p.codigo); });
+        };
+      });
       $("#salvarNota").onclick = function () {
         var v = $("#nota").value.trim(); if (!v) return;
         api("/api/admin/pedidos/" + p.codigo + "/nota", { texto: v }).then(function () { abrir(p.codigo); });

@@ -40,10 +40,14 @@ input,select,textarea{background:#0f0f0f;border:1px solid rgba(240,237,232,.2);b
 .ev b{color:var(--txt)}
 .tot{font-size:16px}.tot b{color:var(--gold)}
 @media(max-width:800px){.row{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.kv{grid-template-columns:120px 1fr}}
+.nav{display:inline}.nav a{color:var(--txt);margin-left:14px;text-decoration:none}.nav a.on{color:var(--gold)}
+.mot{border-top:1px dashed rgba(240,237,232,.15);margin-top:10px;padding-top:10px}.ofr{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+.mot .svc{color:var(--mut);font-size:12px}.btn.mini{padding:4px 10px;font-size:12px}.cst{font-weight:600}.cst-aceita{color:#a5d6a7}.cst-recusada,.cst-cancelada{color:#ef9a9a}.cst-ofertada{color:#ffe08a}
+@media(max-width:800px){header{flex-wrap:wrap}.nav a{margin:0 10px 0 0}.nav{display:block;margin-top:4px}}
 </style>
 </head>
 <body>
-<header><div><b>IGUAÇU</b> · Painel de reservas · <a href="/admin/parceiros.html" style="color:var(--gold)">Parceiros</a></div><small id="who"></small></header>
+<header><div><b>IGUAÇU</b> · Painel <nav class="nav"><a class="on" href="/admin/">Reservas</a><a href="/admin/parceiros.html">Parceiros</a><a href="/admin/comissoes.html">Comissões</a><a href="/admin/precos.html">Preços</a></nav></div><small id="who"></small></header>
 <main>
   <section id="lista">
     <div class="bar" id="chips"></div>
@@ -56,6 +60,6 @@ input,select,textarea{background:#0f0f0f;border:1px solid rgba(240,237,232,.2);b
   </section>
   <section id="detalhe" hidden></section>
 </main>
-<script src="/admin/admin.js?v=2"></script>
+<script src="/admin/admin.js?v=3"></script>
 </body>
 </html>
