@@ -817,6 +817,15 @@ function previaReserva(res, url) {
     .transform(res);
 }
 
+/* App instalável: manifesto, ícone e script de instalação em todas as páginas públicas (não no painel nem nas áreas de parceiro e motorista) */
+const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=1" defer></script>';
+function comApp(res, url) {
+  const p = url.pathname;
+  if (!res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
+  if (p.startsWith("/admin") || p.startsWith("/parceiro/") || p.startsWith("/motorista/") || p === "/offline.html") return res;
+  return new HTMLRewriter().on("head", { element(el) { el.append(APP_HEAD, { html: true }); } }).transform(res);
+}
+
 export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
@@ -827,6 +836,7 @@ export default {
     } else {
       res = await env.ASSETS.fetch(req);
       if ((url.pathname === "/reservar/" || url.pathname === "/reservar/index.html") && req.method === "GET" && res.ok) { await carregarPrecos(env); res = previaReserva(res, url); }
+      if (req.method === "GET") res = comApp(res, url);
     }
     // endereços de teste (*.workers.dev) nunca entram no Google
     if (url.hostname.endsWith(".workers.dev")) {
