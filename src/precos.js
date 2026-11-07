@@ -86,6 +86,11 @@ export const SERVICOS = [
     desc: N("Travessia da Ponte da Amizade até o seu destino no Paraguai.", "Across the Friendship Bridge to your destination in Paraguay.", "Por el Puente de la Amistad hasta su destino en Paraguay."),
     precos: P(500, 1200, 1300, 500, 8000) },
 
+  { id: "rod-foz", grupo: "aeroporto", tipo: "transfer", foto: "foz-do-iguacu-cidade-rio-parana",
+    nome: N("Rodoviária de Foz ⇄ hotel em Foz", "Foz bus station ⇄ hotel in Foz", "Terminal de ómnibus de Foz ⇄ hotel en Foz"),
+    desc: N("Busca na Rodoviária Internacional de Foz do Iguaçu, com o motorista esperando na chegada do ônibus.", "Pick-up at the Foz do Iguaçu International Bus Station, with the driver waiting when your bus arrives.", "Recogida en la Terminal Internacional de Foz do Iguaçu, con el chofer esperando la llegada del ómnibus."),
+    precos: P(350, 1100, 1200, 400, 5000) },
+
   // ---------- Cataratas e passeios (ida e volta) ----------
   { id: "ar-iv", grupo: "passeios", tipo: "passeio", espera: 5, fronteira: true, foto: "cataratas-do-iguacu-vista-aerea",
     nome: N("Cataratas Argentinas — ida e volta", "Argentine Falls — round trip", "Cataratas Argentinas — ida y vuelta"),
