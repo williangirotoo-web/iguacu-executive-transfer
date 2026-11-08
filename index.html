@@ -41,6 +41,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/menu.css">
 <link rel="stylesheet" href="/css/aeroporto.css?v=15">
+<style>
+.hm-nums{max-width:1200px;margin:0 auto;padding:22px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2)}
+.hm-nums div{padding:6px 18px;border-left:1px solid var(--line2)}.hm-nums div:first-child{border-left:0;padding-left:0}
+.hm-nums b{display:block;font-family:'Cormorant Garamond',Georgia,serif;font-size:2.1rem;line-height:1.1;color:var(--gold);font-weight:600}
+.hm-nums span{font-size:.8rem;color:var(--mut)}
+.hf-fil{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 22px}
+.hf-fil button{background:transparent;border:1px solid var(--line2);color:var(--txt);border-radius:30px;padding:9px 18px;font:inherit;font-size:.82rem;cursor:pointer}
+.hf-fil button.on{background:var(--gold);border-color:var(--gold);color:#000;font-weight:600}
+.hf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.hf-card{border:1px solid var(--line2);border-radius:16px;overflow:hidden;background:var(--bg2);display:flex;flex-direction:column}
+.hf-card[hidden]{display:none}
+.hf-im{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#1a1a1a,#0d0d0d)}
+.hf-im img{width:100%;height:100%;object-fit:cover;display:block}
+.hf-ic{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--gold);opacity:.75}.hf-ic svg{width:46%;height:auto}
+.hf-sel{position:absolute;top:10px;left:10px;display:flex;flex-wrap:wrap;gap:6px}
+.hf-sel span{background:rgba(0,0,0,.72);border:1px solid rgba(212,175,55,.5);color:var(--gold);border-radius:20px;padding:3px 10px;font-size:.68rem;font-weight:600;letter-spacing:.03em}
+.hf-b{padding:16px 18px 18px;display:flex;flex-direction:column;gap:2px;flex:1}
+.hf-b>b{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.4rem;font-weight:600}
+.hf-b>span{font-size:.84rem}.hf-b small{color:var(--mut);font-size:.76rem}
+.hf-pr{margin:10px 0 4px;font-size:.84rem;color:var(--mut)}.hf-pr b{color:var(--gold);font-size:1rem}
+.hf-b a{margin-top:auto;color:var(--gold);font-weight:600;font-size:.82rem;text-decoration:none;letter-spacing:.04em}
+@media(max-width:900px){.hf-grid{grid-template-columns:1fr 1fr}.hm-nums{grid-template-columns:1fr 1fr;row-gap:14px}.hm-nums div:nth-child(3){border-left:0;padding-left:0}}
+@media(max-width:600px){.hf-grid{grid-template-columns:1fr}.hm-nums b{font-size:1.7rem}}
+</style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "LocalBusiness", "@id": "https://iguacuexecutivetransfer.com.br/#empresa", "name": "Iguaçu Executive Transfer", "description": "Transfer executivo e táxi 24h em Foz do Iguaçu com preço fechado por carro: aeroporto, Cataratas, Itaipu, Argentina e Paraguai.", "url": "https://iguacuexecutivetransfer.com.br/", "telephone": "+5545991185798", "priceRange": "R$ 350 – R$ 9.000", "foundingDate": "2004", "image": "https://iguacuexecutivetransfer.com.br/img/og-transfer-aeroporto-suv-executivo-corolla-cross.jpg", "logo": "https://iguacuexecutivetransfer.com.br/favicon.svg", "address": {"@type": "PostalAddress", "addressLocality": "Foz do Iguaçu", "addressRegion": "PR", "postalCode": "85850-000", "addressCountry": "BR"}, "geo": {"@type": "GeoCoordinates", "latitude": -25.5469, "longitude": -54.5882}, "openingHoursSpecification": {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "00:00", "closes": "23:59"}, "areaServed": [{"@type": "City", "name": "Foz do Iguaçu"}, {"@type": "City", "name": "Puerto Iguazú"}, {"@type": "City", "name": "Ciudad del Este"}], "currenciesAccepted": "BRL, USD", "paymentAccepted": "Cash, Credit Card, Debit Card, Pix, PayPal", "hasMap": "https://maps.google.com/?q=Foz+do+Iguacu+PR"}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "Iguaçu Executive Transfer", "url": "https://iguacuexecutivetransfer.com.br/", "inLanguage": "pt-BR", "publisher": {"@id": "https://iguacuexecutivetransfer.com.br/#empresa"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Quanto custa um táxi do aeroporto de Foz do Iguaçu até o hotel?", "acceptedAnswer": {"@type": "Answer", "text": "A partir de R$ 350 por carro, para o grupo todo, com 1 hora de espera grátis depois do pouso. O preço é fechado na reserva, sem taxímetro, e muda conforme a categoria do carro."}}, {"@type": "Question", "name": "Vocês atendem 24 horas, inclusive de madrugada?", "acceptedAnswer": {"@type": "Answer", "text": "Sim, com agendamento. Fazemos táxi e transfer 24 horas por dia, 7 dias por semana, inclusive feriados e voos de madrugada. Pelo site você reserva a qualquer hora; pelo WhatsApp, atendemos das 6h às 23h."}}, {"@type": "Question", "name": "Qual a diferença entre o táxi comum e o táxi executivo?", "acceptedAnswer": {"@type": "Answer", "text": "No táxi executivo o preço é fechado antes, por carro, e o motorista vem no horário marcado, espera no desembarque e acompanha o voo. Você escolhe a categoria: do carro Comum ao SUV de luxo e à van."}}, {"@type": "Question", "name": "Os carros têm Wi-Fi?", "acceptedAnswer": {"@type": "Answer", "text": "Executivo, Executivo SUV, Executivo Luxo e Van Executiva têm Wi-Fi Starlink a bordo. O 7 Lugares tem internet móvel 5G/LTE."}}, {"@type": "Question", "name": "O preço é por pessoa ou por carro?", "acceptedAnswer": {"@type": "Answer", "text": "Por carro, para o grupo todo. Um táxi do aeroporto para 4 pessoas custa o mesmo que para 1."}}, {"@type": "Question", "name": "Vocês levam para a Argentina e o Paraguai?", "acceptedAnswer": {"@type": "Answer", "text": "Levamos. O motorista cruza a fronteira com você até Puerto Iguazú, as Cataratas argentinas e Ciudad del Este. Brasileiros usam RG em bom estado ou passaporte; para a Argentina, o RG deve ter menos de 10 anos."}}, {"@type": "Question", "name": "Como reservo?", "acceptedAnswer": {"@type": "Answer", "text": "Na reserva online você escolhe o serviço, a data e o carro e vê o preço na hora. Confirmamos a disponibilidade pelo WhatsApp e enviamos o link de pagamento: Pix, cartão em até 6x ou PayPal."}}]}</script>
@@ -76,7 +100,7 @@
 <section class="a-hero hm-hero">
   <div class="a-hero-in">
     <p class="a-eye">Foz do Iguaçu · desde 2004 · 24 horas</p>
-    <h1>Transfer Executivo e Táxi 24h em Foz do Iguaçu <em>preço fechado, motorista no horário</em></h1>
+    <h1>Transfer Executivo e Táxi 24h em Foz do Iguaçu <em>chegue no horário, com preço fechado</em></h1>
     <p class="a-sub">Do aeroporto ao hotel, das Cataratas ao Paraguai e à Argentina: você vê o preço antes, por carro e não por pessoa, e o motorista chega no horário marcado. Sem taxímetro e sem surpresa.</p>
     <div class="a-cta">
       <a class="a-btn a-big" href="/reservar/">Ver preços e reservar</a>
@@ -90,6 +114,13 @@
     <small>preço a partir de, por carro</small>
     <a class="a-btn" href="/reservar/">Ver todos os destinos</a>
   </aside>
+</section>
+
+<section class="hm-nums" aria-label="A Iguaçu Executive Transfer em números">
+  <div><b>2004</b><span>atendendo em Foz do Iguaçu</span></div>
+  <div><b>24h</b><span>com agendamento, todos os dias</span></div>
+  <div><b>3 países</b><span>Brasil, Argentina e Paraguai</span></div>
+  <div><b>1 h grátis</b><span>de espera no aeroporto</span></div>
 </section>
 
 <section class="a-sec" id="precos">
@@ -122,9 +153,11 @@
 </section>
 
 <section class="a-sec">
-  <div class="a-head rv"><p class="a-eye">Nossa frota</p><h2>Do carro de passeio à van, você escolhe</h2>
+  <div class="a-head rv"><p class="a-eye">Nossa frota</p><h2>Frota executiva, do sedã à van</h2>
   <p>Seis categorias de carro. Os modelos são referência; a categoria reservada é garantida. <a href="/servicos/frota-foz-do-iguacu.html">Conheça a frota</a>.</p></div>
-  <div class="hm-cats"><div class="hm-cat rv"><b>Comum</b><span>até 4 pessoas · 3 malas</span><small>Virtus, Yaris Sedan, Voyage</small></div><div class="hm-cat rv"><b>Executivo</b><span>até 4 pessoas · 3 malas</span><small>Corolla, Jetta</small></div><div class="hm-cat rv"><b>Executivo SUV</b><span>até 4 pessoas · 3 malas</span><small>Corolla Cross, HR-V, Haval H6, Tiggo 7</small></div><div class="hm-cat rv"><b>7 Lugares</b><span>até 6 pessoas · 3 malas</span><small>Spin, Tiguan 7 lugares</small></div><div class="hm-cat rv"><b>Executivo Luxo</b><span>até 4 pessoas · 4 malas</span><small>SW4, Trailblazer, Commander</small></div><div class="hm-cat rv"><b>Van Executiva</b><span>até 15 pessoas · 15 malas</span><small>Sprinter, Master, Ducato</small></div></div>
+  <div class="hf-fil rv" role="group" aria-label="Filtrar frota"><button type="button" class="on" data-f="">Todos</button><button type="button" data-f="seda">Sedã</button><button type="button" data-f="suv">SUV</button><button type="button" data-f="grupo">Famílias e grupos</button></div>
+  <div class="hf-grid"><article class="hf-card rv" data-g="seda"><div class="hf-im"><div class="hf-ic"><svg viewBox="0 0 64 32" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22h52M10 22v-5l6-7h22l9 7h7a4 4 0 014 4v1M10 22H6v-3"/><circle cx="18" cy="23" r="4"/><circle cx="46" cy="23" r="4"/><path d="M20 10v7M33 10v7"/></svg></div><div class="hf-sel"></div></div><div class="hf-b"><b>Comum</b><span>Até 4 pessoas · 3 malas</span><small>Virtus, Yaris Sedan, Voyage</small><p class="hf-pr">Aeroporto a partir de <b data-p="igu-foz:comum">R$ 350</b></p><a href="/reservar/">Reservar →</a></div></article><article class="hf-card rv" data-g="seda"><div class="hf-im"><img src="/img/sedan-executivo-corolla-preto-avenida-900.webp" width="900" height="506" alt="Executivo: Corolla preto com motorista" loading="lazy"><div class="hf-sel"><span>Wi-Fi Starlink</span></div></div><div class="hf-b"><b>Executivo</b><span>Até 4 pessoas · 3 malas</span><small>Corolla, Jetta</small><p class="hf-pr">Aeroporto a partir de <b data-p="igu-foz:exec">R$ 1.100</b></p><a href="/reservar/">Reservar →</a></div></article><article class="hf-card rv" data-g="suv"><div class="hf-im"><img src="/img/suv-executivo-corolla-cross-preto-900.webp" width="900" height="506" alt="Executivo SUV: Corolla Cross preto com motorista" loading="lazy"><div class="hf-sel"><span>Wi-Fi Starlink</span></div></div><div class="hf-b"><b>Executivo SUV</b><span>Até 4 pessoas · 3 malas</span><small>Corolla Cross, HR-V, Haval H6, Tiggo 7</small><p class="hf-pr">Aeroporto a partir de <b data-p="igu-foz:suv">R$ 1.200</b></p><a href="/reservar/">Reservar →</a></div></article><article class="hf-card rv" data-g="suv"><div class="hf-im"><img src="/img/motorista-executivo-suv-preto-900.webp" width="900" height="506" alt="Executivo Luxo: SW4 preto com motorista" loading="lazy"><div class="hf-sel"><span>Wi-Fi Starlink</span><span>Topo de linha</span></div></div><div class="hf-b"><b>Executivo Luxo</b><span>Até 4 pessoas · 4 malas</span><small>SW4, Trailblazer, Commander</small><p class="hf-pr">Aeroporto a partir de <b data-p="igu-foz:luxo">R$ 5.000</b></p><a href="/reservar/">Reservar →</a></div></article><article class="hf-card rv" data-g="grupo"><div class="hf-im"><div class="hf-ic"><svg viewBox="0 0 64 32" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22h52M10 22v-5l6-7h22l9 7h7a4 4 0 014 4v1M10 22H6v-3"/><circle cx="18" cy="23" r="4"/><circle cx="46" cy="23" r="4"/><path d="M20 10v7M33 10v7"/></svg></div><div class="hf-sel"><span>Internet 5G</span></div></div><div class="hf-b"><b>7 Lugares</b><span>Até 6 pessoas · 3 malas</span><small>Spin, Tiguan 7 lugares</small><p class="hf-pr">Aeroporto a partir de <b data-p="igu-foz:sete">R$ 400</b></p><a href="/reservar/">Reservar →</a></div></article><article class="hf-card rv" data-g="grupo"><div class="hf-im"><div class="hf-ic"><svg viewBox="0 0 64 32" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 24V8h40l10 8v8H6zM46 8v8h10M14 8v8M26 8v8M36 8v8"/><circle cx="17" cy="25" r="3.5"/><circle cx="47" cy="25" r="3.5"/></svg></div><div class="hf-sel"><span>Wi-Fi Starlink</span><span>Até 15 pessoas</span></div></div><div class="hf-b"><b>Van Executiva</b><span>Até 15 pessoas · 15 malas</span><small>Sprinter, Master, Ducato</small><p class="hf-pr">Diária a partir de <b data-p="diaria:van">R$ 5.200</b></p><a href="/reservar/">Reservar →</a></div></article></div>
+  <script>document.querySelector('.hf-fil').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;this.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b)});document.querySelectorAll('.hf-card').forEach(function(c){c.hidden=!!b.dataset.f&&c.dataset.g!==b.dataset.f})});</script>
 </section>
 
 <section class="a-sec">
