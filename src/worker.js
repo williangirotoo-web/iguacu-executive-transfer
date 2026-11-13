@@ -120,7 +120,7 @@ function catalogo(env) {
       cancelamento: CONFIG.cancelamento, feriadoAcrescimoPct: CONFIG.feriadoAcrescimoPct, esperaAeroporto: CONFIG.esperaAeroporto,
       cadeirinha: CONFIG.cadeirinha, pet: CONFIG.pet, sinalPct: CONFIG.sinalPct, pagamento: CONFIG.pagamento,
       pagamentoViagens: CONFIG.pagamentoViagens, horaExtra: HORA_EXTRA, porHora: { minimoHoras: POR_HORA.minimoHoras, maximoHoras: POR_HORA.maximoHoras, pacoteHoras: POR_HORA.pacoteHoras, pacoteMult: POR_HORA.pacoteMult },
-      turnstileSiteKey: env.TURNSTILE_SITEKEY || "", pagamentoOnline: false,
+      turnstileSiteKey: env.TURNSTILE_SITEKEY || "", pagamentoOnline: !!env.INFINITEPAY_HANDLE,
       porKm: { ...POR_KM, ativo: true }, diaria: DIARIA,
     },
     categorias: CATEGORIAS, servicos: SERVICOS, consulta: CONSULTA,
@@ -288,9 +288,18 @@ async function criarPedido(req, env, ctx) {
   const txtParc = parceiro ? `Reserva feita pelo parceiro: ${parceiro.empresa || parceiro.responsavel} (${parceiro.codigo}) · comissão ${Number(parceiro.comissao_pct) || 0}%\n\n` : "";
   ctx.waitUntil(enviarAviso(env, `Nova reserva ${codigo} — ${cliente.nome} — ${brl(pag.total)}` + (parceiro ? ` — parceiro ${parceiro.codigo}` : ""), txtParc + resumoTexto(pedido, itensDb, true, origem)));
 
+  // pagamento na hora: cliente direto, site em português (estrangeiros recebem o link/PayPal pelo WhatsApp)
+  let pagamento = null;
+  if (env.INFINITEPAY_HANDLE && !parceiro && idioma === "pt" && pag.agora >= 1) {
+    try {
+      const r = await gerarLinkPagamento(env, { id: pedidoId, codigo, nome: cliente.nome, email: cliente.email, telefone: cliente.telefone, status: "solicitacao" },
+        pag.agora < pag.total ? "Sinal" : "Valor total", pag.agora, origem, "site");
+      if (r.url) pagamento = { url: r.url, valor: pag.agora };
+    } catch (e) { console.error("link na reserva", e && e.message); }
+  }
   const msgWa = (idioma === "en" ? "Hello! I just booked on the website." : idioma === "es" ? "¡Hola! Acabo de reservar en el sitio." : "Olá! Acabei de fazer uma reserva pelo site.") +
     "\n\n" + resumoTexto(pedido, itensDb, false);
-  return json({ ok: true, codigo, token, total: pag.total, valorAgora: pag.agora, status: "solicitacao",
+  return json({ ok: true, codigo, token, total: pag.total, valorAgora: pag.agora, status: pagamento ? "pagamento_pendente" : "solicitacao", pagamento,
     whatsapp: "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(msgWa) });
 }
 
@@ -542,6 +551,25 @@ async function confirmarPagamento(env, x, origem) {
   await enviarAviso(env, "Pagamento recebido " + pg.codigo + " · " + brl(valorPago), texto + "\nCliente: " + pg.nome + "\n\nPainel: " + origem + "/admin/#" + pg.codigo);
   return { ok: true, pago: true, codigo: pg.codigo };
 }
+/* Cria o link no InfinitePay e registra no pedido (usado pelo painel e pela reserva com pagamento na hora) */
+async function gerarLinkPagamento(env, ped, desc, valor, origem, autor) {
+  const tel = String(ped.telefone || "").replace(/\D/g, "");
+  const order_nsu = ped.codigo + "-" + aleatorio(4);
+  const corpo = { handle: env.INFINITEPAY_HANDLE, order_nsu, redirect_url: origem + "/reservar/pago/?pedido=" + ped.codigo,
+    webhook_url: origem + "/api/pagamentos/infinitepay",
+    items: [{ description: (desc + " · reserva " + ped.codigo + " · Iguaçu Executive Transfer").slice(0, 120), price: Math.round(valor * 100), quantity: 1 }],
+    customer: { name: ped.nome, email: ped.email, ...(tel.length >= 10 ? { phone_number: "+" + (tel.length <= 11 ? "55" : "") + tel } : {}) } };
+  const r = await ipCriarLink(env, corpo);
+  if (r.erro) return r;
+  const now = agoraIso();
+  await env.DB.batch([
+    env.DB.prepare("INSERT INTO pagamentos (pedido_id, provedor, order_nsu, descricao, valor, url, status, criado_em, autor) VALUES (?,?,?,?,?,?,?,?,?)").bind(ped.id, "infinitepay", order_nsu, desc, valor, r.url, "aguardando", now, autor),
+    env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, autor, texto) VALUES (?,?,?,?,?)").bind(ped.id, now, "pagamento", autor, "Link de pagamento gerado: " + desc + " " + brl(valor)),
+    ...(ped.status === "solicitacao" ? [env.DB.prepare("UPDATE pedidos SET status = 'pagamento_pendente', atualizado_em = ? WHERE id = ?").bind(now, ped.id),
+      env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, status_de, status_para, autor) VALUES (?,?,?,?,?,?)").bind(ped.id, now, "status", "solicitacao", "pagamento_pendente", autor)] : []),
+  ]);
+  return { url: r.url };
+}
 async function avisoInfinitePay(req, env, ctx, url) {
   let b; try { b = await lerJson(req, 20000); } catch { return erro("json_invalido"); }
   // responde rápido (o InfinitePay espera ~1 s) e confere em segundo plano
@@ -761,20 +789,8 @@ async function admin(req, env, url) {
       else { desc = "Pagamento"; valor = Number(String(b.valor || "").replace(/\./g, "").replace(",", ".")); }
       valor = Math.round(valor * 100) / 100;
       if (!(valor >= 1 && valor <= restante + 0.001)) return erro("valor", 400, { restante });
-      const order_nsu = p.codigo + "-" + aleatorio(4);
-      const corpo = { handle: env.INFINITEPAY_HANDLE, order_nsu, redirect_url: url.origin + "/reservar/pago/?pedido=" + p.codigo,
-        webhook_url: url.origin + "/api/pagamentos/infinitepay",
-        items: [{ description: (desc + " · reserva " + p.codigo + " · Iguaçu Executive Transfer").slice(0, 120), price: Math.round(valor * 100), quantity: 1 }],
-        customer: { name: p.nome, email: p.email, ...(String(p.telefone).replace(/\D/g, "").length >= 10 ? { phone_number: "+" + (String(p.telefone).replace(/\D/g, "").length <= 11 ? "55" : "") + String(p.telefone).replace(/\D/g, "") } : {}) } };
-      const r = await ipCriarLink(env, corpo);
+      const r = await gerarLinkPagamento(env, p, desc, valor, url.origin, user.email);
       if (r.erro) return erro("infinitepay", 502, { detalhe: r.erro });
-      const now = agoraIso();
-      await env.DB.batch([
-        env.DB.prepare("INSERT INTO pagamentos (pedido_id, provedor, order_nsu, descricao, valor, url, status, criado_em, autor) VALUES (?,?,?,?,?,?,?,?,?)").bind(p.id, "infinitepay", order_nsu, desc, valor, r.url, "aguardando", now, user.email),
-        env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, autor, texto) VALUES (?,?,?,?,?)").bind(p.id, now, "pagamento", user.email, "Link de pagamento gerado: " + desc + " " + brl(valor)),
-        ...(p.status === "solicitacao" ? [env.DB.prepare("UPDATE pedidos SET status = 'pagamento_pendente', atualizado_em = ? WHERE id = ?").bind(now, p.id),
-          env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, status_de, status_para, autor) VALUES (?,?,?,?,?,?)").bind(p.id, now, "status", "solicitacao", "pagamento_pendente", user.email)] : []),
-      ]);
       return json({ ok: true, url: r.url, valor, descricao: desc });
     }
     if (req.method === "POST" && partes[2] === "corrida") {

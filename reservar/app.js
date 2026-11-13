@@ -39,7 +39,7 @@
       regraPag: "Categoria Comum e 7 lugares: 100% na reserva. Executivo Luxo e viagens para outras cidades: {p}% de sinal.",
       pagInfo: "Depois que confirmarmos a disponibilidade, enviamos o link de pagamento (Pix, cartão em até 12x (à vista sem acréscimo; parcelado com juros da operadora) ou PayPal) pelo WhatsApp.",
       aceito: "Li e aceito os <a href=\"/termos.html\" target=\"_blank\">Termos de Uso</a> e a <a href=\"/privacidade.html\" target=\"_blank\">Política de Privacidade</a>. Cancelamento grátis até {h} h antes; depois disso, devolvemos {d}%.",
-      enviar: "Enviar pedido de reserva", enviando: "Enviando…",
+      enviar: "Enviar pedido de reserva", enviando: "Enviando…", enviarPagar: "Reservar e pagar", pagInfoOn: "Ao reservar, você vai para a página segura do InfinitePay para pagar por Pix ou cartão em até 12x (à vista sem acréscimo; parcelado com juros da operadora). A confirmação chega na hora.", okPagTit: "Reserva feita! Falta só o pagamento", okPagTxt: "Código: {c}. Estamos levando você para a página de pagamento. Se não abrir, toque no botão abaixo.", okPagBtn: "Pagar {v} agora",
       okTit: "Pedido recebido!", okTxt: "Código do pedido: {c}. Vamos confirmar a disponibilidade e enviar o link de pagamento pelo WhatsApp.",
       okWa: "Enviar o pedido no WhatsApp", okNovo: "Fazer outra reserva",
       especial: "Data especial (+{p}%)", lin_base: "Serviço", lin_hora_extra: "Horas extras ({q} × {u})", lin_cadeirinha: "Cadeirinhas ({q} × {u})",
@@ -567,10 +567,10 @@
       '<p class="r-lbl">' + esc(t("pagar")) + "</p>" +
       (temEscolha ? '<div class="r-opts">' + opt("modo", "sinal", t("pSinal", { p: cfg.sinalPct }), true) + opt("modo", "total", t("pTotal"), false) + "</div>" : "") +
       '<div class="r-paybox" id="r-paybox"></div><p class="r-sm">' + esc(t("regraPag", { p: cfg.sinalPct })) + "</p>" +
-      '<p class="r-sm">' + esc(t("pagInfo")) + "</p>" +
+      '<p class="r-sm">' + esc(t(S.lang === "pt" && CAT.config.pagamentoOnline ? "pagInfoOn" : "pagInfo")) + "</p>" +
       '<label class="r-chk"><input type="checkbox" name="consentimento" required> <span>' + t("aceito", { h: cfg.cancelamento.gratisAteHoras, d: cfg.cancelamento.devolveDepoisPct }) + "</span></label>" +
       (cfg.turnstileSiteKey ? '<div id="r-ts"></div>' : "") +
-      '<p class="r-err" id="r-cerr" role="alert"></p><button type="submit" class="r-btn r-big" id="r-send">' + esc(t("enviar")) + '</button><div id="r-done"></div>';
+      '<p class="r-err" id="r-cerr" role="alert"></p><button type="submit" class="r-btn r-big" id="r-send">' + esc(t(S.lang === "pt" && CAT.config.pagamentoOnline ? "enviarPagar" : "enviar")) + '</button><div id="r-done"></div>';
     $("#r-checkout-f").innerHTML = h;
     if (pc) api("/api/parceiro/eu").then(function (r) { if (!r || !r.ok) { store.set("parceiro", null); var b = $(".r-parc"); if (b) b.remove(); } }).catch(function () {});
     updatePay();
@@ -609,7 +609,7 @@
     track("begin_checkout", { value: pagamento(body.modoPagamento).total, currency: "BRL" });
     api("/api/pedidos", body).then(function (r) {
       if (!r || !r.ok) {
-        btn.disabled = false; btn.textContent = t("enviar");
+        btn.disabled = false; btn.textContent = t(S.lang === "pt" && CAT.config.pagamentoOnline ? "enviarPagar" : "enviar");
         if (tsId != null && window.turnstile) try { window.turnstile.reset(tsId); } catch (x) {}
         err.textContent = r && r.erro === "item_invalido" ? t("e_item_invalido", { m: errTxt({ erro: r.motivo, horas: r.detalhe && r.detalhe.horas, max: r.detalhe && r.detalhe.max }) }) : errTxt(r);
         return;
@@ -618,11 +618,18 @@
       store.set("ultimoPedido", { codigo: r.codigo, token: r.token, em: Date.now() });
       S.cart = []; saveCart();
       btn.hidden = true;
+      if (r.pagamento && r.pagamento.url) {
+        $("#r-done").innerHTML = '<div class="r-ok"><h3>' + esc(t("okPagTit")) + "</h3><p>" + esc(t("okPagTxt", { c: r.codigo })) + "</p>" +
+          '<div class="r-actions r-center"><a class="r-btn r-big" href="' + esc(r.pagamento.url) + '">' + esc(t("okPagBtn", { v: brl(r.pagamento.valor) })) + "</a></div></div>";
+        $("#r-done").scrollIntoView({ behavior: "smooth", block: "center" });
+        setTimeout(function () { location.href = r.pagamento.url; }, 1200);
+        return;
+      }
       $("#r-done").innerHTML = '<div class="r-ok"><h3>' + esc(t("okTit")) + "</h3><p>" + esc(t("okTxt", { c: r.codigo })) + "</p>" +
         '<div class="r-actions r-center"><a class="r-btn r-btn-wa" target="_blank" rel="noopener" href="' + esc(r.whatsapp) + '">' + esc(t("okWa")) +
         '</a><button type="button" class="r-btn r-ghost" id="r-novo">' + esc(t("okNovo")) + "</button></div></div>";
       $("#r-done").scrollIntoView({ behavior: "smooth", block: "center" });
-    }).catch(function () { btn.disabled = false; btn.textContent = t("enviar"); err.textContent = t("e_rede"); });
+    }).catch(function () { btn.disabled = false; btn.textContent = t(S.lang === "pt" && CAT.config.pagamentoOnline ? "enviarPagar" : "enviar"); err.textContent = t("e_rede"); });
   }
 
   /* ---------- pacote compartilhado ---------- */
