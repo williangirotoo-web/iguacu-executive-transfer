@@ -87,7 +87,7 @@
       regraPag: "Standard and 7-seater: 100% at booking. Luxury and trips to other cities: {p}% deposit.",
       pagInfo: "Once we confirm availability, we'll send you a payment link (Pix, card or PayPal) on WhatsApp.",
       aceito: "I have read and accept the <a href=\"/termos.html\" target=\"_blank\">Terms</a> and the <a href=\"/privacidade.html\" target=\"_blank\">Privacy Policy</a>. Free cancellation up to {h} h before; after that, {d}% is refunded.",
-      enviar: "Send booking request", enviando: "Sending…",
+      enviar: "Send booking request", enviando: "Sending…", enviarPagar: "Book and pay", pagInfoOn: "When you book, you go to PayPal's secure page to pay with your PayPal account or card. Charged in Brazilian reais (BRL); PayPal converts to your currency.", okPagTit: "Booked! Only the payment is left", okPagTxt: "Code: {c}. Taking you to the payment page. If it does not open, tap the button below.", okPagBtn: "Pay {v} now",
       okTit: "Request received!", okTxt: "Booking code: {c}. We'll confirm availability and send the payment link on WhatsApp.",
       okWa: "Send the booking on WhatsApp", okNovo: "Make another booking",
       especial: "Special date (+{p}%)", lin_base: "Service", lin_hora_extra: "Extra hours ({q} × {u})", lin_cadeirinha: "Car seats ({q} × {u})",
@@ -135,7 +135,7 @@
       regraPag: "Estándar y 7 plazas: 100% en la reserva. Lujo y viajes a otras ciudades: seña del {p}%.",
       pagInfo: "Cuando confirmemos la disponibilidad, le enviamos el link de pago (Pix, tarjeta o PayPal) por WhatsApp.",
       aceito: "Leí y acepto los <a href=\"/termos.html\" target=\"_blank\">Términos</a> y la <a href=\"/privacidade.html\" target=\"_blank\">Política de Privacidad</a>. Cancelación gratis hasta {h} h antes; después, devolvemos el {d}%.",
-      enviar: "Enviar pedido de reserva", enviando: "Enviando…",
+      enviar: "Enviar pedido de reserva", enviando: "Enviando…", enviarPagar: "Reservar y pagar", pagInfoOn: "Al reservar, va a la página segura de PayPal para pagar con su cuenta PayPal o tarjeta. Se cobra en reales (BRL); PayPal convierte a su moneda.", okPagTit: "¡Reserva hecha! Solo falta el pago", okPagTxt: "Código: {c}. Lo estamos llevando a la página de pago. Si no se abre, toque el botón de abajo.", okPagBtn: "Pagar {v} ahora",
       okTit: "¡Pedido recibido!", okTxt: "Código del pedido: {c}. Confirmaremos la disponibilidad y enviaremos el link de pago por WhatsApp.",
       okWa: "Enviar el pedido por WhatsApp", okNovo: "Hacer otra reserva",
       especial: "Fecha especial (+{p}%)", lin_base: "Servicio", lin_hora_extra: "Horas extra ({q} × {u})", lin_cadeirinha: "Sillas ({q} × {u})",
@@ -339,6 +339,7 @@
   function field(l, input, cls) { return '<label class="r-f' + (cls ? " " + cls : "") + '"><span>' + esc(l) + "</span>" + input + "</label>"; }
   function num(n, v, mi, ma) { return '<input type="number" inputmode="numeric" name="' + n + '" value="' + v + '" min="' + mi + '" max="' + ma + '">'; }
   function hoje() { var d = new Date(Date.now() - 3 * 3600e3); return d.toISOString().slice(0, 10); } // horário de Foz (UTC-3)
+  function pagOnline() { return S.lang === "pt" ? !!CAT.config.pagamentoOnline : !!CAT.config.paypal; }
   function aeroNome(id) { return /^igr/.test(id) ? "Aeroporto de Puerto Iguazú (IGR)" : "Aeroporto de Foz do Iguaçu (IGU)"; }
   function renderModal() {
     var s = svc(cur.servico), m = $("#r-modal-b"), cfg = CAT.config;
@@ -578,10 +579,10 @@
       '<p class="r-lbl">' + esc(t("pagar")) + "</p>" +
       (temEscolha ? '<div class="r-opts">' + opt("modo", "sinal", t("pSinal", { p: cfg.sinalPct }), true) + opt("modo", "total", t("pTotal"), false) + "</div>" : "") +
       '<div class="r-paybox" id="r-paybox"></div><p class="r-sm">' + esc(t("regraPag", { p: cfg.sinalPct })) + "</p>" +
-      '<p class="r-sm">' + esc(t(S.lang === "pt" && CAT.config.pagamentoOnline ? "pagInfoOn" : "pagInfo")) + "</p>" +
+      '<p class="r-sm">' + esc(t(pagOnline() ? "pagInfoOn" : "pagInfo")) + "</p>" +
       '<label class="r-chk"><input type="checkbox" name="consentimento" required> <span>' + t("aceito", { h: cfg.cancelamento.gratisAteHoras, d: cfg.cancelamento.devolveDepoisPct }) + "</span></label>" +
       (cfg.turnstileSiteKey ? '<div id="r-ts"></div>' : "") +
-      '<p class="r-err" id="r-cerr" role="alert"></p><button type="submit" class="r-btn r-big" id="r-send">' + esc(t(S.lang === "pt" && CAT.config.pagamentoOnline ? "enviarPagar" : "enviar")) + '</button><div id="r-done"></div>';
+      '<p class="r-err" id="r-cerr" role="alert"></p><button type="submit" class="r-btn r-big" id="r-send">' + esc(t(pagOnline() ? "enviarPagar" : "enviar")) + '</button><div id="r-done"></div>';
     $("#r-checkout-f").innerHTML = h;
     if (pc) api("/api/parceiro/eu").then(function (r) { if (!r || !r.ok) { store.set("parceiro", null); var b = $(".r-parc"); if (b) b.remove(); } }).catch(function () {});
     updatePay();
@@ -620,7 +621,7 @@
     track("begin_checkout", { value: pagamento(body.modoPagamento).total, currency: "BRL" });
     api("/api/pedidos", body).then(function (r) {
       if (!r || !r.ok) {
-        btn.disabled = false; btn.textContent = t(S.lang === "pt" && CAT.config.pagamentoOnline ? "enviarPagar" : "enviar");
+        btn.disabled = false; btn.textContent = t(pagOnline() ? "enviarPagar" : "enviar");
         if (tsId != null && window.turnstile) try { window.turnstile.reset(tsId); } catch (x) {}
         err.textContent = r && r.erro === "item_invalido" ? t("e_item_invalido", { m: errTxt({ erro: r.motivo, horas: r.detalhe && r.detalhe.horas, max: r.detalhe && r.detalhe.max }) }) : errTxt(r);
         return;
@@ -640,7 +641,7 @@
         '<div class="r-actions r-center"><a class="r-btn r-btn-wa" target="_blank" rel="noopener" href="' + esc(r.whatsapp) + '">' + esc(t("okWa")) +
         '</a><button type="button" class="r-btn r-ghost" id="r-novo">' + esc(t("okNovo")) + "</button></div></div>";
       $("#r-done").scrollIntoView({ behavior: "smooth", block: "center" });
-    }).catch(function () { btn.disabled = false; btn.textContent = t(S.lang === "pt" && CAT.config.pagamentoOnline ? "enviarPagar" : "enviar"); err.textContent = t("e_rede"); });
+    }).catch(function () { btn.disabled = false; btn.textContent = t(pagOnline() ? "enviarPagar" : "enviar"); err.textContent = t("e_rede"); });
   }
 
   /* ---------- pacote compartilhado ---------- */

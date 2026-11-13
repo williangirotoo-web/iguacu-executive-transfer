@@ -24,33 +24,47 @@ code{color:var(--gold)}
 <body>
 <main class="box">
   <a class="logo" href="/">IGUAÇU EXECUTIVE TRANSFER</a>
-  <section id="carregando"><div class="wait" aria-hidden="true"></div><h1>Conferindo o pagamento…</h1><p>Só um instante.</p></section>
+  <section id="carregando"><div class="wait" aria-hidden="true"></div><h1 data-t="t1"></h1><p data-t="t2"></p></section>
   <section id="pago" hidden>
     <div class="ok" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-    <h1>Pagamento recebido. Obrigado!</h1>
-    <p>O pagamento da reserva <code id="cod1"></code> foi confirmado. Qualquer dúvida, fale com a gente pelo WhatsApp.</p>
-    <a class="btn wa" id="wa1" href="https://wa.me/5545991185798" target="_blank" rel="noopener">Falar no WhatsApp</a>
+    <h1 data-t="ok1"></h1>
+    <p><span data-t="ok2"></span> <code class="cod"></code> <span data-t="ok3"></span></p>
+    <a class="btn wa" href="https://wa.me/5545991185798" target="_blank" rel="noopener" data-t="wa"></a>
   </section>
   <section id="pendente" hidden>
-    <h1>Ainda não recebemos a confirmação</h1>
-    <p>Se você pagou por Pix ou cartão, a confirmação pode levar alguns minutos. Assim que chegar, a sua reserva <code id="cod2"></code> é atualizada e avisamos você.</p>
-    <p>Se não concluiu o pagamento, abra de novo o link que enviamos pelo WhatsApp.</p>
-    <a class="btn wa" id="wa2" href="https://wa.me/5545991185798" target="_blank" rel="noopener">Falar no WhatsApp</a>
+    <h1 data-t="p1"></h1>
+    <p><span data-t="p2"></span> <code class="cod"></code> <span data-t="p3"></span></p>
+    <p data-t="p4"></p>
+    <a class="btn wa" href="https://wa.me/5545991185798" target="_blank" rel="noopener" data-t="wa"></a>
+  </section>
+  <section id="cancelado" hidden>
+    <h1 data-t="c1"></h1>
+    <p><span data-t="c2"></span> <code class="cod"></code> <span data-t="c3"></span></p>
+    <a class="btn wa" href="https://wa.me/5545991185798" target="_blank" rel="noopener" data-t="wa"></a>
   </section>
 </main>
 <script>
 (function(){
-  var q=new URLSearchParams(location.search),cod=(q.get("pedido")||"").replace(/[^A-Z0-9-]/g,"").slice(0,12);
-  ["cod1","cod2"].forEach(function(i){document.getElementById(i).textContent=cod});
-  var msg=encodeURIComponent("Olá! Acabei de pagar a reserva "+cod+".");
-  ["wa1","wa2"].forEach(function(i){document.getElementById(i).href="https://wa.me/5545991185798?text="+msg});
-  function mostrar(id){["carregando","pago","pendente"].forEach(function(x){document.getElementById(x).hidden=x!==id})}
-  var dados={order_nsu:q.get("order_nsu"),transaction_nsu:q.get("transaction_nsu"),slug:q.get("slug"),capture_method:q.get("capture_method"),receipt_url:q.get("receipt_url")};
-  if(!dados.order_nsu||!dados.slug){mostrar("pendente");return}
-  history.replaceState(null,"",location.pathname+"?pedido="+cod);
+  var T={
+    pt:{t1:"Conferindo o pagamento…",t2:"Só um instante.",ok1:"Pagamento recebido. Obrigado!",ok2:"O pagamento da reserva",ok3:"foi confirmado. Qualquer dúvida, fale com a gente pelo WhatsApp.",p1:"Ainda não recebemos a confirmação",p2:"Se você pagou por Pix ou cartão, a confirmação pode levar alguns minutos. Assim que chegar, a reserva",p3:"é atualizada.",p4:"Se não concluiu o pagamento, abra de novo o link que enviamos pelo WhatsApp.",c1:"Pagamento não concluído",c2:"A reserva",c3:"está guardada, mas ainda sem pagamento. Fale com a gente pelo WhatsApp para receber o link de novo.",wa:"Falar no WhatsApp",msg:"Olá! Sobre a reserva "},
+    en:{t1:"Checking your payment…",t2:"Just a moment.",ok1:"Payment received. Thank you!",ok2:"The payment for booking",ok3:"is confirmed. Any questions, message us on WhatsApp.",p1:"We haven't received the confirmation yet",p2:"It can take a few minutes. As soon as it arrives, booking",p3:"will be updated.",p4:"If you did not finish paying, open the payment link again or message us.",c1:"Payment not completed",c2:"Booking",c3:"is saved but not paid yet. Message us on WhatsApp and we'll send the payment link again.",wa:"Message us on WhatsApp",msg:"Hello! About booking "},
+    es:{t1:"Verificando el pago…",t2:"Un momento.",ok1:"Pago recibido. ¡Gracias!",ok2:"El pago de la reserva",ok3:"está confirmado. Cualquier duda, escríbanos por WhatsApp.",p1:"Todavía no recibimos la confirmación",p2:"Puede tardar unos minutos. Cuando llegue, la reserva",p3:"se actualizará.",p4:"Si no terminó el pago, abra de nuevo el link o escríbanos.",c1:"Pago no completado",c2:"La reserva",c3:"está guardada, pero sin pago. Escríbanos por WhatsApp y le enviamos el link de nuevo.",wa:"Escribir por WhatsApp",msg:"¡Hola! Sobre la reserva "}};
+  var q=new URLSearchParams(location.search),lang=T[q.get("lang")]?q.get("lang"):"pt",tx=T[lang];
+  if(lang!=="pt")document.documentElement.lang=lang;
+  var cod=(q.get("pedido")||"").replace(/[^A-Z0-9-]/g,"").slice(0,12);
+  document.querySelectorAll("[data-t]").forEach(function(e){e.textContent=tx[e.dataset.t]});
+  document.querySelectorAll(".cod").forEach(function(e){e.textContent=cod});
+  document.querySelectorAll(".wa").forEach(function(e){e.href="https://wa.me/5545991185798?text="+encodeURIComponent(tx.msg+cod+".")});
+  function mostrar(id){["carregando","pago","pendente","cancelado"].forEach(function(x){document.getElementById(x).hidden=x!==id})}
+  if(q.get("cancelado")){mostrar("cancelado");return}
+  var url,dados;
+  if(q.get("pp")){url="/api/pagamentos/paypal/capturar";dados={order_nsu:q.get("pp"),token:q.get("token")}}
+  else{url="/api/pagamentos/conferir";dados={order_nsu:q.get("order_nsu"),transaction_nsu:q.get("transaction_nsu"),slug:q.get("slug"),capture_method:q.get("capture_method"),receipt_url:q.get("receipt_url")}}
+  if(!dados.order_nsu||!(dados.slug||dados.token)){mostrar("pendente");return}
+  history.replaceState(null,"",location.pathname+"?pedido="+cod+(lang!=="pt"?"&lang="+lang:""));
   var tentativas=0;
   (function conferir(){
-    fetch("/api/pagamentos/conferir",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(dados)})
+    fetch(url,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(dados)})
       .then(function(r){return r.json()}).then(function(r){
         if(r.pago){mostrar("pago");return}
         if(++tentativas<4)setTimeout(conferir,4000);else mostrar("pendente");

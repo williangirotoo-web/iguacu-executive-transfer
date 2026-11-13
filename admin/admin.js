@@ -73,20 +73,24 @@
     var h = "<h3>Pagamento online</h3>";
     h += pgs.map(function (x) {
       return '<div class="ev"><b>' + esc(x.descricao) + " " + brl(x.valor) + '</b> · <span class="cst cst-' + (x.status === "pago" ? "aceita" : "ofertada") + '">' + esc(PST[x.status] || x.status) + "</span>" +
-        (x.status === "pago" ? " em " + esc(quando(x.pago_em)) + " · " + esc(x.metodo === "pix" ? "Pix" : "cartão" + (x.parcelas > 1 ? " " + x.parcelas + "x" : "")) + (x.recibo_url ? ' · <a style="color:var(--gold)" href="' + esc(x.recibo_url) + '" target="_blank" rel="noopener">recibo</a>' : "")
+        (x.status === "pago" ? " em " + esc(quando(x.pago_em)) + " · " + esc(x.metodo === "pix" ? "Pix" : x.metodo === "paypal" ? "PayPal" : "cartão" + (x.parcelas > 1 ? " " + x.parcelas + "x" : "")) + (x.recibo_url ? ' · <a style="color:var(--gold)" href="' + esc(x.recibo_url) + '" target="_blank" rel="noopener">recibo</a>' : "")
           : ' <a class="btn wa mini" target="_blank" rel="noopener" href="' + esc(waCliente(p, msgPag(p, x.descricao, x.valor, x.url))) + '">Enviar no WhatsApp</a> <button class="btn gh mini" type="button" data-copiar="' + esc(x.url) + '">Copiar link</button>') + "</div>";
     }).join("");
     h += '<p class="svc">Pago: <b>' + brl(pago) + "</b> · Falta: <b>" + brl(rest) + "</b></p>";
-    if (!r.pagamentoOnline) return h + '<p class="svc">Pagamento online ainda não configurado (falta a InfiniteTag no site).</p>';
+    if (!r.pagamentoOnline) return h + '<p class="svc">Pagamento online ainda não configurado.</p>';
     if (p.status === "cancelada" || rest < 1) return h;
     var opts = [["sinal", "Sinal · " + brl(p.valor_agora)], ["total", "Total · " + brl(p.total)]];
     if (pago > 0) opts = [["restante", "Restante · " + brl(rest)]];
     opts.push(["outro", "Outro valor"]);
     h += '<div class="ofr"><select id="pgTipo">' + opts.filter(function (o) { return o[0] !== "sinal" || p.valor_agora < p.total; }).map(function (o) { return '<option value="' + o[0] + '">' + esc(o[1]) + "</option>"; }).join("") +
-      '</select> <input id="pgValor" inputmode="decimal" placeholder="Valor R$" style="width:120px" hidden> <button class="btn mini" id="pgGerar" type="button">Gerar link de pagamento</button></div><div id="pgRes"></div>';
+      '</select>' + (r.paypal && r.infinitepay ? ' <select id="pgProv"><option value="infinitepay"' + (p.idioma === "pt" ? " selected" : "") + '>InfinitePay (Pix e cartão)</option><option value="paypal"' + (p.idioma !== "pt" ? " selected" : "") + ">PayPal (exterior)</option></select>" : "") +
+      ' <input id="pgValor" inputmode="decimal" placeholder="Valor R$" style="width:120px" hidden> <button class="btn mini" id="pgGerar" type="button">Gerar link de pagamento</button></div><div id="pgRes"></div>';
     return h;
   }
   function msgPag(p, desc, valor, link) {
+    var n = p.nome.split(" ")[0];
+    if (p.idioma === "en") return "Hello, " + n + "! Here is the payment link for your booking " + p.codigo + " (" + brl(valor) + "). You can pay with PayPal or card:\n" + link;
+    if (p.idioma === "es") return "¡Hola, " + n + "! Aquí está el link de pago de su reserva " + p.codigo + " (" + brl(valor) + "). Puede pagar con PayPal o tarjeta:\n" + link;
     return "Olá, " + p.nome.split(" ")[0] + "! Segue o link para pagamento da sua reserva " + p.codigo + " (" + desc.toLowerCase() + ": " + brl(valor) + "). Você pode pagar por Pix ou cartão:\n" + link;
   }
   function abrir(cod) {
@@ -129,9 +133,10 @@
         pt.onchange = function () { d.querySelector("#pgValor").hidden = pt.value !== "outro"; };
         d.querySelector("#pgGerar").onclick = function () {
           var b = this; b.disabled = true;
-          api("/api/admin/pedidos/" + p.codigo + "/pagamento", { tipo: pt.value, valor: d.querySelector("#pgValor").value }).then(function (x) {
+          var pv = d.querySelector("#pgProv");
+          api("/api/admin/pedidos/" + p.codigo + "/pagamento", { tipo: pt.value, valor: d.querySelector("#pgValor").value, provedor: pv ? pv.value : (r.infinitepay ? "infinitepay" : "paypal") }).then(function (x) {
             b.disabled = false;
-            if (!x.ok) { d.querySelector("#pgRes").innerHTML = '<p class="msg">' + esc({ valor: "Valor inválido. Falta pagar " + brl(x.restante || 0) + ".", sem_infinitepay: "Pagamento online não configurado.", infinitepay: "O InfinitePay recusou: " + (x.detalhe || "") + ". Confira se o checkout está ativado no app InfinitePay." }[x.erro] || "Erro: " + x.erro) + "</p>"; return; }
+            if (!x.ok) { d.querySelector("#pgRes").innerHTML = '<p class="msg">' + esc({ valor: "Valor inválido. Falta pagar " + brl(x.restante || 0) + ".", sem_infinitepay: "Pagamento online não configurado.", infinitepay: "O InfinitePay recusou: " + (x.detalhe || "") + ". Confira se o checkout está ativado no app InfinitePay.", paypal: "O PayPal recusou: " + (x.detalhe || "") + ".", sem_paypal: "PayPal não configurado." }[x.erro] || "Erro: " + x.erro) + "</p>"; return; }
             abrir(p.codigo);
           });
         };

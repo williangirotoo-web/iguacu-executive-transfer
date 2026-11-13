@@ -122,7 +122,7 @@ function catalogo(env) {
       cancelamento: CONFIG.cancelamento, feriadoAcrescimoPct: CONFIG.feriadoAcrescimoPct, esperaAeroporto: CONFIG.esperaAeroporto,
       cadeirinha: CONFIG.cadeirinha, pet: CONFIG.pet, sinalPct: CONFIG.sinalPct, pagamento: CONFIG.pagamento,
       pagamentoViagens: CONFIG.pagamentoViagens, horaExtra: HORA_EXTRA, porHora: { minimoHoras: POR_HORA.minimoHoras, maximoHoras: POR_HORA.maximoHoras, pacoteHoras: POR_HORA.pacoteHoras, pacoteMult: POR_HORA.pacoteMult },
-      turnstileSiteKey: env.TURNSTILE_SITEKEY || "", pagamentoOnline: !!env.INFINITEPAY_HANDLE,
+      turnstileSiteKey: env.TURNSTILE_SITEKEY || "", pagamentoOnline: !!env.INFINITEPAY_HANDLE, paypal: temPayPal(env),
       porKm: { ...POR_KM, ativo: true }, diaria: DIARIA,
     },
     categorias: CATEGORIAS, servicos: SERVICOS, consulta: CONSULTA,
@@ -293,10 +293,11 @@ async function criarPedido(req, env, ctx) {
 
   // pagamento na hora: cliente direto, site em português (estrangeiros recebem o link/PayPal pelo WhatsApp)
   let pagamento = null;
-  if (env.INFINITEPAY_HANDLE && !parceiro && idioma === "pt" && pag.agora >= 1) {
+  const provReserva = idioma === "pt" ? (env.INFINITEPAY_HANDLE ? "infinitepay" : null) : (temPayPal(env) ? "paypal" : null);
+  if (provReserva && !parceiro && pag.agora >= 1) {
     try {
       const r = await gerarLinkPagamento(env, { id: pedidoId, codigo, nome: cliente.nome, email: cliente.email, telefone: cliente.telefone, status: "solicitacao" },
-        pag.agora < pag.total ? "Sinal" : "Valor total", pag.agora, origem, "site");
+        pag.agora < pag.total ? (idioma === "pt" ? "Sinal" : "Deposit") : (idioma === "pt" ? "Valor total" : "Total"), pag.agora, origem, "site", provReserva, idioma);
       if (r.url) pagamento = { url: r.url, valor: pag.agora };
     } catch (e) { console.error("link na reserva", e && e.message); }
   }
@@ -554,10 +555,85 @@ async function confirmarPagamento(env, x, origem) {
   await enviarAviso(env, "Pagamento recebido " + pg.codigo + " · " + brl(valorPago), texto + "\nCliente: " + pg.nome + "\n\nPainel: " + origem + "/admin/#" + pg.codigo);
   return { ok: true, pago: true, codigo: pg.codigo };
 }
+/* ---------------- PayPal (clientes do exterior) ----------------
+   Pedido no PayPal com "intent CAPTURE": o dinheiro só sai quando o site captura, na volta do cliente.
+   PAYPAL_CLIENT_ID e PAYPAL_SECRET ficam como segredos na Cloudflare (nunca no código). */
+const PP_API = "https://api-m.paypal.com";
+const temPayPal = (env) => !!(env.PAYPAL_CLIENT_ID && env.PAYPAL_SECRET) || env.PAYPAL_MOCK === "1";
+async function ppToken(env) {
+  const r = await fetch(PP_API + "/v1/oauth2/token", { method: "POST", signal: AbortSignal.timeout(12000),
+    headers: { authorization: "Basic " + btoa(env.PAYPAL_CLIENT_ID + ":" + env.PAYPAL_SECRET), "content-type": "application/x-www-form-urlencoded" }, body: "grant_type=client_credentials" });
+  const d = await r.json().catch(() => ({}));
+  if (!d.access_token) throw new Error("paypal_token " + r.status);
+  return d.access_token;
+}
+async function ppCriarPedido(env, order_nsu, desc, valor, retorno, cancelar, idioma) {
+  if (env.PAYPAL_MOCK === "1") return { url: retorno + "&token=MOCK" + order_nsu.slice(-4), id: "MOCK" + order_nsu.slice(-4) };
+  const tk = await ppToken(env);
+  const r = await fetch(PP_API + "/v2/checkout/orders", { method: "POST", signal: AbortSignal.timeout(15000),
+    headers: { authorization: "Bearer " + tk, "content-type": "application/json", "paypal-request-id": order_nsu },
+    body: JSON.stringify({ intent: "CAPTURE",
+      purchase_units: [{ reference_id: order_nsu, custom_id: order_nsu, description: desc.slice(0, 120), amount: { currency_code: "BRL", value: valor.toFixed(2) } }],
+      payment_source: { paypal: { experience_context: { brand_name: "Iguaçu Executive Transfer", user_action: "PAY_NOW", shipping_preference: "NO_SHIPPING",
+        locale: idioma === "es" ? "es-AR" : idioma === "en" ? "en-US" : "pt-BR", return_url: retorno, cancel_url: cancelar } } } }) });
+  const d = await r.json().catch(() => ({}));
+  const link = (d.links || []).find((l) => l.rel === "payer-action" || l.rel === "approve");
+  if (!r.ok || !link) { console.error("paypal order", r.status, JSON.stringify(d).slice(0, 300)); return { erro: (d.details && d.details[0] && d.details[0].issue) || d.name || ("http_" + r.status) }; }
+  return { url: link.href, id: d.id };
+}
+async function ppCapturar(env, id) {
+  if (env.PAYPAL_MOCK === "1") return { ok: true, valor: null };
+  const tk = await ppToken(env);
+  const r = await fetch(PP_API + "/v2/checkout/orders/" + encodeURIComponent(id) + "/capture", { method: "POST", signal: AbortSignal.timeout(15000),
+    headers: { authorization: "Bearer " + tk, "content-type": "application/json", "paypal-request-id": "cap-" + id } });
+  const d = await r.json().catch(() => ({}));
+  const cap = d.purchase_units && d.purchase_units[0] && d.purchase_units[0].payments && d.purchase_units[0].payments.captures && d.purchase_units[0].payments.captures[0];
+  if (d.status === "COMPLETED" && cap && cap.status === "COMPLETED") return { ok: true, valor: Number(cap.amount && cap.amount.value) || null, captura: cap.id };
+  if (d.name === "UNPROCESSABLE_ENTITY" && JSON.stringify(d).includes("ORDER_ALREADY_CAPTURED")) return { ok: true, valor: null, ja: true };
+  console.error("paypal capture", r.status, JSON.stringify(d).slice(0, 300));
+  return { ok: false };
+}
+async function capturarPayPal(env, b, origem) {
+  const order_nsu = String(b.order_nsu || ""), token = String(b.token || "").slice(0, 40);
+  if (!/^IET-[A-Z0-9]{6}-[A-Z0-9]{4}$/.test(order_nsu) || !/^[A-Z0-9]{4,40}$/.test(token)) return { ok: false, erro: "dados" };
+  await prepararBanco(env);
+  const pg = await env.DB.prepare("SELECT pg.*, p.codigo, p.status AS pedido_status, p.nome FROM pagamentos pg JOIN pedidos p ON p.id = pg.pedido_id WHERE pg.order_nsu = ? AND pg.provedor = 'paypal'").bind(order_nsu).first();
+  if (!pg || pg.slug !== token) return { ok: false, erro: "nao_encontrado" };
+  if (pg.status === "pago") return { ok: true, pago: true, codigo: pg.codigo, ja: true };
+  const c = await ppCapturar(env, token);
+  if (!c.ok) return { ok: true, pago: false, codigo: pg.codigo };
+  const now = agoraIso(), valorPago = c.valor || pg.valor;
+  const r = await env.DB.prepare("UPDATE pagamentos SET status = 'pago', pago_em = ?, valor_pago = ?, metodo = 'paypal', parcelas = 1, transaction_nsu = ? WHERE id = ? AND status != 'pago'").bind(now, valorPago, c.captura || null, pg.id).run();
+  if (!r.meta || !r.meta.changes) return { ok: true, pago: true, codigo: pg.codigo, ja: true };
+  const texto = "Pagamento recebido: " + brl(valorPago) + " por PayPal (" + (pg.descricao || "pagamento") + ")";
+  const ops = [env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, autor, texto) VALUES (?,?,?,?,?)").bind(pg.pedido_id, now, "pagamento", "PayPal", texto)];
+  if (["solicitacao", "pagamento_pendente"].includes(pg.pedido_status)) {
+    ops.push(env.DB.prepare("UPDATE pedidos SET status = 'aprovado', atualizado_em = ? WHERE id = ?").bind(now, pg.pedido_id));
+    ops.push(env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, status_de, status_para, autor, texto) VALUES (?,?,?,?,?,?,?)").bind(pg.pedido_id, now, "status", pg.pedido_status, "aprovado", "PayPal", null));
+  }
+  await env.DB.batch(ops);
+  await enviarAviso(env, "Pagamento recebido " + pg.codigo + " · " + brl(valorPago) + " (PayPal)", texto + "\nCliente: " + pg.nome + "\n\nPainel: " + origem + "/admin/#" + pg.codigo);
+  return { ok: true, pago: true, codigo: pg.codigo };
+}
+
 /* Cria o link no InfinitePay e registra no pedido (usado pelo painel e pela reserva com pagamento na hora) */
-async function gerarLinkPagamento(env, ped, desc, valor, origem, autor) {
+async function gerarLinkPagamento(env, ped, desc, valor, origem, autor, provedor = "infinitepay", idioma = "pt") {
   const tel = String(ped.telefone || "").replace(/\D/g, "");
   const order_nsu = ped.codigo + "-" + aleatorio(4);
+  if (provedor === "paypal") {
+    const lg = idioma === "pt" ? "" : "&lang=" + idioma;
+    const pr = await ppCriarPedido(env, order_nsu, desc + " · " + ped.codigo + " · Iguaçu Executive Transfer", valor,
+      origem + "/reservar/pago/?pedido=" + ped.codigo + "&pp=" + order_nsu + lg, origem + "/reservar/pago/?pedido=" + ped.codigo + "&cancelado=1" + lg, idioma);
+    if (pr.erro) return pr;
+    const now = agoraIso();
+    await env.DB.batch([
+      env.DB.prepare("INSERT INTO pagamentos (pedido_id, provedor, order_nsu, descricao, valor, url, status, criado_em, autor, slug) VALUES (?,?,?,?,?,?,?,?,?,?)").bind(ped.id, "paypal", order_nsu, desc, valor, pr.url, "aguardando", now, autor, pr.id),
+      env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, autor, texto) VALUES (?,?,?,?,?)").bind(ped.id, now, "pagamento", autor, "Link PayPal gerado: " + desc + " " + brl(valor)),
+      ...(ped.status === "solicitacao" ? [env.DB.prepare("UPDATE pedidos SET status = 'pagamento_pendente', atualizado_em = ? WHERE id = ?").bind(now, ped.id),
+        env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, status_de, status_para, autor) VALUES (?,?,?,?,?,?)").bind(ped.id, now, "status", "solicitacao", "pagamento_pendente", autor)] : []),
+    ]);
+    return { url: pr.url };
+  }
   const corpo = { handle: env.INFINITEPAY_HANDLE, order_nsu, redirect_url: origem + "/reservar/pago/?pedido=" + ped.codigo,
     webhook_url: origem + "/api/pagamentos/infinitepay",
     items: [{ description: (desc + " · reserva " + ped.codigo + " · Iguaçu Executive Transfer").slice(0, 120), price: Math.round(valor * 100), quantity: 1 }],
@@ -767,7 +843,7 @@ async function admin(req, env, url) {
         FROM corridas c JOIN parceiros pa ON pa.id = c.parceiro_id WHERE c.pedido_id = ? ORDER BY c.id`).bind(p.id).all()).results;
       delete p.token; delete p.ip_hash;
       const pagamentos = (await env.DB.prepare("SELECT id, provedor, descricao, valor, url, status, criado_em, pago_em, valor_pago, metodo, parcelas, recibo_url FROM pagamentos WHERE pedido_id = ? ORDER BY id").bind(p.id).all()).results;
-      return json({ ok: true, pedido: p, itens, eventos, parceiro: parc, corridas, pagamentos, pagamentoOnline: !!env.INFINITEPAY_HANDLE });
+      return json({ ok: true, pedido: p, itens, eventos, parceiro: parc, corridas, pagamentos, pagamentoOnline: !!env.INFINITEPAY_HANDLE || temPayPal(env), infinitepay: !!env.INFINITEPAY_HANDLE, paypal: temPayPal(env) });
     }
     if (req.method === "POST" && partes[2] === "status") {
       let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
@@ -781,7 +857,7 @@ async function admin(req, env, url) {
       return json({ ok: true });
     }
     if (req.method === "POST" && partes[2] === "pagamento") {
-      if (!env.INFINITEPAY_HANDLE) return erro("sem_infinitepay");
+      if (!env.INFINITEPAY_HANDLE && !temPayPal(env)) return erro("sem_infinitepay");
       if (p.status === "cancelada") return erro("pedido_cancelado");
       let b; try { b = await lerJson(req, 2000); } catch { return erro("json_invalido"); }
       const pagos = (await env.DB.prepare("SELECT COALESCE(SUM(valor), 0) AS v FROM pagamentos WHERE pedido_id = ? AND status = 'pago'").bind(p.id).first()).v;
@@ -792,8 +868,10 @@ async function admin(req, env, url) {
       else { desc = "Pagamento"; valor = Number(String(b.valor || "").replace(/\./g, "").replace(",", ".")); }
       valor = Math.round(valor * 100) / 100;
       if (!(valor >= 1 && valor <= restante + 0.001)) return erro("valor", 400, { restante });
-      const r = await gerarLinkPagamento(env, p, desc, valor, url.origin, user.email);
-      if (r.erro) return erro("infinitepay", 502, { detalhe: r.erro });
+      const prov = b.provedor === "paypal" ? "paypal" : "infinitepay";
+      if (prov === "paypal" && !temPayPal(env)) return erro("sem_paypal");
+      const r = await gerarLinkPagamento(env, p, desc, valor, url.origin, user.email, prov, ["en", "es"].includes(p.idioma) ? p.idioma : "pt");
+      if (r.erro) return erro(prov, 502, { detalhe: r.erro });
       return json({ ok: true, url: r.url, valor, descricao: desc });
     }
     if (req.method === "POST" && partes[2] === "corrida") {
@@ -878,6 +956,11 @@ async function api(req, env, ctx, url) {
   if (p.startsWith("/api/parceiro/") && m === "GET") return areaParceiro(req, env, url);
   if (p.startsWith("/api/motorista/")) return areaMotorista(req, env, url);
   if (p === "/api/pagamentos/infinitepay" && m === "POST") return avisoInfinitePay(req, env, ctx, url);
+  if (p === "/api/pagamentos/paypal/capturar" && m === "POST") {
+    let b; try { b = await lerJson(req, 2000); } catch { return erro("json_invalido"); }
+    const r = await capturarPayPal(env, b, url.origin);
+    return json(r, r.ok ? 200 : 400);
+  }
   if (p === "/api/pagamentos/conferir" && m === "POST") {
     let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
     const r = await confirmarPagamento(env, b, url.origin);
