@@ -80,6 +80,12 @@ async function prepararBanco(env) {
       criado_em TEXT NOT NULL, respondido_em TEXT, autor TEXT, motivo TEXT)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_corridas_parc ON corridas(parceiro_id, status)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_corridas_item ON corridas(item_id)`),
+    // links de pagamento online (InfinitePay): um pedido pode ter vários (sinal, restante...)
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS pagamentos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, pedido_id INTEGER NOT NULL REFERENCES pedidos(id), provedor TEXT NOT NULL, order_nsu TEXT UNIQUE NOT NULL,
+      descricao TEXT, valor REAL NOT NULL, url TEXT, status TEXT NOT NULL, criado_em TEXT NOT NULL, autor TEXT,
+      pago_em TEXT, valor_pago REAL, metodo TEXT, parcelas INTEGER, slug TEXT, transaction_nsu TEXT, recibo_url TEXT)`),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_pagamentos_pedido ON pagamentos(pedido_id)`),
   ]);
   // coluna nova em tabela antiga: só cria se ainda não existir
   const cols = (await env.DB.prepare("PRAGMA table_info(pedidos)").all()).results.map((c) => c.name);
@@ -493,6 +499,56 @@ async function verificarAccess(req, env) {
   } catch (e) { console.error("access", e && e.message); return null; }
 }
 
+/* ---------------- pagamento online (InfinitePay Checkout) ----------------
+   O painel gera o link com o valor certo; o cliente paga por Pix ou cartão na página do InfinitePay.
+   A confirmação NUNCA confia só no aviso recebido: sempre conferimos no /payment_check do InfinitePay. */
+const IP_API = "https://api.checkout.infinitepay.io";
+async function ipCriarLink(env, corpo) {
+  if (env.INFINITEPAY_MOCK === "1") return { url: corpo.redirect_url + "&mock=1&order_nsu=" + encodeURIComponent(corpo.order_nsu) + "&slug=mock-" + corpo.order_nsu + "&transaction_nsu=tx-" + corpo.order_nsu + "&capture_method=pix" };
+  const r = await fetch(IP_API + "/links", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(corpo), signal: AbortSignal.timeout(12000) });
+  const t = await r.text(); let d = {}; try { d = JSON.parse(t); } catch {}
+  if (!r.ok || !d.url) { console.error("infinitepay links", r.status, t.slice(0, 300)); return { erro: d.error || d.message || ("http_" + r.status) }; }
+  return { url: d.url };
+}
+async function ipConferir(env, x) {
+  if (env.INFINITEPAY_MOCK === "1") return { success: true, paid: true, amount: 0, paid_amount: null, installments: 1, capture_method: x.capture_method || "pix" };
+  const r = await fetch(IP_API + "/payment_check", { method: "POST", headers: { "content-type": "application/json" },
+    body: JSON.stringify({ handle: env.INFINITEPAY_HANDLE, order_nsu: x.order_nsu, transaction_nsu: x.transaction_nsu, slug: x.slug }), signal: AbortSignal.timeout(12000) });
+  try { return await r.json(); } catch { return { success: false }; }
+}
+/* Confere e, se pago, marca o pagamento e o pedido. Usado pelo aviso do InfinitePay e pela página de retorno do cliente. */
+async function confirmarPagamento(env, x, origem) {
+  const s = (v, n = 120) => String(v == null ? "" : v).trim().slice(0, n);
+  const dados = { order_nsu: s(x.order_nsu), transaction_nsu: s(x.transaction_nsu), slug: s(x.slug), capture_method: s(x.capture_method, 20) };
+  if (!/^IET-[A-Z0-9]{6}-[A-Z0-9]{4}$/.test(dados.order_nsu) || !dados.slug || !dados.transaction_nsu) return { ok: false, erro: "dados" };
+  await prepararBanco(env);
+  const pg = await env.DB.prepare("SELECT pg.*, p.codigo, p.status AS pedido_status, p.nome FROM pagamentos pg JOIN pedidos p ON p.id = pg.pedido_id WHERE pg.order_nsu = ?").bind(dados.order_nsu).first();
+  if (!pg) return { ok: false, erro: "nao_encontrado" };
+  if (pg.status === "pago") return { ok: true, pago: true, codigo: pg.codigo, ja: true };
+  const c = await ipConferir(env, dados);
+  if (!c || !c.success || !c.paid) return { ok: true, pago: false, codigo: pg.codigo };
+  const valorPago = c.paid_amount != null ? c.paid_amount / 100 : pg.valor, now = agoraIso();
+  const r = await env.DB.prepare("UPDATE pagamentos SET status = 'pago', pago_em = ?, valor_pago = ?, metodo = ?, parcelas = ?, slug = ?, transaction_nsu = ?, recibo_url = ? WHERE id = ? AND status != 'pago'")
+    .bind(now, valorPago, s(c.capture_method || dados.capture_method, 20), c.installments || 1, dados.slug, dados.transaction_nsu, s(x.receipt_url, 300) || null, pg.id).run();
+  if (!r.meta || !r.meta.changes) return { ok: true, pago: true, codigo: pg.codigo, ja: true };
+  const metodo = (c.capture_method || dados.capture_method) === "pix" ? "Pix" : "cartão" + (c.installments > 1 ? " em " + c.installments + "x" : "");
+  const texto = "Pagamento recebido: " + brl(valorPago) + " por " + metodo + " (" + (pg.descricao || "pagamento") + ")";
+  const ops = [env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, autor, texto) VALUES (?,?,?,?,?)").bind(pg.pedido_id, now, "pagamento", "InfinitePay", texto)];
+  if (["solicitacao", "pagamento_pendente"].includes(pg.pedido_status)) {
+    ops.push(env.DB.prepare("UPDATE pedidos SET status = 'aprovado', atualizado_em = ? WHERE id = ?").bind(now, pg.pedido_id));
+    ops.push(env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, status_de, status_para, autor, texto) VALUES (?,?,?,?,?,?,?)").bind(pg.pedido_id, now, "status", pg.pedido_status, "aprovado", "InfinitePay", null));
+  }
+  await env.DB.batch(ops);
+  await enviarAviso(env, "Pagamento recebido " + pg.codigo + " · " + brl(valorPago), texto + "\nCliente: " + pg.nome + "\n\nPainel: " + origem + "/admin/#" + pg.codigo);
+  return { ok: true, pago: true, codigo: pg.codigo };
+}
+async function avisoInfinitePay(req, env, ctx, url) {
+  let b; try { b = await lerJson(req, 20000); } catch { return erro("json_invalido"); }
+  // responde rápido (o InfinitePay espera ~1 s) e confere em segundo plano
+  ctx.waitUntil(confirmarPagamento(env, b, url.origin).catch((e) => console.error("ip aviso", e && e.message)));
+  return json({ ok: true });
+}
+
 /* Preços: lista de serviços com o padrão e o valor atual; salvar troca um ou vários valores de uma vez */
 async function adminPrecos(req, env, user) {
   if (req.method === "GET") {
@@ -679,7 +735,8 @@ async function admin(req, env, url) {
       const corridas = (await env.DB.prepare(`SELECT c.id, c.item_id, c.status, c.repasse, c.obs, c.motivo, c.criado_em, c.respondido_em, pa.codigo, COALESCE(pa.empresa, pa.responsavel) AS nome, pa.telefone
         FROM corridas c JOIN parceiros pa ON pa.id = c.parceiro_id WHERE c.pedido_id = ? ORDER BY c.id`).bind(p.id).all()).results;
       delete p.token; delete p.ip_hash;
-      return json({ ok: true, pedido: p, itens, eventos, parceiro: parc, corridas });
+      const pagamentos = (await env.DB.prepare("SELECT id, provedor, descricao, valor, url, status, criado_em, pago_em, valor_pago, metodo, parcelas, recibo_url FROM pagamentos WHERE pedido_id = ? ORDER BY id").bind(p.id).all()).results;
+      return json({ ok: true, pedido: p, itens, eventos, parceiro: parc, corridas, pagamentos, pagamentoOnline: !!env.INFINITEPAY_HANDLE });
     }
     if (req.method === "POST" && partes[2] === "status") {
       let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
@@ -691,6 +748,34 @@ async function admin(req, env, url) {
           .bind(p.id, now, "status", p.status, b.status, user.email, String(b.nota || "").slice(0, 1000) || null),
       ]);
       return json({ ok: true });
+    }
+    if (req.method === "POST" && partes[2] === "pagamento") {
+      if (!env.INFINITEPAY_HANDLE) return erro("sem_infinitepay");
+      if (p.status === "cancelada") return erro("pedido_cancelado");
+      let b; try { b = await lerJson(req, 2000); } catch { return erro("json_invalido"); }
+      const pagos = (await env.DB.prepare("SELECT COALESCE(SUM(valor), 0) AS v FROM pagamentos WHERE pedido_id = ? AND status = 'pago'").bind(p.id).first()).v;
+      const restante = Math.round((p.total - pagos) * 100) / 100;
+      const tipos = { sinal: ["Sinal", p.valor_agora], total: ["Valor total", p.total], restante: ["Valor restante", restante] };
+      let desc, valor;
+      if (tipos[b.tipo]) [desc, valor] = tipos[b.tipo];
+      else { desc = "Pagamento"; valor = Number(String(b.valor || "").replace(/\./g, "").replace(",", ".")); }
+      valor = Math.round(valor * 100) / 100;
+      if (!(valor >= 1 && valor <= restante + 0.001)) return erro("valor", 400, { restante });
+      const order_nsu = p.codigo + "-" + aleatorio(4);
+      const corpo = { handle: env.INFINITEPAY_HANDLE, order_nsu, redirect_url: url.origin + "/reservar/pago/?pedido=" + p.codigo,
+        webhook_url: url.origin + "/api/pagamentos/infinitepay",
+        items: [{ description: (desc + " · reserva " + p.codigo + " · Iguaçu Executive Transfer").slice(0, 120), price: Math.round(valor * 100), quantity: 1 }],
+        customer: { name: p.nome, email: p.email, ...(String(p.telefone).replace(/\D/g, "").length >= 10 ? { phone_number: "+" + (String(p.telefone).replace(/\D/g, "").length <= 11 ? "55" : "") + String(p.telefone).replace(/\D/g, "") } : {}) } };
+      const r = await ipCriarLink(env, corpo);
+      if (r.erro) return erro("infinitepay", 502, { detalhe: r.erro });
+      const now = agoraIso();
+      await env.DB.batch([
+        env.DB.prepare("INSERT INTO pagamentos (pedido_id, provedor, order_nsu, descricao, valor, url, status, criado_em, autor) VALUES (?,?,?,?,?,?,?,?,?)").bind(p.id, "infinitepay", order_nsu, desc, valor, r.url, "aguardando", now, user.email),
+        env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, autor, texto) VALUES (?,?,?,?,?)").bind(p.id, now, "pagamento", user.email, "Link de pagamento gerado: " + desc + " " + brl(valor)),
+        ...(p.status === "solicitacao" ? [env.DB.prepare("UPDATE pedidos SET status = 'pagamento_pendente', atualizado_em = ? WHERE id = ?").bind(now, p.id),
+          env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, status_de, status_para, autor) VALUES (?,?,?,?,?,?)").bind(p.id, now, "status", "solicitacao", "pagamento_pendente", user.email)] : []),
+      ]);
+      return json({ ok: true, url: r.url, valor, descricao: desc });
     }
     if (req.method === "POST" && partes[2] === "corrida") {
       let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
@@ -773,6 +858,12 @@ async function api(req, env, ctx, url) {
   if (p === "/api/parceiros" && m === "POST") return cadastrarParceiro(req, env, ctx);
   if (p.startsWith("/api/parceiro/") && m === "GET") return areaParceiro(req, env, url);
   if (p.startsWith("/api/motorista/")) return areaMotorista(req, env, url);
+  if (p === "/api/pagamentos/infinitepay" && m === "POST") return avisoInfinitePay(req, env, ctx, url);
+  if (p === "/api/pagamentos/conferir" && m === "POST") {
+    let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
+    const r = await confirmarPagamento(env, b, url.origin);
+    return json(r, r.ok ? 200 : 400);
+  }
   if (p === "/api/pacotes" && m === "POST") return criarPacote(req, env);
   const mp = p.match(/^\/api\/pacotes\/([A-Z0-9]{7})$/);
   if (mp && m === "GET") return verPacote(env, mp[1]);

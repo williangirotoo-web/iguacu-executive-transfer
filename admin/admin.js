@@ -65,6 +65,30 @@
     }
     return h + "</div>";
   }
+  var PST = { aguardando: "Aguardando pagamento", pago: "Pago" };
+  function blocoPagamento(r) {
+    var p = r.pedido, pgs = r.pagamentos || [];
+    var pago = pgs.filter(function (x) { return x.status === "pago"; }).reduce(function (a, x) { return a + x.valor; }, 0);
+    var rest = Math.round((p.total - pago) * 100) / 100;
+    var h = "<h3>Pagamento online</h3>";
+    h += pgs.map(function (x) {
+      return '<div class="ev"><b>' + esc(x.descricao) + " " + brl(x.valor) + '</b> · <span class="cst cst-' + (x.status === "pago" ? "aceita" : "ofertada") + '">' + esc(PST[x.status] || x.status) + "</span>" +
+        (x.status === "pago" ? " em " + esc(quando(x.pago_em)) + " · " + esc(x.metodo === "pix" ? "Pix" : "cartão" + (x.parcelas > 1 ? " " + x.parcelas + "x" : "")) + (x.recibo_url ? ' · <a style="color:var(--gold)" href="' + esc(x.recibo_url) + '" target="_blank" rel="noopener">recibo</a>' : "")
+          : ' <a class="btn wa mini" target="_blank" rel="noopener" href="' + esc(waCliente(p, msgPag(p, x.descricao, x.valor, x.url))) + '">Enviar no WhatsApp</a> <button class="btn gh mini" type="button" data-copiar="' + esc(x.url) + '">Copiar link</button>') + "</div>";
+    }).join("");
+    h += '<p class="svc">Pago: <b>' + brl(pago) + "</b> · Falta: <b>" + brl(rest) + "</b></p>";
+    if (!r.pagamentoOnline) return h + '<p class="svc">Pagamento online ainda não configurado (falta a InfiniteTag no site).</p>';
+    if (p.status === "cancelada" || rest < 1) return h;
+    var opts = [["sinal", "Sinal · " + brl(p.valor_agora)], ["total", "Total · " + brl(p.total)]];
+    if (pago > 0) opts = [["restante", "Restante · " + brl(rest)]];
+    opts.push(["outro", "Outro valor"]);
+    h += '<div class="ofr"><select id="pgTipo">' + opts.filter(function (o) { return o[0] !== "sinal" || p.valor_agora < p.total; }).map(function (o) { return '<option value="' + o[0] + '">' + esc(o[1]) + "</option>"; }).join("") +
+      '</select> <input id="pgValor" inputmode="decimal" placeholder="Valor R$" style="width:120px" hidden> <button class="btn mini" id="pgGerar" type="button">Gerar link de pagamento</button></div><div id="pgRes"></div>';
+    return h;
+  }
+  function msgPag(p, desc, valor, link) {
+    return "Olá, " + p.nome.split(" ")[0] + "! Segue o link para pagamento da sua reserva " + p.codigo + " (" + desc.toLowerCase() + ": " + brl(valor) + "). Você pode pagar por Pix ou cartão:\n" + link;
+  }
   function abrir(cod) {
     Promise.all([api("/api/admin/pedidos/" + encodeURIComponent(cod)), api("/api/admin/motoristas").catch(function () { return { motoristas: [] }; })]).then(function (rr) {
       var r = rr[0], mots = rr[1].motoristas || [];
@@ -89,8 +113,9 @@
           (it.dias ? "<span>Diárias</span><span>" + esc(it.dias) + "</span>" : "") + (it.data_especial ? "<span>Data especial</span><span>sim (+5%)</span>" : "") +
           "<span>Valor</span><span><b>" + brl(it.valor) + "</b> · " + (it.modo === "total" ? "100% na reserva" : "sinal: " + brl(it.valor_agora)) + "</span></div>" + blocoMotorista(it, r.corridas || [], mots, p) + "</div>";
       }).join("");
+      h += blocoPagamento(r);
       h += '<h3>Histórico</h3>' + r.eventos.map(function (e) {
-        return '<div class="ev"><b>' + esc(quando(e.em)) + "</b> · " + esc(e.autor || "") + " · " + (e.tipo === "status" ? esc(STATUS[e.status_de] || e.status_de) + " → " + esc(STATUS[e.status_para] || e.status_para) : esc(e.tipo === "criado" ? "Pedido criado" : e.tipo === "corrida" ? "Motorista" : "Nota")) +
+        return '<div class="ev"><b>' + esc(quando(e.em)) + "</b> · " + esc(e.autor || "") + " · " + (e.tipo === "status" ? esc(STATUS[e.status_de] || e.status_de) + " → " + esc(STATUS[e.status_para] || e.status_para) : esc(e.tipo === "criado" ? "Pedido criado" : e.tipo === "corrida" ? "Motorista" : e.tipo === "pagamento" ? "Pagamento" : "Nota")) +
           (e.texto ? "<br>" + esc(e.texto) : "") + "</div>";
       }).join("") + '<p><input id="nota" placeholder="Adicionar nota interna" style="width:70%"> <button class="btn gh" id="salvarNota" type="button">Adicionar</button></p></div>';
       $("#lista").hidden = true; var d = $("#detalhe"); d.hidden = false; d.innerHTML = h; scrollTo(0, 0);
@@ -99,6 +124,21 @@
         this.disabled = true;
         api("/api/admin/pedidos/" + p.codigo + "/status", { status: $("#novoSt").value, nota: $("#notaSt").value }).then(function () { abrir(p.codigo); });
       };
+      var pt = d.querySelector("#pgTipo");
+      if (pt) {
+        pt.onchange = function () { d.querySelector("#pgValor").hidden = pt.value !== "outro"; };
+        d.querySelector("#pgGerar").onclick = function () {
+          var b = this; b.disabled = true;
+          api("/api/admin/pedidos/" + p.codigo + "/pagamento", { tipo: pt.value, valor: d.querySelector("#pgValor").value }).then(function (x) {
+            b.disabled = false;
+            if (!x.ok) { d.querySelector("#pgRes").innerHTML = '<p class="msg">' + esc({ valor: "Valor inválido. Falta pagar " + brl(x.restante || 0) + ".", sem_infinitepay: "Pagamento online não configurado.", infinitepay: "O InfinitePay recusou: " + (x.detalhe || "") + ". Confira se o checkout está ativado no app InfinitePay." }[x.erro] || "Erro: " + x.erro) + "</p>"; return; }
+            abrir(p.codigo);
+          });
+        };
+      }
+      d.querySelectorAll("[data-copiar]").forEach(function (b) {
+        b.onclick = function () { try { navigator.clipboard.writeText(b.dataset.copiar); b.textContent = "Copiado"; } catch (e) { prompt("Copie o link:", b.dataset.copiar); } };
+      });
       d.querySelectorAll("[data-ofertar]").forEach(function (b) {
         b.onclick = function () {
           var id = b.dataset.ofertar, q = function (a) { return d.querySelector("[" + a + '="' + id + '"]'); };
