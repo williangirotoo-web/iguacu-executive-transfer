@@ -48,7 +48,7 @@ export function normalizarItem(x) {
   return {
     servico: s(x.servico, 40), categoria: s(x.categoria, 10),
     data: s(x.data, 10), hora: s(x.hora, 5), sentido: x.sentido === "saida" ? "saida" : "chegada",
-    voo: s(x.voo, 20), origem: s(x.origem), destino: s(x.destino),
+    voo: s(x.voo, 20), origem: s(x.origem), destino: s(x.destino), obs: s(x.obs, 300),
     pax: Math.max(1, int(x.pax, 1)), malas: Math.max(0, int(x.malas, 0)),
     cadeirinhas: Math.max(0, int(x.cadeirinhas, 0)), pet: !!x.pet,
     horasExtras: Math.max(0, int(x.horasExtras, 0)), horas: int(x.horas, POR_HORA.minimoHoras),

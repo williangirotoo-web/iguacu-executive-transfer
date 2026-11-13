@@ -73,7 +73,7 @@ textarea{width:100%;background:#0f0f0f;border:1px solid rgba(240,237,232,.2);bor
     kv.push(["Passageiros",c.pax+" · "+c.malas+" mala(s)"+(c.cadeirinhas?" · "+c.cadeirinhas+" cadeirinha(s)":"")+(c.pet?" · com pet":"")]);
     if(c.horas)kv.push(["Horas",c.horas]);if(c.dias)kv.push(["Diárias",c.dias]);if(c.horas_extras)kv.push(["Horas extras",c.horas_extras]);
     if(c.passageiro)kv.push(["Passageiro",c.passageiro]);if(c.telefone)kv.push(["Telefone",c.telefone]);if(c.observacoes)kv.push(["Observações",c.observacoes]);
-    if(c.obs)kv.push(["Recado",c.obs]);
+    if(c.obs_item)kv.push(["Obs. do cliente",c.obs_item]);if(c.obs)kv.push(["Recado",c.obs]);
     if(c.pedido_status==="cancelada")kv.push(["Atenção","Reserva cancelada pelo cliente"]);
     var h='<div class="cr'+(c.status==="ofertada"?" nova":"")+'"><div class="q">'+esc(dataBr(c.data))+" às "+esc(c.hora)+' <span class="tag tag-'+esc(c.status)+'">'+esc(TAG[c.status]||c.status)+'</span></div><div class="mut" style="font-size:.8rem">'+esc(c.pedido)+"</div>";
     h+='<div class="kv">'+kv.map(function(x){return"<span>"+esc(x[0])+"</span><span>"+esc(x[1])+"</span>"}).join("")+"</div>";

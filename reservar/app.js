@@ -24,7 +24,7 @@
       apartir: "a partir de", porveiculo: "por veículo", escolher: "Escolher", consulta: "Sob consulta", pedir: "Pedir cotação no WhatsApp",
       consTit: "Grupos e experiências", consDesc: "Atendimento personalizado pelo WhatsApp:",
       data: "Data", hora: "Horário", horaVoo: "Horário do voo", sentido: "Sentido", chegada: "Chegada (aeroporto → hotel)", saida: "Saída (hotel → aeroporto)",
-      voo: "Número do voo", origem: "Buscar em (hotel ou endereço)", destino: "Levar para", destinoOpc: "Levar para (opcional)",
+      voo: "Número do voo", localCheg: "Levar para (hotel ou endereço)", localSai: "Buscar em (hotel ou endereço)", obsItem: "Observações (opcional)", obsPh: "Ex.: placa com nome, parada no caminho, criança de colo", origem: "Buscar em (hotel ou endereço)", destino: "Levar para", destinoOpc: "Levar para (opcional)",
       pax: "Passageiros", malas: "Malas grandes", cadeirinhas: "Cadeirinhas infantis (R$ {v} cada)", pet: "Vou levar um pet", cadNota: "Cadeirinha ou assento de elevação: obrigatório para crianças até 10 anos. Disponível do Executivo para cima.", incl: "Incluído: carro exclusivo para você, motorista profissional, pedágios e cancelamento grátis até 48 h antes.", inclFr: "Incluído: carro exclusivo para você, motorista profissional, travessia da fronteira com o motorista, pedágios e cancelamento grátis até 48 h antes. Ingressos dos atrativos são pagos à parte.", duvidas: "Dúvidas antes de reservar",
       horasExtras: "Horas extras de espera", horas: "Quantas horas (o pacote inclui 5 h)", dias: "Quantas diárias",
       categoria: "Categoria do veículo", ate: "até {n} passageiros", malasTxt: "{n} malas grandes", malasMao: " + {n} de mão",
@@ -72,7 +72,7 @@
       apartir: "from", porveiculo: "per vehicle", escolher: "Select", consulta: "On request", pedir: "Request a quote on WhatsApp",
       consTit: "Groups & experiences", consDesc: "Personal service via WhatsApp:",
       data: "Date", hora: "Time", horaVoo: "Flight time", sentido: "Direction", chegada: "Arrival (airport → hotel)", saida: "Departure (hotel → airport)",
-      voo: "Flight number", origem: "Pick-up (hotel or address)", destino: "Drop-off", destinoOpc: "Drop-off (optional)",
+      voo: "Flight number", localCheg: "Drop-off (hotel or address)", localSai: "Pick-up (hotel or address)", obsItem: "Notes (optional)", obsPh: "E.g.: name sign, stop on the way, infant", origem: "Pick-up (hotel or address)", destino: "Drop-off", destinoOpc: "Drop-off (optional)",
       pax: "Passengers", malas: "Large suitcases", cadeirinhas: "Child car seats (R$ {v} each)", pet: "I'm bringing a pet", cadNota: "Child seat or booster: required for children up to 10 years old. Available from Executive upwards.", incl: "Included: private car just for you, professional driver, tolls and free cancellation up to 48 h before.", inclFr: "Included: private car just for you, professional driver, border crossing with the driver, tolls and free cancellation up to 48 h before. Attraction tickets are paid separately.", duvidas: "Questions before booking",
       horasExtras: "Extra waiting hours", horas: "How many hours (package includes 5 h)", dias: "How many days",
       categoria: "Vehicle category", ate: "up to {n} passengers", malasTxt: "{n} large suitcases", malasMao: " + {n} carry-on",
@@ -120,7 +120,7 @@
       apartir: "desde", porveiculo: "por vehículo", escolher: "Elegir", consulta: "A consultar", pedir: "Pedir cotización por WhatsApp",
       consTit: "Grupos y experiencias", consDesc: "Atención personalizada por WhatsApp:",
       data: "Fecha", hora: "Horario", horaVoo: "Horario del vuelo", sentido: "Sentido", chegada: "Llegada (aeropuerto → hotel)", saida: "Salida (hotel → aeropuerto)",
-      voo: "Número de vuelo", origem: "Buscar en (hotel o dirección)", destino: "Llevar a", destinoOpc: "Llevar a (opcional)",
+      voo: "Número de vuelo", localCheg: "Llevar a (hotel o dirección)", localSai: "Buscar en (hotel o dirección)", obsItem: "Observaciones (opcional)", obsPh: "Ej.: cartel con nombre, parada en el camino, bebé", origem: "Buscar en (hotel o dirección)", destino: "Llevar a", destinoOpc: "Llevar a (opcional)",
       pax: "Pasajeros", malas: "Valijas grandes", cadeirinhas: "Sillas para niños (R$ {v} c/u)", pet: "Voy con mascota", cadNota: "Silla o elevador infantil: obligatorio para niños de hasta 10 años. Disponible desde Ejecutivo.", incl: "Incluido: auto exclusivo para usted, chofer profesional, peajes y cancelación gratis hasta 48 h antes.", inclFr: "Incluido: auto exclusivo para usted, chofer profesional, cruce de frontera con el chofer, peajes y cancelación gratis hasta 48 h antes. Las entradas de los atractivos se pagan aparte.", duvidas: "Dudas antes de reservar",
       horasExtras: "Horas extra de espera", horas: "Cuántas horas (el paquete incluye 5 h)", dias: "Cuántos días",
       categoria: "Categoría del vehículo", ate: "hasta {n} pasajeros", malasTxt: "{n} valijas grandes", malasMao: " + {n} de mano",
@@ -339,6 +339,7 @@
   function field(l, input, cls) { return '<label class="r-f' + (cls ? " " + cls : "") + '"><span>' + esc(l) + "</span>" + input + "</label>"; }
   function num(n, v, mi, ma) { return '<input type="number" inputmode="numeric" name="' + n + '" value="' + v + '" min="' + mi + '" max="' + ma + '">'; }
   function hoje() { var d = new Date(Date.now() - 3 * 3600e3); return d.toISOString().slice(0, 10); } // horário de Foz (UTC-3)
+  function aeroNome(id) { return /^igr/.test(id) ? "Aeroporto de Puerto Iguazú (IGR)" : "Aeroporto de Foz do Iguaçu (IGU)"; }
   function renderModal() {
     var s = svc(cur.servico), m = $("#r-modal-b"), cfg = CAT.config;
     var f = '<button type="button" class="r-x" data-close aria-label="' + esc(t("cancelar")) + '">×</button><h3>' + esc(L(s.nome)) + "</h3><p class=\"r-sm\">" + esc(L(s.desc)) + "</p>";
@@ -354,10 +355,13 @@
         field(t("kmHoraVolta") + " *", '<input type="time" name="horaVolta"' + (cur.horaVolta ? ' value="' + esc(cur.horaVolta) + '"' : "") + ">") + '</div><p class="r-sm">' + esc(t("kmVoltaDica", { h: pk.idaVoltaEsperaHoras })) + "</p></div>" +
         '<div class="r-kminfo" id="r-kminfo" aria-live="polite"></div>' +
         '<p class="r-note">' + esc(t("kmRegras", { a: pk.acrescimoAcimaKm, p: pk.acrescimoPct })) + "</p>";
-    } else
+    } else if (s.sentido)
+    f += '<label class="r-f"><span id="r-local-l">' + esc(t(cur.sentido === "saida" ? "localSai" : "localCheg") + " *") + '</span><input name="local" required maxlength="160" autocomplete="street-address"></label>';
+    else
     f += '<div class="r-row">' + field(t("origem") + " *", '<input name="origem" required maxlength="160" autocomplete="street-address">') +
       field(s.tipo === "transfer" || s.tipo === "viagem" ? t("destino") : t("destinoOpc"), '<input name="destino" maxlength="160">') + "</div>";
     f += '<div class="r-row">' + field(t("pax"), num("pax", cur.pax, 1, 15)) + field(t("malas"), num("malas", cur.malas, 0, 15)) + "</div>";
+    f += field(t("obsItem"), '<textarea name="obs" rows="2" maxlength="300" placeholder="' + esc(t("obsPh")) + '"></textarea>');
     if (s.tipo === "hora") f += field(t("horas"), num("horas", cur.horas, cfg.porHora.minimoHoras, cfg.porHora.maximoHoras));
     if (s.tipo === "diaria") f += field(t("dias"), num("dias", cur.dias, 1, 15));
     if (s.espera || s.tipo === "diaria") f += field(t("horasExtras"), num("horasExtras", cur.horasExtras, 0, 8));
@@ -474,7 +478,13 @@
   function renderCats() { var el = $("#r-cats"); if (el) el.innerHTML = catsHtml(); }
   function readModal() {
     var fm = $("#r-modal-b"), g = function (n) { var el = fm.querySelector('[name="' + n + '"]'); return el ? (el.type === "checkbox" ? el.checked : el.value) : undefined; };
-    ["sentido", "data", "hora", "voo", "origem", "destino"].forEach(function (k) { var v = g(k); if (v !== undefined) cur[k] = String(v).trim(); });
+    ["sentido", "data", "hora", "voo", "origem", "destino", "obs"].forEach(function (k) { var v = g(k); if (v !== undefined) cur[k] = String(v).trim(); });
+    if (g("local") !== undefined) {
+      var loc = String(g("local")).trim(), ae = aeroNome(cur.servico);
+      if (cur.sentido === "saida") { cur.origem = loc; cur.destino = ae; } else { cur.origem = ae; cur.destino = loc; }
+      cur.local = loc;
+      var ll = $("#r-local-l"); if (ll) ll.textContent = t(cur.sentido === "saida" ? "localSai" : "localCheg") + " *";
+    }
     ["pax", "malas", "cadeirinhas", "horasExtras", "horas", "dias"].forEach(function (k) { var v = g(k); if (v !== undefined) cur[k] = Math.max(0, parseInt(v, 10) || 0); });
     if (cur.pax < 1) cur.pax = 1;
     cur.pet = !!g("pet");
@@ -520,6 +530,7 @@
     if (it.voo) parts.push(t("voo") + ": " + it.voo);
     parts.push(t("origem").replace(/ \(.*\)/, "") + ": " + it.origem);
     if (it.destino) parts.push(t("destino") + ": " + it.destino);
+    if (it.obs) parts.push(t("obsItem").replace(/ \(.*\)/, "") + ": " + it.obs);
     if (it.idaVolta && it.dataVolta) parts.push(t("voltaTxt") + ": " + fmtDate(it.dataVolta) + " " + it.horaVolta);
     parts.push(t("pax") + ": " + it.pax + " · " + t("malas") + ": " + it.malas);
     return parts;
@@ -738,7 +749,7 @@
     if (document.activeElement && document.activeElement.dataset && document.activeElement.dataset.ac) { var ul0 = $("#r-acl-" + document.activeElement.dataset.ac); if (ul0 && !ul0.hidden && acRes[document.activeElement.dataset.ac] && acRes[document.activeElement.dataset.ac].length) { acPick(document.activeElement.dataset.ac, 0); return; } }
     if (svc(cur.servico).tipo === "km" && (!cur.de || !cur.para)) { er.textContent = t("e_rota_falta"); return; }
     if (svc(cur.servico).tipo === "km" && cur.idaVolta && (!cur.dataVolta || !cur.horaVolta)) { er.textContent = t("e_volta_falta"); return; }
-    if (!cur.origem || !cur.data || !cur.hora) { er.textContent = t("e_campos"); return; }
+    if (!cur.origem || !cur.data || !cur.hora || (svc(cur.servico).sentido && !cur.local)) { er.textContent = t("e_campos"); return; }
     var q = cur.categoria && quotes[cur.categoria];
     if (!q || !q.ok) { er.textContent = t("e_cat"); return; }
     var item = JSON.parse(JSON.stringify(cur)); item.cot = { valor: q.valor, modos: q.modos, km: q.km };
