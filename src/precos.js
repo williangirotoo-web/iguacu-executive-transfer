@@ -27,7 +27,7 @@ export const CONFIG = {
   pagamento: { comum: "total", exec: "escolha", suv: "escolha", sete: "total", luxo: "sinal", van: "sinal" },
   pagamentoViagens: "sinal",
   sinalPct: 50,
-  parcelasMax: 6,
+  parcelasMax: 12,
 };
 
 export const CATEGORIAS = {
