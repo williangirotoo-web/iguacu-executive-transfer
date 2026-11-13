@@ -25,7 +25,7 @@
       consTit: "Grupos e experiências", consDesc: "Atendimento personalizado pelo WhatsApp:",
       data: "Data", hora: "Horário", horaVoo: "Horário do voo", sentido: "Sentido", chegada: "Chegada (aeroporto → hotel)", saida: "Saída (hotel → aeroporto)",
       voo: "Número do voo", origem: "Buscar em (hotel ou endereço)", destino: "Levar para", destinoOpc: "Levar para (opcional)",
-      pax: "Passageiros", malas: "Malas grandes", cadeirinhas: "Cadeirinhas infantis (R$ {v} cada)", pet: "Vou levar um pet",
+      pax: "Passageiros", malas: "Malas grandes", cadeirinhas: "Cadeirinhas infantis (R$ {v} cada)", pet: "Vou levar um pet", cadNota: "Cadeirinha ou assento de elevação: obrigatório para crianças até 10 anos. Disponível do Executivo para cima.", incl: "Incluído: carro exclusivo para você, motorista profissional, pedágios e cancelamento grátis até 48 h antes.", inclFr: "Incluído: carro exclusivo para você, motorista profissional, travessia da fronteira com o motorista, pedágios e cancelamento grátis até 48 h antes. Ingressos dos atrativos são pagos à parte.", duvidas: "Dúvidas antes de reservar",
       horasExtras: "Horas extras de espera", horas: "Quantas horas (o pacote inclui 5 h)", dias: "Quantas diárias",
       categoria: "Categoria do veículo", ate: "até {n} passageiros", malasTxt: "{n} malas grandes", malasMao: " + {n} de mão",
       ref: "Ex.: {m}. Modelos de referência; a categoria é garantida, o modelo não.",
@@ -73,7 +73,7 @@
       consTit: "Groups & experiences", consDesc: "Personal service via WhatsApp:",
       data: "Date", hora: "Time", horaVoo: "Flight time", sentido: "Direction", chegada: "Arrival (airport → hotel)", saida: "Departure (hotel → airport)",
       voo: "Flight number", origem: "Pick-up (hotel or address)", destino: "Drop-off", destinoOpc: "Drop-off (optional)",
-      pax: "Passengers", malas: "Large suitcases", cadeirinhas: "Child car seats (R$ {v} each)", pet: "I'm bringing a pet",
+      pax: "Passengers", malas: "Large suitcases", cadeirinhas: "Child car seats (R$ {v} each)", pet: "I'm bringing a pet", cadNota: "Child seat or booster: required for children up to 10 years old. Available from Executive upwards.", incl: "Included: private car just for you, professional driver, tolls and free cancellation up to 48 h before.", inclFr: "Included: private car just for you, professional driver, border crossing with the driver, tolls and free cancellation up to 48 h before. Attraction tickets are paid separately.", duvidas: "Questions before booking",
       horasExtras: "Extra waiting hours", horas: "How many hours (package includes 5 h)", dias: "How many days",
       categoria: "Vehicle category", ate: "up to {n} passengers", malasTxt: "{n} large suitcases", malasMao: " + {n} carry-on",
       ref: "E.g. {m}. Reference models; the category is guaranteed, the model is not.",
@@ -121,7 +121,7 @@
       consTit: "Grupos y experiencias", consDesc: "Atención personalizada por WhatsApp:",
       data: "Fecha", hora: "Horario", horaVoo: "Horario del vuelo", sentido: "Sentido", chegada: "Llegada (aeropuerto → hotel)", saida: "Salida (hotel → aeropuerto)",
       voo: "Número de vuelo", origem: "Buscar en (hotel o dirección)", destino: "Llevar a", destinoOpc: "Llevar a (opcional)",
-      pax: "Pasajeros", malas: "Valijas grandes", cadeirinhas: "Sillas para niños (R$ {v} c/u)", pet: "Voy con mascota",
+      pax: "Pasajeros", malas: "Valijas grandes", cadeirinhas: "Sillas para niños (R$ {v} c/u)", pet: "Voy con mascota", cadNota: "Silla o elevador infantil: obligatorio para niños de hasta 10 años. Disponible desde Ejecutivo.", incl: "Incluido: auto exclusivo para usted, chofer profesional, peajes y cancelación gratis hasta 48 h antes.", inclFr: "Incluido: auto exclusivo para usted, chofer profesional, cruce de frontera con el chofer, peajes y cancelación gratis hasta 48 h antes. Las entradas de los atractivos se pagan aparte.", duvidas: "Dudas antes de reservar",
       horasExtras: "Horas extra de espera", horas: "Cuántas horas (el paquete incluye 5 h)", dias: "Cuántos días",
       categoria: "Categoría del vehículo", ate: "hasta {n} pasajeros", malasTxt: "{n} valijas grandes", malasMao: " + {n} de mano",
       ref: "Ej.: {m}. Modelos de referencia; la categoría está garantizada, el modelo no.",
@@ -363,6 +363,8 @@
     if (s.espera || s.tipo === "diaria") f += field(t("horasExtras"), num("horasExtras", cur.horasExtras, 0, 8));
     f += '<div class="r-row">' + field(t("cadeirinhas", { v: cfg.cadeirinha.valor }), num("cadeirinhas", cur.cadeirinhas, 0, 3)) +
       '<label class="r-chk r-chk-in"><input type="checkbox" name="pet"> <span>' + esc(t("pet")) + "</span></label></div>";
+    f += '<p class="r-note">' + esc(t("cadNota")) + "</p>";
+    f += '<p class="r-note r-incl">' + esc(t(s.fronteira || s.tipo === "km" ? "inclFr" : "incl")) + (S.lang === "pt" ? ' <a href="/pt/duvidas-transfer-foz-do-iguacu.html" target="_blank" rel="noopener">' + esc(t("duvidas")) + "</a>" : "") + "</p>";
     if (s.espera) f += '<p class="r-note">' + esc(t("inclui", { n: s.espera })) + "</p>";
     if (s.voo) f += '<p class="r-note">' + esc(t("espAero", { v: cfg.esperaAeroporto.valorHora })) + "</p>";
     if (s.tipo === "diaria" && cfg.diaria) f += '<p class="r-note" id="r-dianota">' + esc(t("diariaNota", { h: cfg.diaria.horas, km: cfg.diaria.km, v: brl(cfg.porKm.valorKm[cur.categoria || "comum"]) })) + "</p>";
