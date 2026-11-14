@@ -1,4 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect x="1.5" y="1.5" width="61" height="61" rx="13" fill="#0b0b0b" stroke="#c9a84c" stroke-width="3"/>
-  <text x="32" y="43.5" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="bold" fill="#d4b35a" text-anchor="middle" textLength="50" lengthAdjust="spacingAndGlyphs">IET</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0b0b0b"/><text x="32" y="51" font-family="Georgia, 'Times New Roman', serif" font-size="54" font-weight="bold" fill="#d4b35a" text-anchor="middle">F</text></svg>
