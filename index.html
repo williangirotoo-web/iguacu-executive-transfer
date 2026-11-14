@@ -64,6 +64,31 @@
 .hf-b a{margin-top:auto;color:var(--gold);font-weight:600;font-size:.82rem;text-decoration:none;letter-spacing:.04em}
 @media(max-width:900px){.hf-grid{grid-template-columns:1fr 1fr}.hm-nums{grid-template-columns:1fr 1fr;row-gap:14px}.hm-nums div:nth-child(3){border-left:0;padding-left:0}}
 @media(max-width:600px){.hf-grid{grid-template-columns:1fr}.hm-nums b{font-size:1.7rem}}
+
+/* ---- visual premium (só CSS, leve) ---- */
+@property --hm-ang{syntax:"<angle>";inherits:false;initial-value:0deg}
+.hm-hero .a-hero-in,.hm-hero .a-hero-card{position:relative;z-index:2}
+.hm-aura{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;mix-blend-mode:screen}
+.hm-aura i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.38}
+.hm-aura i:nth-child(1){width:46vw;height:46vw;left:-10vw;top:-12vw;background:radial-gradient(circle,rgba(212,175,55,.55),transparent 65%);animation:hmF1 18s ease-in-out infinite alternate}
+.hm-aura i:nth-child(2){width:34vw;height:34vw;right:-6vw;top:30%;background:radial-gradient(circle,rgba(243,220,142,.35),transparent 65%);animation:hmF2 22s ease-in-out infinite alternate}
+.hm-aura i:nth-child(3){width:30vw;height:30vw;left:30%;bottom:-16vw;background:radial-gradient(circle,rgba(184,149,43,.4),transparent 65%);animation:hmF1 26s ease-in-out infinite alternate-reverse}
+@keyframes hmF1{to{transform:translate(8vw,6vw) scale(1.12)}}
+@keyframes hmF2{to{transform:translate(-7vw,-5vw) scale(.92)}}
+.hm-gridfx{position:absolute;inset:0;z-index:1;pointer-events:none;background-image:linear-gradient(rgba(212,175,55,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(212,175,55,.07) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(ellipse 70% 60% at 30% 45%,#000 10%,transparent 75%);mask-image:radial-gradient(ellipse 70% 60% at 30% 45%,#000 10%,transparent 75%)}
+.hm-hero .a-hero-card{border-color:transparent;background:linear-gradient(rgba(14,15,17,.78),rgba(14,15,17,.78)) padding-box,conic-gradient(from var(--hm-ang),rgba(212,175,55,.08),rgba(243,220,142,.85),rgba(212,175,55,.08) 30%,rgba(212,175,55,.08) 70%,rgba(243,220,142,.6),rgba(212,175,55,.08)) border-box;border:1px solid transparent;animation:aIn .9s var(--ease) .5s forwards,hmRot 8s linear infinite;box-shadow:0 30px 80px -30px rgba(212,175,55,.25),0 30px 60px -30px #000}
+@keyframes hmRot{to{--hm-ang:360deg}}
+.hm-hero .a-btn.a-big:not(.a-ghost){position:relative;overflow:hidden}
+.hm-hero .a-btn.a-big:not(.a-ghost)::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);transform:translateX(-120%);animation:hmShine 4.5s ease-in-out 1.6s infinite}
+@keyframes hmShine{0%,60%{transform:translateX(-120%)}85%,100%{transform:translateX(120%)}}
+.hm-nums div{transition:transform .3s}
+.hm-nums b{text-shadow:0 0 24px rgba(212,175,55,.35)}
+.hf-card{transition:transform .35s var(--ease),border-color .35s,box-shadow .35s}
+.hf-card:hover{transform:translateY(-4px);border-color:rgba(212,175,55,.55);box-shadow:0 24px 50px -28px rgba(212,175,55,.45)}
+.hf-im img{transition:transform .8s var(--ease)}.hf-card:hover .hf-im img{transform:scale(1.05)}
+.hf-im{overflow:hidden}
+@media(max-width:900px){.hm-aura i{filter:blur(50px);opacity:.3}.hm-gridfx{background-size:40px 40px}}
+@media(prefers-reduced-motion:reduce){.hm-aura i,.hm-hero .a-hero-card,.hm-hero .a-btn.a-big::after{animation:none!important}.hm-hero .a-hero-card{opacity:1}}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "LocalBusiness", "@id": "https://iguacuexecutivetransfer.com.br/#empresa", "name": "Iguaçu Executive Transfer", "description": "Transfer executivo e táxi 24h em Foz do Iguaçu com preço fechado por carro: aeroporto, Cataratas, Itaipu, Argentina e Paraguai.", "url": "https://iguacuexecutivetransfer.com.br/", "telephone": "+5545991185798", "priceRange": "R$ 350 – R$ 9.000", "foundingDate": "2004", "image": "https://iguacuexecutivetransfer.com.br/img/og-transfer-aeroporto-suv-executivo-corolla-cross.jpg", "logo": "https://iguacuexecutivetransfer.com.br/favicon.svg", "address": {"@type": "PostalAddress", "addressLocality": "Foz do Iguaçu", "addressRegion": "PR", "postalCode": "85850-000", "addressCountry": "BR"}, "geo": {"@type": "GeoCoordinates", "latitude": -25.5469, "longitude": -54.5882}, "openingHoursSpecification": {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "00:00", "closes": "23:59"}, "areaServed": [{"@type": "City", "name": "Foz do Iguaçu"}, {"@type": "City", "name": "Puerto Iguazú"}, {"@type": "City", "name": "Ciudad del Este"}], "currenciesAccepted": "BRL, USD", "paymentAccepted": "Cash, Credit Card, Debit Card, Pix, PayPal", "hasMap": "https://maps.google.com/?q=Foz+do+Iguacu+PR"}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "Iguaçu Executive Transfer", "url": "https://iguacuexecutivetransfer.com.br/", "inLanguage": "pt-BR", "publisher": {"@id": "https://iguacuexecutivetransfer.com.br/#empresa"}}</script>
@@ -98,6 +123,7 @@
 </nav>
 <main>
 <section class="a-hero hm-hero">
+  <div class="hm-aura" aria-hidden="true"><i></i><i></i><i></i></div><div class="hm-gridfx" aria-hidden="true"></div>
   <div class="a-hero-in">
     <p class="a-eye">Foz do Iguaçu · desde 2004 · 24 horas</p>
     <h1>Transfer Executivo e Táxi 24h em Foz do Iguaçu <em>chegue no horário, com preço fechado</em></h1>
