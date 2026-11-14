@@ -86,16 +86,38 @@ async function prepararBanco(env) {
       descricao TEXT, valor REAL NOT NULL, url TEXT, status TEXT NOT NULL, criado_em TEXT NOT NULL, autor TEXT,
       pago_em TEXT, valor_pago REAL, metodo TEXT, parcelas INTEGER, slug TEXT, transaction_nsu TEXT, recibo_url TEXT)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_pagamentos_pedido ON pagamentos(pedido_id)`),
+    // cupons de desconto (% sobre o valor dos serviços), criados no painel
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS cupons (
+      codigo TEXT PRIMARY KEY, pct REAL NOT NULL, ativo INTEGER NOT NULL DEFAULT 1, inicio TEXT, fim TEXT,
+      usos_max INTEGER, usos INTEGER NOT NULL DEFAULT 0, descricao TEXT, criado_em TEXT NOT NULL, autor TEXT)`),
   ]);
   // coluna nova em tabela antiga: só cria se ainda não existir
   const cols = (await env.DB.prepare("PRAGMA table_info(pedidos)").all()).results.map((c) => c.name);
   if (!cols.includes("parceiro_id")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN parceiro_id INTEGER").run();
   if (!cols.includes("comissao_paga_id")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN comissao_paga_id INTEGER").run();
   if (!cols.includes("comissao_valor")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN comissao_valor REAL").run();
+  if (!cols.includes("cupom")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN cupom TEXT").run();
+  if (!cols.includes("desconto")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN desconto REAL").run();
   const colsItens = (await env.DB.prepare("PRAGMA table_info(itens)").all()).results.map((c) => c.name);
   if (!colsItens.includes("obs")) await env.DB.prepare("ALTER TABLE itens ADD COLUMN obs TEXT").run();
   schemaPronto = true;
 }
+
+/* ---------------- cupons ---------------- */
+const hojeFoz = () => new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
+async function buscarCupom(env, codigo) {
+  const c = String(codigo || "").trim().toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 30);
+  if (!c) return { ok: false, erro: "cupom_invalido" };
+  await prepararBanco(env);
+  const x = await env.DB.prepare("SELECT * FROM cupons WHERE codigo = ?").bind(c).first();
+  if (!x || !x.ativo) return { ok: false, erro: "cupom_invalido" };
+  const h = hojeFoz();
+  if (x.inicio && h < x.inicio) return { ok: false, erro: "cupom_invalido" };
+  if (x.fim && h > x.fim) return { ok: false, erro: "cupom_expirado" };
+  if (x.usos_max != null && x.usos >= x.usos_max) return { ok: false, erro: "cupom_esgotado" };
+  return { ok: true, codigo: x.codigo, pct: x.pct };
+}
+const comDesconto = (v, pct) => Math.round(v * (1 - pct / 100) * 100) / 100;
 
 /* ---------------- preços editados no painel ----------------
    Lidos do banco a cada 30 s (por instância) e aplicados por cima do precos.js. Cotação, reserva e catálogo usam o mesmo valor. */
@@ -195,6 +217,7 @@ function resumoTexto(p, itens, comLinks, origem) {
     if (it.data_especial) linhas.push(`   Data especial: +${CONFIG.feriadoAcrescimoPct}%`);
     linhas.push(`   Valor: ${brl(it.valor)} (${it.modo === "total" ? "100% na reserva" : CONFIG.sinalPct + "% de sinal"})`);
   });
+  if (p.cupom) linhas.push("", `Cupom: ${p.cupom}`);
   linhas.push("", `Total: ${brl(p.total)}`, `A pagar na reserva: ${brl(p.valor_agora)}`, `Restante no dia: ${brl(p.total - p.valor_agora)}`);
   if (p.observacoes) linhas.push("", `Observações: ${p.observacoes}`);
   if (comLinks) {
@@ -245,6 +268,15 @@ async function criarPedido(req, env, ctx) {
     if (!it.origem) return erro("item_invalido", 422, { item: i, motivo: "origem" });
     itens.push({ it, cot, svc: servico(it.servico) });
   }
+  let cupom = null;
+  if (body.cupom) {
+    cupom = await buscarCupom(env, body.cupom);
+    if (!cupom.ok) return erro(cupom.erro);
+    for (const x of itens) {
+      const antes = x.cot.valor, depois = comDesconto(antes, cupom.pct);
+      x.cot = { ...x.cot, valor: depois, linhas: [...x.cot.linhas, { k: "cupom", cupom: cupom.codigo, pct: cupom.pct, valor: Math.round((depois - antes) * 100) / 100 }] };
+    }
+  }
   const parceiro = await parceiroDaChave(req, env);
   const escolha = body.modoPagamento === "total" ? "total" : "sinal";
   const pag = valorAgora(itens, escolha);
@@ -264,9 +296,10 @@ async function criarPedido(req, env, ctx) {
     codigo = "IET-" + aleatorio(6);
     try {
       const r = await env.DB.prepare(`INSERT INTO pedidos (codigo, token, criado_em, atualizado_em, status, idioma, nome, email, telefone, pais, observacoes,
-        consentimento_em, total, valor_agora, modo_pagamento, ip_hash, origem, parceiro_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+        consentimento_em, total, valor_agora, modo_pagamento, ip_hash, origem, parceiro_id, cupom, desconto) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
         .bind(codigo, token, now, now, "solicitacao", idioma, cliente.nome, cliente.email, cliente.telefone, cliente.pais || null,
-          cliente.observacoes || null, now, pag.total, pag.agora, escolha, ipHash, new URL(req.url).hostname, parceiro ? parceiro.id : null).run();
+          cliente.observacoes || null, now, pag.total, pag.agora, escolha, ipHash, new URL(req.url).hostname, parceiro ? parceiro.id : null,
+          cupom ? cupom.codigo : null, cupom ? Math.round(itens.reduce((a, x) => a + x.cot.linhas.filter((l) => l.k === "cupom").reduce((b, l) => b - l.valor, 0), 0) * 100) / 100 : null).run();
       pedidoId = r.meta.last_row_id;
     } catch (e) { if (!String(e.message).includes("UNIQUE")) throw e; }
   }
@@ -280,9 +313,10 @@ async function criarPedido(req, env, ctx) {
     cot.valor, pag.detalhes[i].modo, pag.detalhes[i].due, JSON.stringify(cot.linhas), it.obs || null));
   stmts.push(env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, status_para, autor, texto) VALUES (?,?,?,?,?,?)")
     .bind(pedidoId, now, "criado", "solicitacao", parceiro ? "parceiro " + parceiro.codigo : "cliente", parceiro ? `Reserva feita pelo parceiro ${parceiro.empresa || parceiro.responsavel} (${parceiro.codigo})` : "Pedido feito pelo site"));
+  if (cupom) stmts.push(env.DB.prepare("UPDATE cupons SET usos = usos + 1 WHERE codigo = ?").bind(cupom.codigo));
   await env.DB.batch(stmts);
 
-  const pedido = { codigo, ...cliente, total: pag.total, valor_agora: pag.agora };
+  const pedido = { codigo, ...cliente, total: pag.total, valor_agora: pag.agora, cupom: cupom ? cupom.codigo + " (-" + cupom.pct + "%)" : null };
   const itensDb = itens.map(({ it, cot, svc }, i) => ({ servico_id: it.servico, servico_nome: svc.nome.pt, categoria: it.categoria, data: it.data, hora: it.hora,
     sentido: it.sentido, voo: it.voo, origem: it.origem, destino: it.destino, pax: it.pax, malas: it.malas, cadeirinhas: it.cadeirinhas, pet: it.pet,
     horas_extras: it.horasExtras, horas: it.horas, dias: it.dias, data_especial: cot.dataEspecial, valor: cot.valor, modo: pag.detalhes[i].modo, obs: it.obs,
@@ -754,6 +788,26 @@ async function admin(req, env, url) {
 
   if (partes[0] === "eu") return json({ ok: true, email: user.email });
   if (partes[0] === "precos") return adminPrecos(req, env, user);
+  if (partes[0] === "cupons") {
+    if (req.method === "GET") return json({ ok: true, cupons: (await env.DB.prepare("SELECT * FROM cupons ORDER BY criado_em DESC").all()).results, hoje: hojeFoz() });
+    let b; try { b = await lerJson(req, 2000); } catch { return erro("json_invalido"); }
+    const cod = String(b.codigo || "").trim().toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 30);
+    if (cod.length < 3) return erro("codigo");
+    if (partes[1] === "ativo") {
+      await env.DB.prepare("UPDATE cupons SET ativo = ? WHERE codigo = ?").bind(b.ativo ? 1 : 0, cod).run();
+      return json({ ok: true });
+    }
+    const pct = Number(String(b.pct).replace(",", "."));
+    if (!(pct > 0 && pct <= 50)) return erro("pct");
+    const data = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v || "") ? v : null;
+    const max = b.usos_max === "" || b.usos_max == null ? null : parseInt(b.usos_max, 10);
+    if (max != null && !(max >= 1)) return erro("usos");
+    try {
+      await env.DB.prepare("INSERT INTO cupons (codigo, pct, ativo, inicio, fim, usos_max, descricao, criado_em, autor) VALUES (?,?,?,?,?,?,?,?,?)")
+        .bind(cod, pct, 1, data(b.inicio), data(b.fim), max, String(b.descricao || "").slice(0, 120) || null, agoraIso(), user.email).run();
+    } catch (e) { return erro("ja_existe"); }
+    return json({ ok: true });
+  }
   if (partes[0] === "comissoes") return adminComissoes(req, env, url, user, partes);
   if (partes[0] === "motoristas" && req.method === "GET") {
     const { results } = await env.DB.prepare(`SELECT codigo, COALESCE(empresa, responsavel) AS nome, responsavel, categoria, veiculo, telefone, cidade, (chave_hash IS NOT NULL) AS tem_acesso,
@@ -956,6 +1010,11 @@ async function api(req, env, ctx, url) {
   if (p.startsWith("/api/parceiro/") && m === "GET") return areaParceiro(req, env, url);
   if (p.startsWith("/api/motorista/")) return areaMotorista(req, env, url);
   if (p === "/api/pagamentos/infinitepay" && m === "POST") return avisoInfinitePay(req, env, ctx, url);
+  if (p === "/api/cupom" && m === "POST") {
+    let b; try { b = await lerJson(req, 500); } catch { return erro("json_invalido"); }
+    const r = await buscarCupom(env, b.codigo);
+    return json(r, r.ok ? 200 : 400);
+  }
   if (p === "/api/pagamentos/paypal/capturar" && m === "POST") {
     let b; try { b = await lerJson(req, 2000); } catch { return erro("json_invalido"); }
     const r = await capturarPayPal(env, b, url.origin);

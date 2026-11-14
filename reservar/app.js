@@ -24,7 +24,7 @@
       apartir: "a partir de", porveiculo: "por veículo", escolher: "Escolher", consulta: "Sob consulta", pedir: "Pedir cotação no WhatsApp",
       consTit: "Grupos e experiências", consDesc: "Atendimento personalizado pelo WhatsApp:",
       data: "Data", hora: "Horário", horaVoo: "Horário do voo", sentido: "Sentido", chegada: "Chegada (aeroporto → hotel)", saida: "Saída (hotel → aeroporto)",
-      voo: "Número do voo", localCheg: "Levar para (hotel ou endereço)", localSai: "Buscar em (hotel ou endereço)", obsItem: "Observações (opcional)", obsPh: "Ex.: placa com nome, parada no caminho, criança de colo", origem: "Buscar em (hotel ou endereço)", destino: "Levar para", destinoOpc: "Levar para (opcional)",
+      voo: "Número do voo", localCheg: "Levar para (hotel ou endereço)", localSai: "Buscar em (hotel ou endereço)", obsItem: "Observações (opcional)", stQuando: "Quando", stOnde: "Trajeto", stQuem: "Passageiros e bagagem", stCarro: "Escolha o veículo", footSel: "Escolha o veículo", footTot: "Total deste serviço", cupom: "Cupom de desconto", cupomBtn: "Aplicar", cupomOk: "Cupom {c} aplicado: {p}% de desconto", cupomRem: "remover", desconto: "Desconto", e_cupom_invalido: "Cupom inválido", e_cupom_expirado: "Este cupom expirou", e_cupom_esgotado: "Este cupom esgotou", obsPh: "Ex.: placa com nome, parada no caminho, criança de colo", origem: "Buscar em (hotel ou endereço)", destino: "Levar para", destinoOpc: "Levar para (opcional)",
       pax: "Passageiros", malas: "Malas grandes", cadeirinhas: "Cadeirinhas infantis (R$ {v} cada)", pet: "Vou levar um pet", cadNota: "Cadeirinha ou assento de elevação: obrigatório para crianças até 10 anos. Disponível do Executivo para cima.", incl: "Incluído: carro exclusivo para você, motorista profissional, pedágios e cancelamento grátis até 48 h antes.", inclFr: "Incluído: carro exclusivo para você, motorista profissional, travessia da fronteira com o motorista, pedágios e cancelamento grátis até 48 h antes. Ingressos dos atrativos são pagos à parte.", duvidas: "Dúvidas antes de reservar",
       horasExtras: "Horas extras de espera", horas: "Quantas horas (o pacote inclui 5 h)", dias: "Quantas diárias",
       categoria: "Categoria do veículo", ate: "até {n} passageiros", malasTxt: "{n} malas grandes", malasMao: " + {n} de mão",
@@ -72,7 +72,7 @@
       apartir: "from", porveiculo: "per vehicle", escolher: "Select", consulta: "On request", pedir: "Request a quote on WhatsApp",
       consTit: "Groups & experiences", consDesc: "Personal service via WhatsApp:",
       data: "Date", hora: "Time", horaVoo: "Flight time", sentido: "Direction", chegada: "Arrival (airport → hotel)", saida: "Departure (hotel → airport)",
-      voo: "Flight number", localCheg: "Drop-off (hotel or address)", localSai: "Pick-up (hotel or address)", obsItem: "Notes (optional)", obsPh: "E.g.: name sign, stop on the way, infant", origem: "Pick-up (hotel or address)", destino: "Drop-off", destinoOpc: "Drop-off (optional)",
+      voo: "Flight number", localCheg: "Drop-off (hotel or address)", localSai: "Pick-up (hotel or address)", obsItem: "Notes (optional)", stQuando: "When", stOnde: "Route", stQuem: "Passengers and luggage", stCarro: "Choose your vehicle", footSel: "Choose a vehicle", footTot: "Total for this service", cupom: "Discount code", cupomBtn: "Apply", cupomOk: "Code {c} applied: {p}% off", cupomRem: "remove", desconto: "Discount", e_cupom_invalido: "Invalid code", e_cupom_expirado: "This code has expired", e_cupom_esgotado: "This code is no longer available", obsPh: "E.g.: name sign, stop on the way, infant", origem: "Pick-up (hotel or address)", destino: "Drop-off", destinoOpc: "Drop-off (optional)",
       pax: "Passengers", malas: "Large suitcases", cadeirinhas: "Child car seats (R$ {v} each)", pet: "I'm bringing a pet", cadNota: "Child seat or booster: required for children up to 10 years old. Available from Executive upwards.", incl: "Included: private car just for you, professional driver, tolls and free cancellation up to 48 h before.", inclFr: "Included: private car just for you, professional driver, border crossing with the driver, tolls and free cancellation up to 48 h before. Attraction tickets are paid separately.", duvidas: "Questions before booking",
       horasExtras: "Extra waiting hours", horas: "How many hours (package includes 5 h)", dias: "How many days",
       categoria: "Vehicle category", ate: "up to {n} passengers", malasTxt: "{n} large suitcases", malasMao: " + {n} carry-on",
@@ -120,7 +120,7 @@
       apartir: "desde", porveiculo: "por vehículo", escolher: "Elegir", consulta: "A consultar", pedir: "Pedir cotización por WhatsApp",
       consTit: "Grupos y experiencias", consDesc: "Atención personalizada por WhatsApp:",
       data: "Fecha", hora: "Horario", horaVoo: "Horario del vuelo", sentido: "Sentido", chegada: "Llegada (aeropuerto → hotel)", saida: "Salida (hotel → aeropuerto)",
-      voo: "Número de vuelo", localCheg: "Llevar a (hotel o dirección)", localSai: "Buscar en (hotel o dirección)", obsItem: "Observaciones (opcional)", obsPh: "Ej.: cartel con nombre, parada en el camino, bebé", origem: "Buscar en (hotel o dirección)", destino: "Llevar a", destinoOpc: "Llevar a (opcional)",
+      voo: "Número de vuelo", localCheg: "Llevar a (hotel o dirección)", localSai: "Buscar en (hotel o dirección)", obsItem: "Observaciones (opcional)", stQuando: "Cuándo", stOnde: "Trayecto", stQuem: "Pasajeros y equipaje", stCarro: "Elija el vehículo", footSel: "Elija el vehículo", footTot: "Total de este servicio", cupom: "Cupón de descuento", cupomBtn: "Aplicar", cupomOk: "Cupón {c} aplicado: {p}% de descuento", cupomRem: "quitar", desconto: "Descuento", e_cupom_invalido: "Cupón inválido", e_cupom_expirado: "Este cupón expiró", e_cupom_esgotado: "Este cupón se agotó", obsPh: "Ej.: cartel con nombre, parada en el camino, bebé", origem: "Buscar en (hotel o dirección)", destino: "Llevar a", destinoOpc: "Llevar a (opcional)",
       pax: "Pasajeros", malas: "Valijas grandes", cadeirinhas: "Sillas para niños (R$ {v} c/u)", pet: "Voy con mascota", cadNota: "Silla o elevador infantil: obligatorio para niños de hasta 10 años. Disponible desde Ejecutivo.", incl: "Incluido: auto exclusivo para usted, chofer profesional, peajes y cancelación gratis hasta 48 h antes.", inclFr: "Incluido: auto exclusivo para usted, chofer profesional, cruce de frontera con el chofer, peajes y cancelación gratis hasta 48 h antes. Las entradas de los atractivos se pagan aparte.", duvidas: "Dudas antes de reservar",
       horasExtras: "Horas extra de espera", horas: "Cuántas horas (el paquete incluye 5 h)", dias: "Cuántos días",
       categoria: "Categoría del vehículo", ate: "hasta {n} pasajeros", malasTxt: "{n} valijas grandes", malasMao: " + {n} de mano",
@@ -344,10 +344,14 @@
   function renderModal() {
     var s = svc(cur.servico), m = $("#r-modal-b"), cfg = CAT.config;
     var f = '<button type="button" class="r-x" data-close aria-label="' + esc(t("cancelar")) + '">×</button><h3>' + esc(L(s.nome)) + "</h3><p class=\"r-sm\">" + esc(L(s.desc)) + "</p>";
+    var ok = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+    var step = function (n, tit) { return '<section class="r-step"><h4><i>' + n + "</i>" + esc(t(tit)) + "</h4>"; };
+    f += step(1, "stQuando");
     if (s.sentido) f += field(t("sentido"), '<select name="sentido"><option value="chegada">' + esc(t("chegada")) + '</option><option value="saida">' + esc(t("saida")) + "</option></select>");
     f += '<div class="r-row">' + field(t("data") + " *", '<input type="date" name="data" min="' + hoje() + '" required>') +
       field((s.voo ? t("horaVoo") : t("hora")) + " *", '<input type="time" name="hora" required>') + "</div>";
     if (s.voo) f += field(t("voo"), '<input name="voo" placeholder="G3 1234" maxlength="20">');
+    f += "</section>" + step(2, "stOnde");
     if (s.tipo === "km") {
       var pk = cfg.porKm;
       f += acField("de", t("kmDe") + " *") + acField("para", t("kmPara") + " *") +
@@ -361,22 +365,26 @@
     else
     f += '<div class="r-row">' + field(t("origem") + " *", '<input name="origem" required maxlength="160" autocomplete="street-address">') +
       field(s.tipo === "transfer" || s.tipo === "viagem" ? t("destino") : t("destinoOpc"), '<input name="destino" maxlength="160">') + "</div>";
+    f += "</section>" + step(3, "stQuem");
     f += '<div class="r-row">' + field(t("pax"), num("pax", cur.pax, 1, 15)) + field(t("malas"), num("malas", cur.malas, 0, 15)) + "</div>";
-    f += field(t("obsItem"), '<textarea name="obs" rows="2" maxlength="300" placeholder="' + esc(t("obsPh")) + '"></textarea>');
     if (s.tipo === "hora") f += field(t("horas"), num("horas", cur.horas, cfg.porHora.minimoHoras, cfg.porHora.maximoHoras));
     if (s.tipo === "diaria") f += field(t("dias"), num("dias", cur.dias, 1, 15));
     if (s.espera || s.tipo === "diaria") f += field(t("horasExtras"), num("horasExtras", cur.horasExtras, 0, 8));
     f += '<div class="r-row">' + field(t("cadeirinhas", { v: cfg.cadeirinha.valor }), num("cadeirinhas", cur.cadeirinhas, 0, 3)) +
       '<label class="r-chk r-chk-in"><input type="checkbox" name="pet"> <span>' + esc(t("pet")) + "</span></label></div>";
-    f += '<p class="r-note">' + esc(t("cadNota")) + "</p>";
-    f += '<p class="r-note r-incl">' + esc(t(s.fronteira || s.tipo === "km" ? "inclFr" : "incl")) + (S.lang === "pt" ? ' <a href="/pt/duvidas-transfer-foz-do-iguacu.html" target="_blank" rel="noopener">' + esc(t("duvidas")) + "</a>" : "") + "</p>";
-    if (s.espera) f += '<p class="r-note">' + esc(t("inclui", { n: s.espera })) + "</p>";
-    if (s.voo) f += '<p class="r-note">' + esc(t("espAero", { v: cfg.esperaAeroporto.valorHora })) + "</p>";
-    if (s.tipo === "diaria" && cfg.diaria) f += '<p class="r-note" id="r-dianota">' + esc(t("diariaNota", { h: cfg.diaria.horas, km: cfg.diaria.km, v: brl(cfg.porKm.valorKm[cur.categoria || "comum"]) })) + "</p>";
-    if (s.fronteira) f += '<p class="r-note">' + esc(t("fronteira")) + "</p>";
-    f += '<p class="r-lbl">' + esc(t("categoria")) + '</p><div class="r-cats" id="r-cats"></div>';
-    f += '<p class="r-err" id="r-merr" role="alert"></p><div class="r-actions"><button type="button" class="r-btn r-ghost" data-close>' + esc(t("cancelar")) +
-      '</button><button type="submit" class="r-btn">' + esc(t("add")) + "</button></div>";
+    f += field(t("obsItem"), '<textarea name="obs" rows="2" maxlength="300" placeholder="' + esc(t("obsPh")) + '"></textarea>');
+    f += "</section>";
+    var info = [];
+    info.push(esc(t("cadNota")));
+    info.unshift(esc(t(s.fronteira || s.tipo === "km" ? "inclFr" : "incl")) + (S.lang === "pt" ? ' <a href="/pt/duvidas-transfer-foz-do-iguacu.html" target="_blank" rel="noopener">' + esc(t("duvidas")) + "</a>" : ""));
+    if (s.espera) info.push(esc(t("inclui", { n: s.espera })));
+    if (s.voo) info.push(esc(t("espAero", { v: cfg.esperaAeroporto.valorHora })));
+    if (s.tipo === "diaria" && cfg.diaria) info.push('<span id="r-dianota">' + esc(t("diariaNota", { h: cfg.diaria.horas, km: cfg.diaria.km, v: brl(cfg.porKm.valorKm[cur.categoria || "comum"]) })) + "</span>");
+    if (s.fronteira) info.push(esc(t("fronteira")));
+    f += step(4, "stCarro") + '<div class="r-cats" id="r-cats"></div></section>';
+    f += '<ul class="r-info">' + info.map(function (x) { return "<li>" + ok + "<span>" + x + "</span></li>"; }).join("") + "</ul>";
+    f += '<div class="r-foot"><div class="r-foot-p"><small id="r-foot-l">' + esc(t("footSel")) + '</small><b id="r-foot-v"></b></div><p class="r-err" id="r-merr" role="alert"></p>' +
+      '<div class="r-actions"><button type="button" class="r-btn r-ghost" data-close>' + esc(t("cancelar")) + '</button><button type="submit" class="r-btn">' + esc(t("add")) + "</button></div></div>";
     m.innerHTML = f;
     renderCats(); requestQuotes();
   }
@@ -476,7 +484,12 @@
     });
     return out;
   }
-  function renderCats() { var el = $("#r-cats"); if (el) el.innerHTML = catsHtml(); }
+  function renderCats() { var el = $("#r-cats"); if (el) el.innerHTML = catsHtml(); updateFoot(); }
+  function updateFoot() {
+    var v = $("#r-foot-v"), l = $("#r-foot-l"); if (!v) return;
+    var q = cur && cur.categoria && quotes[cur.categoria];
+    if (q && q.ok) { l.textContent = t("footTot"); v.textContent = brl(q.valor); } else { l.textContent = t("footSel"); v.textContent = ""; }
+  }
   function readModal() {
     var fm = $("#r-modal-b"), g = function (n) { var el = fm.querySelector('[name="' + n + '"]'); return el ? (el.type === "checkbox" ? el.checked : el.value) : undefined; };
     ["sentido", "data", "hora", "voo", "origem", "destino", "obs"].forEach(function (k) { var v = g(k); if (v !== undefined) cur[k] = String(v).trim(); });
@@ -538,12 +551,13 @@
   }
   function modosDe(it) { return (it.cot && it.cot.modos) || ["total"]; }
   function pagamento(escolha) {
-    var tot = 0, agora = 0;
+    var tot = 0, agora = 0, cheio = 0, pct = S.cupom ? S.cupom.pct : 0;
     S.cart.forEach(function (it) {
       var m = modosDe(it), modo = m.indexOf(escolha) > -1 ? escolha : m[0];
-      tot += it.cot.valor; agora += modo === "total" ? it.cot.valor : Math.round(it.cot.valor * CAT.config.sinalPct / 100);
+      var v = pct ? Math.round(it.cot.valor * (1 - pct / 100) * 100) / 100 : it.cot.valor;
+      cheio += it.cot.valor; tot += v; agora += modo === "total" ? v : Math.round(v * CAT.config.sinalPct / 100);
     });
-    return { total: tot, agora: agora };
+    return { total: Math.round(tot * 100) / 100, agora: Math.round(agora * 100) / 100, desconto: Math.round((cheio - tot) * 100) / 100 };
   }
   function renderCart() {
     $("#r-cart-tit").textContent = t("carrinho");
@@ -576,6 +590,7 @@
       field(t("email") + " *", '<input name="email" type="email" required autocomplete="email" maxlength="160">') + field(t("pais"), '<input name="pais" autocomplete="country-name" maxlength="60">') + "</div>" +
       field(t("obs"), '<textarea name="observacoes" rows="2" maxlength="1000"></textarea>') +
       '<input type="text" name="website" tabindex="-1" autocomplete="off" class="r-hp" aria-hidden="true">' +
+      (pc ? "" : '<div class="r-cupom" id="r-cupom"></div>') +
       '<p class="r-lbl">' + esc(t("pagar")) + "</p>" +
       (temEscolha ? '<div class="r-opts">' + opt("modo", "sinal", t("pSinal", { p: cfg.sinalPct }), true) + opt("modo", "total", t("pTotal"), false) + "</div>" : "") +
       '<div class="r-paybox" id="r-paybox"></div><p class="r-sm">' + esc(t("regraPag", { p: cfg.sinalPct })) + "</p>" +
@@ -585,7 +600,7 @@
       '<p class="r-err" id="r-cerr" role="alert"></p><button type="submit" class="r-btn r-big" id="r-send">' + esc(t(pagOnline() ? "enviarPagar" : "enviar")) + '</button><div id="r-done"></div>';
     $("#r-checkout-f").innerHTML = h;
     if (pc) api("/api/parceiro/eu").then(function (r) { if (!r || !r.ok) { store.set("parceiro", null); var b = $(".r-parc"); if (b) b.remove(); } }).catch(function () {});
-    updatePay();
+    renderCupom(); updatePay();
     if (cfg.turnstileSiteKey) loadTurnstile();
   }
   function loadTurnstile() {
@@ -597,10 +612,24 @@
     return '<label class="r-opt"><input type="radio" name="' + n + '" value="' + v + '"' + (checked ? " checked" : "") + "><span>" + esc(label) + "</span></label>";
   }
   function escolhaAtual() { var r = $('#r-checkout-f [name="modo"]:checked'); return r ? r.value : "sinal"; }
+  function renderCupom() {
+    var el = $("#r-cupom"); if (!el) return;
+    if (S.cupom) { el.innerHTML = '<p class="r-cupok">' + esc(t("cupomOk", { c: S.cupom.codigo, p: String(S.cupom.pct).replace(".", ",") })) + ' <button type="button" class="r-link" id="r-cupom-x">' + esc(t("cupomRem")) + "</button></p>"; $("#r-cupom-x").onclick = function () { S.cupom = null; renderCupom(); updatePay(); }; return; }
+    el.innerHTML = '<label class="r-f"><span>' + esc(t("cupom")) + '</span><div class="r-cupin"><input id="r-cupom-i" maxlength="30" autocomplete="off" style="text-transform:uppercase"><button type="button" class="r-btn r-ghost" id="r-cupom-b">' + esc(t("cupomBtn")) + '</button></div></label><p class="r-err" id="r-cupom-e"></p>';
+    var aplicar = function () {
+      var c = $("#r-cupom-i").value.trim(); if (!c) return;
+      api("/api/cupom", { codigo: c }).then(function (r) {
+        if (r && r.ok) { S.cupom = { codigo: r.codigo, pct: r.pct }; renderCupom(); updatePay(); }
+        else $("#r-cupom-e").textContent = t("e_" + ((r && r.erro) || "cupom_invalido"));
+      });
+    };
+    $("#r-cupom-b").onclick = aplicar;
+    $("#r-cupom-i").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); aplicar(); } });
+  }
   function updatePay() {
     var box = $("#r-paybox"); if (!box) return;
     var p = pagamento(escolhaAtual());
-    box.innerHTML = "<div><span>" + esc(t("total")) + "</span><b>" + brl(p.total) + fxTxt(p.total) + "</b></div><div><span>" + esc(t("aPagar")) + "</span><b>" + brl(p.agora) + fxTxt(p.agora) + "</b></div>" +
+    box.innerHTML = (p.desconto > 0 ? '<div class="r-desc"><span>' + esc(t("desconto")) + " (" + esc(S.cupom.codigo) + ")</span><b>− " + brl(p.desconto) + "</b></div>" : "") + "<div><span>" + esc(t("total")) + "</span><b>" + brl(p.total) + fxTxt(p.total) + "</b></div><div><span>" + esc(t("aPagar")) + "</span><b>" + brl(p.agora) + fxTxt(p.agora) + "</b></div>" +
       (p.total - p.agora > 0.001 ? '<div class="r-sm"><span>' + esc(t("restante")) + "</span><span>" + brl(p.total - p.agora) + "</span></div>" : "") +
       (fxStr(p.total) ? '<p class="r-fxpag">' + esc(t("fxPag")) + "</p>" : "");
   }
@@ -613,7 +642,7 @@
     err.textContent = "";
     var btn = $("#r-send"); btn.disabled = true; btn.textContent = t("enviando");
     var body = {
-      idioma: S.lang, consentimento: true, modoPagamento: escolhaAtual(), website: g("website"),
+      idioma: S.lang, consentimento: true, modoPagamento: escolhaAtual(), website: g("website"), cupom: S.cupom ? S.cupom.codigo : undefined,
       turnstile: tsId != null && window.turnstile ? window.turnstile.getResponse(tsId) : "",
       cliente: { nome: g("nome"), email: g("email"), telefone: g("telefone"), pais: g("pais"), observacoes: g("observacoes") },
       itens: S.cart.map(function (it) { var x = JSON.parse(JSON.stringify(it)); delete x.cot; return x; }),
@@ -735,6 +764,7 @@
       cur.categoria = e.target.value;
       var dn = $("#r-dianota"); if (dn && CAT.config.diaria) dn.textContent = t("diariaNota", { h: CAT.config.diaria.horas, km: CAT.config.diaria.km, v: brl(CAT.config.porKm.valorKm[cur.categoria]) });
       $$("#r-cats .r-cat").forEach(function (l) { var i = l.querySelector("input"); l.classList.toggle("on", !!(i && i.checked)); });
+      updateFoot();
       return;
     }
     readModal(); requestQuotes();
