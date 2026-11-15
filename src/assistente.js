@@ -50,6 +50,17 @@ INFORMAÇÕES CORRETAS QUE VOCÊ PODE DAR:
 SERVIÇOS (use o id exato):
 ${c.servicos}
 
+DICAS PARA ESCOLHER O SERVIÇO:
+- "aeroporto para o hotel" / "do hotel para o aeroporto" em Foz = igu-foz (chegada ou saída). Ida e volta do aeroporto = 2 trechos (chegada e saída) no mesmo serviço.
+- "Cataratas argentinas", "lado argentino", "parque Iguazú" = ar-iv (ida e volta). Só ida = ar-ida.
+- "Cataratas brasileiras", "lado brasileiro", "Parque das Aves" = br-iv (leva e busca) ou br-espera (motorista esperando).
+- "compras no Paraguai", "Ciudad del Este", "Paraguai" para passear/comprar = cde (ida e volta). foz-cde é só ida.
+- Viagem para outra cidade da lista (ex.: Cascavel, Curitiba) = o id da cidade.
+- Se o cliente já disse o serviço, preencha "servico" imediatamente, mesmo que faltem outros dados.
+
+EXEMPLO de resposta (JSON) após o cliente dizer "chego no aeroporto de Foz dia 20/11 às 14h, 2 pessoas, 2 malas, hotel Mabu":
+{"resposta":"Pronto!","servico":"igu-foz","pax":2,"malas":2,"local":"Hotel Mabu","trechos":[{"data":"2026-11-20","hora":"14:00","sentido":"chegada"}],"humano":false}
+
 CATEGORIAS DE CARRO:
 ${c.categorias}
 
@@ -194,9 +205,12 @@ export async function assistente(env, body, agora = Date.now()) {
   // nunca deixar a IA mostrar valores: remove qualquer "R$ 123" / "$123" que escape
   let resposta = String(saida.resposta || "").replace(/(R\$|US\$|U\$S|\$|€)\s?\d[\d.,]*/g, "").slice(0, 700).trim();
   const out = { ok: true, resposta, humano: !!saida.humano };
+  if (body.debug === true) out._ia = saida;
+  if (/^\s*humano\s*[=:]/i.test(resposta) || /^\s*\{/.test(resposta)) out.resposta = resposta = "";
   const cot = cotacaoDe(saida, agora, lang);
   if (cot.itens) {
     out.cotacao = { itens: cot.itens, categorias: cot.categorias };
+    out.resposta = resposta = { pt: "Pronto! Veja os valores abaixo e toque em Reservar no carro que preferir.", en: "Done! See the prices below and tap Book on the vehicle you prefer.", es: "¡Listo! Vea los valores abajo y toque Reservar en el vehículo que prefiera." }[lang];
     out.servicoNome = servico(cot.servicoId).nome[lang] || servico(cot.servicoId).nome.pt;
   } else if (!out.humano) {
     // a IA não pode dizer "veja os valores" se o sistema ainda não calculou: pergunta o que falta
@@ -214,6 +228,7 @@ export async function assistente(env, body, agora = Date.now()) {
     }
     console.log("assistente: faltando", JSON.stringify(cot.faltando), "campos", Object.keys(saida).join(","));
   }
+  if (!out.resposta && out.humano) out.resposta = { pt: "Posso ajudar com transfer e passeios em Foz do Iguaçu. Para outros assuntos, nossa equipe responde pelo WhatsApp.", en: "I can help with transfers and tours in Foz do Iguaçu. For anything else, our team replies on WhatsApp.", es: "Puedo ayudar con traslados y paseos en Foz do Iguaçu. Para otros temas, nuestro equipo responde por WhatsApp." }[lang];
   if (!out.resposta) out.resposta = out.cotacao ? "" : (lang === "en" ? "Sorry, could you rephrase that?" : lang === "es" ? "Disculpe, ¿puede repetirlo de otra forma?" : "Desculpe, pode explicar de outro jeito?");
   return out;
 }
