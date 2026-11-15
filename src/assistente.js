@@ -16,7 +16,7 @@ function hojeFoz() {
 function catalogoTexto() {
   const linhas = SERVICOS.filter((s) => !s.oculto && s.tipo !== "km").map((s) =>
     `- ${s.id}: ${s.nome.pt}${s.sentido ? " (pedir se é chegada ou saída do aeroporto)" : ""}${s.tipo === "hora" ? " (pedir quantas horas, mínimo 5)" : ""}${s.tipo === "diaria" ? " (pedir quantos dias)" : ""}`);
-  const cats = Object.entries(CATEGORIAS).map(([k, c]) => `- ${k}: ${c.nome.pt}, até ${c.pax} passageiros; espaço padrão de ${c.malas} malas grandes e ${c.malasMao} de bordo`);
+  const cats = Object.entries(CATEGORIAS).map(([k, c]) => `- ${k}: ${c.nome.pt}, até ${c.pax} passageiros e ${c.malas} malas grandes`);
   return { servicos: linhas.join("\n"), categorias: cats.join("\n") };
 }
 
@@ -27,7 +27,7 @@ Responda SEMPRE em ${LINGUAS[lang]}, de forma curta, educada e profissional (no 
 Hoje é ${h.dia}, ${h.iso}, ${h.hora} no horário de Foz do Iguaçu.
 
 SEU TRABALHO: entender qual serviço o cliente quer e coletar, uma ou duas perguntas por vez:
-1) serviço (escolha um id da lista abaixo), 2) data, 3) horário, 4) número de passageiros, 5) número de malas grandes e de malas de bordo/mão (as malas nunca impedem a reserva: se passar do espaço padrão, a equipe combina depois), 6) nome do hotel ou endereço do cliente (onde buscar ou onde deixar), 7) para aeroporto: se é chegada (aeroporto → hotel) ou saída (hotel → aeroporto); se o cliente quiser ida e volta do aeroporto, colete data e horário dos dois trechos.
+1) serviço (escolha um id da lista abaixo), 2) data, 3) horário, 4) número de passageiros, 5) número de malas grandes, 6) nome do hotel ou endereço do cliente (onde buscar ou onde deixar), 7) para aeroporto: se é chegada (aeroporto → hotel) ou saída (hotel → aeroporto); se o cliente quiser ida e volta do aeroporto, colete data e horário dos dois trechos.
 
 REGRAS IMPORTANTES:
 - NUNCA diga valores, preços, descontos ou números de dinheiro. O sistema do site calcula e mostra o preço sozinho logo abaixo da sua mensagem quando os dados estiverem completos. Quando estiverem completos, diga apenas algo como "Pronto, veja os valores abaixo".
@@ -51,7 +51,7 @@ ${c.servicos}
 CATEGORIAS DE CARRO:
 ${c.categorias}
 
-FORMATO: em TODA resposta, preencha os campos do JSON com TUDO o que o cliente já informou na conversa inteira (não só na última mensagem): servico (id), pax, malas, malasMao, local, trechos [{data AAAA-MM-DD, hora HH:MM, sentido chegada|saida}], horas, dias. Deixe vazio o que ainda não sabe.
+FORMATO: em TODA resposta, preencha os campos do JSON com TUDO o que o cliente já informou na conversa inteira (não só na última mensagem): servico (id), pax, malas, local, trechos [{data AAAA-MM-DD, hora HH:MM, sentido chegada|saida}], horas, dias. Deixe vazio o que ainda não sabe.
 Responda SOMENTE com JSON no formato pedido.`;
 }
 
@@ -62,7 +62,6 @@ const ESQUEMA = {
     servico: { type: "string" },
     pax: { type: "integer" },
     malas: { type: "integer" },
-    malasMao: { type: "integer" },
     local: { type: "string" },
     horas: { type: "integer" },
     dias: { type: "integer" },
@@ -146,13 +145,13 @@ function cotacaoDe(d, agora, lang) {
   if (local.length < 3) falta.push("local");
   if (falta.length) return { faltando: falta };
   const aero = /^igr/.test(svc.id) ? "Aeroporto de Puerto Iguazú (IGR)" : "Aeroporto de Foz do Iguaçu (IGU)";
-  const itens = trechos.map((t) => normalizarItem({ servico: svc.id, data: t.data, hora: t.hora, sentido: t.sentido || "chegada", pax, malas, malasMao: parseInt(d.malasMao, 10) || 0, horas: d.horas, dias: d.dias,
+  const itens = trechos.map((t) => normalizarItem({ servico: svc.id, data: t.data, hora: t.hora, sentido: t.sentido || "chegada", pax, malas, horas: d.horas, dias: d.dias,
     origem: svc.sentido ? (t.sentido === "saida" ? local : aero) : local, destino: svc.sentido ? (t.sentido === "saida" ? aero : local) : "" }));
   const cot = itens.map((it) => cotarTodas(it, agora));
   const cats = {};
   for (const cat of Object.keys(CATEGORIAS)) {
     const rs = cot.map((c) => c.ok && c.categorias[cat]);
-    if (rs.every((r) => r && r.ok)) cats[cat] = { ok: true, valor: rs.reduce((a, r) => a + r.valor, 0), nome: CATEGORIAS[cat].nome[lang], pax: CATEGORIAS[cat].pax, malas: CATEGORIAS[cat].malas, malasMao: CATEGORIAS[cat].malasMao, acima: rs.some((r) => r.malasAcima) };
+    if (rs.every((r) => r && r.ok)) cats[cat] = { ok: true, valor: rs.reduce((a, r) => a + r.valor, 0), nome: CATEGORIAS[cat].nome[lang], pax: CATEGORIAS[cat].pax, malas: CATEGORIAS[cat].malas };
     else {
       const e = rs.find((r) => r && !r.ok);
       if (e) cats[cat] = { ok: false, erro: e.erro, horas: e.horas };
