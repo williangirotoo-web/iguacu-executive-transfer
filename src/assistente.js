@@ -86,13 +86,11 @@ function lerPax(txt) {
   let m;
   if (/\b(so eu|sozinh[oa]|eu sozinh|just me|only me|solo yo|1 adulto)\b/.test(t)) return 1;
   if (/\b(eu e minha (esposa|mulher|namorada|mae|filha)|eu e meu (marido|namorado|pai|filho)|um casal|casal|my (wife|husband|partner) and i|a couple|mi (esposa|esposo|pareja) y yo|una pareja)\b/.test(t) && !/\b\d+\s*(pessoas|people|personas)/.test(t)) return 2;
+  const c = new RegExp("\\b" + NUMRE + "\\s*(?:criancas?|child(?:ren)?|kids?|ninos?|ninas?|chicos?|bebes?|babies|baby)\\b").exec(t);
+  const adultos = new RegExp("\\b" + NUMRE + "\\s*(?:adult[oa]s?|adults?)\\b").exec(t);
+  if (adultos) return num(adultos[1]) + (c ? num(c[1]) : 0);
   if ((m = new RegExp("\\b(?:somos|seremos|we are|somos un grupo de|grupo de)\\s+" + NUMRE + "\\b").exec(t))) return num(m[1]);
-  if ((m = new RegExp("\\b" + NUMRE + "\\s*(?:pessoas?|passageir[oa]s?|pax|adult[oa]s?|people|persons?|passengers?|adults?|personas?|pasajer[oa]s?)\\b").exec(t))) {
-    let n = num(m[1]);
-    const c = new RegExp("\\b" + NUMRE + "\\s*(?:criancas?|children|kids?|ninos?|chicos?)\\b").exec(t);
-    if (c && /adult/.test(m[0])) n += num(c[1]);
-    return n;
-  }
+  if ((m = new RegExp("\\b" + NUMRE + "\\s*(?:pessoas?|passageir[oa]s?|pax|people|persons?|passengers?|personas?|pasajer[oa]s?)\\b").exec(t))) return num(m[1]);
   return null;
 }
 function lerMalas(txt) {
@@ -116,7 +114,7 @@ function lerLocal(txt) {
 function lerServico(txt, atual) {
   const t = " " + sa(txt) + " ";
   const tem = (re) => re.test(t);
-  const aero = tem(/\b(aeroporto|airport|aeropuerto|voo|vuelo|flight|igu|igr)\b/);
+  const aero = tem(/\b(aeroporto|airport|aeropuerto|igu|igr)\b/);
   const pi = tem(/\bpuerto iguazu\b/), cde = tem(/\b(ciudad del este|cde|paraguai|paraguay)\b/), arg = tem(/\b(argentin\w*|lado argentino)\b/);
   const soIda = tem(/\b(so ida|somente ida|apenas ida|one way|solo ida)\b/);
   // viagem para outra cidade (nome depois de "→" no catálogo)
@@ -166,7 +164,7 @@ Leia a ÚLTIMA mensagem do cliente (use as anteriores só como contexto) e devol
 - servico: id da lista abaixo, se o cliente indicou o serviço/trajeto (senão "").
 - pax, malas: números, se o cliente disse. local: hotel ou endereço do cliente, se disse.
 - trechos: [{data "AAAA-MM-DD", hora "HH:MM", sentido "chegada"|"saida"|""}]. Ida e volta do aeroporto = 2 trechos.
-- duvida: "" ou, SE o cliente fez uma pergunta (ex.: cancelamento, cadeirinha, pagamento, quanto tempo leva, documentos), a resposta curta (1 ou 2 frases) em ${LINGUAS[lang]}, usando SÓ as informações abaixo. Nunca escreva preços nem valores. Nunca escreva ids.
+- duvida: "" ou, SE o cliente fez uma pergunta que NÃO seja sobre preço/valor (o sistema mostra o preço sozinho) (ex.: cancelamento, cadeirinha, pagamento, quanto tempo leva, documentos), a resposta curta (1 ou 2 frases) em ${LINGUAS[lang]}, usando SÓ as informações abaixo. Nunca escreva preços nem valores. Nunca escreva ids.
 - humano: true só se o pedido não existe na lista (outra cidade fora da lista, evento especial, grupo grande com várias vans), se pedir para falar com uma pessoa, ou se o assunto não for transfer/turismo.
 
 INFORMAÇÕES CORRETAS:
@@ -225,7 +223,9 @@ function aplicar(est, ia, regras) {
   const vazio = (v) => v === undefined || v === null || v === "";
   const svcIa = ia.servico && servico(String(ia.servico).trim());
   if (vazio(e.servico) && svcIa && !svcIa.oculto && svcIa.tipo !== "km") e.servico = svcIa.id;
-  for (const k of ["pax", "malas", "horas", "dias"]) { const v = parseInt(ia[k], 10); if (vazio(e[k]) && Number.isFinite(v) && v >= (k === "pax" ? 1 : 0)) e[k] = v; }
+  // a IA só preenche números se o cliente escreveu algum número/quantidade nesta mensagem (evita "0 malas" inventado)
+  const temNum = /\d|\b(um|uma|dois|duas|tres|quatro|cinco|seis|one|two|three|four|five|six|dos|cuatro|sem|sin|no|nenhuma)\b/.test(sa(regras.texto || ""));
+  for (const k of ["pax", "malas", "horas", "dias"]) { const v = parseInt(ia[k], 10); if (temNum && vazio(e[k]) && Number.isFinite(v) && v >= (k === "pax" ? 1 : 0)) e[k] = v; }
   if (!e.local && typeof ia.local === "string" && ia.local.trim().length >= 3) e.local = ia.local.trim().slice(0, 120);
   if (Array.isArray(ia.trechos)) ia.trechos.slice(0, 2).forEach((t, i) => {
     if (!t) return; e.trechos[i] = e.trechos[i] || { data: "", hora: "", sentido: "" };
@@ -355,7 +355,7 @@ export async function assistente(env, body, agora = Date.now()) {
   const tq = sa(ultima), mh = /\b(\d{1,2})\s*(horas|hours|hs)\b/.exec(tq), md = /\b(\d{1,2})\s*(dias|days|diarias)\b/.exec(tq);
   const localLido = lerLocal(ultima);
   const semLocal = localLido ? ultima.replace(localLido, " ") : ultima;
-  const regras = { agora, horas: mh ? +mh[1] : null, dias: md ? +md[1] : null, servico: lerServico(semLocal, ""), pax: lerPax(ultima), malas: lerMalas(ultima), local: localLido, data: lerData(ultima, agora), hora: lerHora(ultima), sentido: lerSentido(ultima) };
+  const regras = { texto: ultima, agora, horas: mh ? +mh[1] : null, dias: md ? +md[1] : null, servico: lerServico(semLocal, ""), pax: lerPax(ultima), malas: lerMalas(ultima), local: localLido, data: lerData(ultima, agora), hora: lerHora(ultima), sentido: lerSentido(ultima) };
   // resposta só com um número ("2"): vale para o primeiro dado numérico que estava faltando
   const soNum = /^\s*(\d{1,2})\s*[.!]?\s*$/.exec(ultima);
   if (soNum && servico(antes.servico)) {
@@ -390,6 +390,7 @@ export async function assistente(env, body, agora = Date.now()) {
   let duvida = String(ia.duvida || "").replace(/(R\$|US\$|U\$S|\$|€)\s?\d[\d.,]*/g, "").trim();
   for (const sv of SERVICOS) if (duvida.includes(sv.id)) duvida = duvida.split(sv.id).join(sv.nome[lang] || sv.nome.pt);
   if (duvida.length < 8 || /^\{/.test(duvida)) duvida = "";
+  if (/\b(valor|valores|pre[cç]o|price|precio|acesse|acessar|nosso site|website|sitio web|whats\s?app)\b/i.test(duvida)) duvida = "";
   if (duvida.length > 400) duvida = duvida.slice(0, 400).replace(/\s\S*$/, "") + "…";
 
   const f = faltando(estado);
