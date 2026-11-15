@@ -75,12 +75,12 @@
 
   function montar() {
     var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
-    var temBarra = !!document.querySelector(".h-mbar,.a-mbar"), temWa = !!document.querySelector(".wa-float");
+    var temBarra = !!document.querySelector(".h-mbar,.a-mbar");
     var fab = document.createElement("div"); fab.className = "ia-fab " + (temBarra ? "tem-barra" : "sem-barra");
     if (/^\/reservar\//.test(location.pathname)) fab.className += " compacto";
     fab.innerHTML = '<button type="button" class="ia-b-ia" aria-haspopup="dialog">' + ICO_IA + "<span>" + esc(T.abrir) + "</span></button>" +
-      (temWa ? "" : '<a class="ia-b-wa" target="_blank" rel="noopener" aria-label="WhatsApp" href="' + waLink() + '">' + ICO_WA + "</a>");
-    if (temWa) { var w = document.querySelector(".wa-float"); w.style.display = "none"; fab.insertAdjacentHTML("beforeend", '<a class="ia-b-wa" target="_blank" rel="noopener" aria-label="WhatsApp" href="' + waLink() + '">' + ICO_WA + "</a>"); }
+      "";
+    // o WhatsApp flutuante foi retirado a pedido; os botões de WhatsApp da página continuam
     document.body.appendChild(fab);
     var box = document.createElement("div"); box.className = "ia-box"; box.setAttribute("role", "dialog"); box.setAttribute("aria-label", T.tit);
     box.innerHTML = '<div class="ia-hd"><i>' + ICO_IA + "</i><div><b>" + esc(T.tit) + "</b><small>" + esc(T.sub) + '</small></div><button type="button" class="ia-novo">' + esc(T.limpar) + '</button><button type="button" class="ia-x" aria-label="' + esc(T.fechar) + '">×</button></div>' +
@@ -162,7 +162,6 @@
     box.querySelector(".ia-x").onclick = fechar;
     box.querySelector(".ia-novo").onclick = function () { msgs = []; salvar(); render(); };
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && box.classList.contains("on")) fechar(); });
-    fab.querySelector(".ia-b-wa").addEventListener("click", function () { if (window.gtag) try { gtag("event", "whatsapp_click", { origem: "flutuante" }); } catch (e) {} });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", montar); else montar();
 })();

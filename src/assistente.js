@@ -51,6 +51,7 @@ ${c.servicos}
 CATEGORIAS DE CARRO:
 ${c.categorias}
 
+FORMATO: em TODA resposta, preencha os campos do JSON com TUDO o que o cliente já informou na conversa inteira (não só na última mensagem): servico (id), pax, malas, malasMao, local, trechos [{data AAAA-MM-DD, hora HH:MM, sentido chegada|saida}], horas, dias. Deixe vazio o que ainda não sabe.
 Responda SOMENTE com JSON no formato pedido.`;
 }
 
@@ -88,21 +89,64 @@ function lerSaida(r) {
   return x && typeof x === "object" ? x : { resposta: "" };
 }
 
-/* Monta os itens e cota no motor do site. Devolve null se ainda faltam dados. */
+/* Normaliza o que a IA devolveu (ela às vezes troca formatos) */
+const semAcento = (t) => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+function acharServico(v) {
+  if (!v) return null;
+  const x = servico(String(v).trim()) || servico(String(v).trim().toLowerCase());
+  if (x) return x;
+  const q = semAcento(v);
+  return SERVICOS.find((s) => !s.oculto && s.tipo !== "km" && (semAcento(s.nome.pt).includes(q) || q.includes(semAcento(s.nome.pt)))) || null;
+}
+function data(v) {
+  v = String(v || "").trim();
+  let m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(v);
+  if (m) return `${m[1]}-${m[2].padStart(2, "0")}-${m[3].padStart(2, "0")}`;
+  m = /^(\d{1,2})[\/.-](\d{1,2})(?:[\/.-](\d{2,4}))?$/.exec(v);
+  if (m) {
+    const hoje = new Date(Date.now() - 3 * 3600e3);
+    let ano = m[3] ? +m[3] : hoje.getUTCFullYear(); if (ano < 100) ano += 2000;
+    let d = `${ano}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`;
+    if (!m[3] && d < hoje.toISOString().slice(0, 10)) d = `${ano + 1}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`;
+    return d;
+  }
+  return "";
+}
+function hora(v) {
+  v = semAcento(v).replace(/\s/g, "");
+  let m = /^(\d{1,2})(?:[:h](\d{2}))?h?(am|pm)?$/.exec(v);
+  if (!m) return "";
+  let h = +m[1]; const mi = m[2] ? +m[2] : 0;
+  if (m[3] === "pm" && h < 12) h += 12; if (m[3] === "am" && h === 12) h = 0;
+  return h < 24 && mi < 60 ? `${String(h).padStart(2, "0")}:${String(mi).padStart(2, "0")}` : "";
+}
+function sentido(v) {
+  const t = semAcento(v);
+  if (/sai|depart|salida|embarque|ida ao aero|para o aero|to the airport|al aeropuerto/.test(t)) return "saida";
+  if (/cheg|arriv|llega|desembar|do aero|from the airport|del aeropuerto/.test(t)) return "chegada";
+  return "";
+}
+
+/* Monta os itens e cota no motor do site. Se faltar algo, devolve { faltando: [...] }. */
 function cotacaoDe(d, agora, lang) {
-  const svc = servico(d.servico);
-  if (!svc || svc.oculto || svc.tipo === "km") return null;
+  const falta = [];
+  const svc = acharServico(d.servico);
+  if (!svc || svc.oculto || svc.tipo === "km") falta.push("servico");
   const pax = parseInt(d.pax, 10), malas = parseInt(d.malas, 10);
-  if (!(pax >= 1) || !(malas >= 0)) return null;
-  if (svc.tipo === "hora" && !(parseInt(d.horas, 10) >= 1)) return null;
-  const trechos = (Array.isArray(d.trechos) ? d.trechos : []).slice(0, 2)
-    .filter((t) => t && /^\d{4}-\d{2}-\d{2}$/.test(t.data) && /^\d{2}:\d{2}$/.test(t.hora));
-  if (!trechos.length) return null;
+  if (!(pax >= 1)) falta.push("pax");
+  if (!(malas >= 0)) falta.push("malas");
+  if (svc && svc.tipo === "hora" && !(parseInt(d.horas, 10) >= 1)) falta.push("horas");
+  let brutos = Array.isArray(d.trechos) ? d.trechos.slice(0, 2) : [];
+  if (!brutos.length && (d.data || d.hora)) brutos = [{ data: d.data, hora: d.hora, sentido: d.sentido }];
+  const trechos = brutos.map((t) => ({ data: data(t && t.data), hora: hora(t && t.hora), sentido: sentido((t && t.sentido) || d.sentido) }));
+  if (!trechos.length || trechos.some((t) => !t.data)) falta.push("data");
+  if (!trechos.length || trechos.some((t) => !t.hora)) falta.push("hora");
+  if (svc && svc.sentido && trechos.some((t) => !t.sentido)) falta.push("sentido");
   const local = String(d.local || "").trim().slice(0, 160);
-  if (local.length < 3) return null;
+  if (local.length < 3) falta.push("local");
+  if (falta.length) return { faltando: falta };
   const aero = /^igr/.test(svc.id) ? "Aeroporto de Puerto Iguazú (IGR)" : "Aeroporto de Foz do Iguaçu (IGU)";
-  if (svc.sentido && trechos.some((t) => t.sentido !== "chegada" && t.sentido !== "saida")) return null;
-  const itens = trechos.map((t) => normalizarItem({ servico: svc.id, data: t.data, hora: t.hora, sentido: t.sentido, pax, malas, malasMao: parseInt(d.malasMao, 10) || 0, horas: d.horas, dias: d.dias,
+  const itens = trechos.map((t) => normalizarItem({ servico: svc.id, data: t.data, hora: t.hora, sentido: t.sentido || "chegada", pax, malas, malasMao: parseInt(d.malasMao, 10) || 0, horas: d.horas, dias: d.dias,
     origem: svc.sentido ? (t.sentido === "saida" ? local : aero) : local, destino: svc.sentido ? (t.sentido === "saida" ? aero : local) : "" }));
   const cot = itens.map((it) => cotarTodas(it, agora));
   const cats = {};
@@ -114,7 +158,18 @@ function cotacaoDe(d, agora, lang) {
       if (e) cats[cat] = { ok: false, erro: e.erro, horas: e.horas };
     }
   }
-  return { itens, categorias: cats };
+  return { itens, categorias: cats, servicoId: svc.id };
+}
+
+const PERGUNTA = {
+  pt: { servico: "qual serviço ou trajeto você precisa", data: "a data", hora: "o horário", pax: "quantas pessoas", malas: "quantas malas grandes", local: "o nome do hotel ou o endereço", sentido: "se é chegada (aeroporto → hotel) ou saída (hotel → aeroporto)", horas: "quantas horas", ini: "Para calcular o preço, me diga ", e: " e " },
+  en: { servico: "which service or route you need", data: "the date", hora: "the time", pax: "how many people", malas: "how many large bags", local: "the hotel name or address", sentido: "whether it is an arrival (airport → hotel) or departure (hotel → airport)", horas: "how many hours", ini: "To calculate the price, please tell me ", e: " and " },
+  es: { servico: "qué servicio o trayecto necesita", data: "la fecha", hora: "el horario", pax: "cuántas personas", malas: "cuántas valijas grandes", local: "el nombre del hotel o la dirección", sentido: "si es llegada (aeropuerto → hotel) o salida (hotel → aeropuerto)", horas: "cuántas horas", ini: "Para calcular el precio, dígame ", e: " y " },
+};
+function perguntaFalta(falta, lang) {
+  const P = PERGUNTA[lang], l = falta.map((k) => P[k]).filter(Boolean).slice(0, 3);
+  if (!l.length) return "";
+  return P.ini + (l.length > 1 ? l.slice(0, -1).join(", ") + P.e + l[l.length - 1] : l[0]) + ".";
 }
 
 export async function assistente(env, body, agora = Date.now()) {
@@ -139,10 +194,15 @@ export async function assistente(env, body, agora = Date.now()) {
   let resposta = String(saida.resposta || "").replace(/(R\$|US\$|U\$S|\$|€)\s?\d[\d.,]*/g, "").slice(0, 700).trim();
   const out = { ok: true, resposta, humano: !!saida.humano };
   const cot = cotacaoDe(saida, agora, lang);
-  if (cot) {
-    out.cotacao = cot;
-    out.servicoNome = servico(saida.servico).nome[lang] || servico(saida.servico).nome.pt;
+  if (cot.itens) {
+    out.cotacao = { itens: cot.itens, categorias: cot.categorias };
+    out.servicoNome = servico(cot.servicoId).nome[lang] || servico(cot.servicoId).nome.pt;
+  } else if (!out.humano) {
+    // a IA não pode dizer "veja os valores" se o sistema ainda não calculou: pergunta o que falta
+    const promete = /abaixo|below|abajo|valores|prices|precios|pre[cç]o|price|precio/i.test(resposta);
+    if (!resposta || promete) out.resposta = resposta = perguntaFalta(cot.faltando, lang) || resposta;
+    console.log("assistente: faltando", JSON.stringify(cot.faltando), "campos", Object.keys(saida).join(","));
   }
-  if (!resposta) out.resposta = cot ? "" : (lang === "en" ? "Sorry, could you rephrase that?" : lang === "es" ? "Disculpe, ¿puede repetirlo de otra forma?" : "Desculpe, pode explicar de outro jeito?");
+  if (!out.resposta) out.resposta = out.cotacao ? "" : (lang === "en" ? "Sorry, could you rephrase that?" : lang === "es" ? "Disculpe, ¿puede repetirlo de otra forma?" : "Desculpe, pode explicar de outro jeito?");
   return out;
 }
