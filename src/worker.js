@@ -1024,7 +1024,7 @@ async function api(req, env, ctx, url) {
     if (u && u.n >= 40) return erro("muitas_mensagens", 429);
     await env.DB.prepare("INSERT INTO ia_uso (ip_hash, em) VALUES (?, ?)").bind(ipHash, agoraIso()).run();
     if (Math.random() < 0.02) ctx.waitUntil(env.DB.prepare("DELETE FROM ia_uso WHERE em < ?").bind(new Date(Date.now() - 2 * 864e5).toISOString()).run());
-    try { const r = await assistente(env, b); return json(r, r.ok ? 200 : 400); }
+    try { const r = await assistente(env, { ...b, _preview: url.hostname.endsWith(".workers.dev") || url.hostname === "127.0.0.1" || url.hostname === "localhost" }); return json(r, r.ok ? 200 : 400); }
     catch (e) { console.error("assistente", e && e.stack); return json({ ok: false, erro: "ia_indisponivel" }, 503); }
   }
   if (p === "/api/cupom" && m === "POST") {
@@ -1087,7 +1087,7 @@ function previaReserva(res, url) {
 }
 
 /* App instalável: manifesto, ícone e script de instalação em todas as páginas públicas (não no painel nem nas áreas de parceiro e motorista) */
-const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=1" defer></script><script src="/js/assistente.js?v=3" defer></script>';
+const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=1" defer></script><script src="/js/assistente.js?v=4" defer></script>';
 /* Vídeos: o Safari (iPhone) só toca se o servidor responder a pedidos por partes (Range → 206). */
 async function videoParcial(req, env) {
   const base = await env.ASSETS.fetch(new Request(req.url, { method: "GET" }));
