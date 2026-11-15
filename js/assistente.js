@@ -24,6 +24,7 @@
   function brl(v) { return "R$ " + Number(v).toLocaleString("pt-BR", { maximumFractionDigits: 2 }); }
   var KEY = "iet_chat_" + L, msgs = [];
   try { msgs = JSON.parse(sessionStorage.getItem(KEY) || "[]"); } catch (e) { msgs = []; }
+  function estadoAtual() { for (var i = msgs.length - 1; i >= 0; i--) if (msgs[i].estado) return msgs[i].estado; return null; }
   function salvar() { try { sessionStorage.setItem(KEY, JSON.stringify(msgs.slice(-30))); } catch (e) {} }
   function waLink(txt) { return "https://wa.me/" + WA + "?text=" + encodeURIComponent(txt || T.waTxt); }
   function resumoWa() {
@@ -137,13 +138,14 @@
       bolha("eu", esc(txt));
       var dig = bolha("bot", '<span class="ia-dots"><span></span><span></span><span></span></span>');
       var envio = msgs.map(function (m) { return { role: m.role, content: m.content || (m.cot ? "(valores mostrados)" : "") }; });
-      fetch("/api/assistente", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mensagens: envio, lang: L }) })
+      fetch("/api/assistente", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mensagens: envio, lang: L, estado: estadoAtual() }) })
         .then(function (r) { return r.json().then(function (j) { j._s = r.status; return j; }); })
         .then(function (r) {
           dig.remove();
           if (!r.ok) { bolha("bot", esc(r._s === 429 ? T.limite : T.erro)); btnWa(); return; }
           var m = { role: "assistant", content: r.resposta || "", humano: !!r.humano };
           if (r.cotacao) m.cot = r.cotacao;
+          if (r.estado) m.estado = r.estado;
           msgs.push(m); salvar();
           if (m.content) bolha("bot", esc(m.content));
           if (m.cot) cotacao(m.cot);

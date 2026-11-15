@@ -32,6 +32,7 @@ SEU TRABALHO: entender qual serviço o cliente quer e coletar, uma ou duas pergu
 REGRAS IMPORTANTES:
 - NUNCA diga valores, preços, descontos ou números de dinheiro. O sistema do site calcula e mostra o preço sozinho logo abaixo da sua mensagem quando os dados estiverem completos. Quando estiverem completos, diga apenas algo como "Pronto, veja os valores abaixo".
 - Não invente serviços, regras, horários, nomes de motoristas, carros ou promessas que não estejam aqui.
+- Nunca escreva para o cliente os ids internos dos serviços (ex.: "salto-del-guaira", "igu-foz"); use o nome do serviço.
 - Nunca responda só "preciso de mais detalhes": sempre diga exatamente quais dados faltam, em forma de pergunta.
 - "Amanhã", "depois de amanhã" e dias da semana são relativos a hoje (veja a data acima).
 - Se o pedido não estiver na lista (outra cidade, evento, algo especial), ou o cliente pedir para falar com uma pessoa, marque humano=true e diga que a equipe responde pelo WhatsApp.
@@ -114,6 +115,11 @@ function data(v) {
   v = String(v || "").trim();
   let m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(v);
   if (m) return `${m[1]}-${m[2].padStart(2, "0")}-${m[3].padStart(2, "0")}`;
+  const MES = { jan: 1, fev: 2, feb: 2, mar: 3, abr: 4, apr: 4, mai: 5, may: 5, jun: 6, jul: 7, ago: 8, aug: 8, set: 9, sep: 9, out: 10, oct: 10, nov: 11, dez: 12, dec: 12, dic: 12, ene: 1 };
+  const vm = semAcento(v).replace(/\bde\b|,|\./g, " ").replace(/\s+/g, " ").trim();
+  let mm = /^(\d{1,2}) ([a-z]{3})[a-z]*(?: (\d{4}))?$/.exec(vm) || null;
+  if (mm && MES[mm[2]]) v = mm[1] + "/" + MES[mm[2]] + (mm[3] ? "/" + mm[3] : "");
+  else if ((mm = /^([a-z]{3})[a-z]* (\d{1,2})(?: (\d{4}))?$/.exec(vm)) && MES[mm[1]]) v = mm[2] + "/" + MES[mm[1]] + (mm[3] ? "/" + mm[3] : "");
   m = /^(\d{1,2})[\/.-](\d{1,2})(?:[\/.-](\d{2,4}))?$/.exec(v);
   if (m) {
     const hoje = new Date(Date.now() - 3 * 3600e3);
@@ -184,6 +190,25 @@ function perguntaFalta(falta, lang) {
   return P.ini + (l.length > 1 ? l.slice(0, -1).join(", ") + P.e + l[l.length - 1] : l[0]) + ".";
 }
 
+/* Junta o que já foi coletado (estado que o navegador devolve) com o que a IA trouxe agora */
+function juntar(estado, novo) {
+  const e = estado && typeof estado === "object" ? estado : {}, n = novo || {}, out = {};
+  const okNum = (v) => v !== undefined && v !== null && v !== "" && Number.isFinite(parseInt(v, 10)) && parseInt(v, 10) >= 0;
+  out.servico = acharServico(n.servico) ? acharServico(n.servico).id : (acharServico(e.servico) ? acharServico(e.servico).id : "");
+  for (const k of ["pax", "malas", "horas", "dias"]) out[k] = okNum(n[k]) && !(k === "pax" && parseInt(n[k], 10) === 0) ? parseInt(n[k], 10) : okNum(e[k]) ? parseInt(e[k], 10) : undefined;
+  out.local = String(n.local || "").trim().length >= 3 ? String(n.local).trim().slice(0, 160) : String(e.local || "").slice(0, 160);
+  const tn = Array.isArray(n.trechos) && n.trechos.length ? n.trechos : (n.data || n.hora ? [{ data: n.data, hora: n.hora, sentido: n.sentido }] : []);
+  const te = Array.isArray(e.trechos) ? e.trechos : [];
+  const norm = (t) => ({ data: data(t && t.data), hora: hora(t && t.hora), sentido: sentido((t && t.sentido) || n.sentido) });
+  const tnn = tn.slice(0, 2).map(norm), ten = te.slice(0, 2).map(norm);
+  const base = tnn.length >= ten.length ? tnn : ten;
+  out.trechos = base.map((t, i) => {
+    const o = ten[i] || {};
+    return { data: t.data || o.data || "", hora: t.hora || o.hora || "", sentido: t.sentido || o.sentido || "" };
+  });
+  return out;
+}
+
 export async function assistente(env, body, agora = Date.now()) {
   const lang = LINGUAS[body.lang] ? body.lang : "pt";
   const hist = (Array.isArray(body.mensagens) ? body.mensagens : []).slice(-12)
@@ -196,7 +221,7 @@ export async function assistente(env, body, agora = Date.now()) {
   else {
     if (!env.AI) return { ok: false, erro: "ia_indisponivel" };
     const r = await env.AI.run(MODELO, {
-      messages: [{ role: "system", content: sistema(lang) }, ...hist],
+      messages: [{ role: "system", content: sistema(lang) + (body.estado ? "\n\nDADOS JÁ COLETADOS NESTA CONVERSA (mantenha e complete): " + JSON.stringify(juntar(body.estado, {})).slice(0, 800) : "") }, ...hist],
       response_format: { type: "json_schema", json_schema: ESQUEMA },
       max_tokens: 400, temperature: 0.3,
     });
@@ -207,7 +232,13 @@ export async function assistente(env, body, agora = Date.now()) {
   const out = { ok: true, resposta, humano: !!saida.humano };
   if (body.debug === true) out._ia = saida;
   if (/^\s*humano\s*[=:]/i.test(resposta) || /^\s*\{/.test(resposta)) out.resposta = resposta = "";
-  const cot = cotacaoDe(saida, agora, lang);
+  const estado = juntar(body.estado, saida);
+  out.estado = estado;
+  // ids internos nunca aparecem para o cliente
+  for (const sv of SERVICOS) if (resposta.includes(sv.id) && sv.id.includes("-")) resposta = resposta.split(sv.id).join(sv.nome[lang] || sv.nome.pt);
+  if (/^[a-z0-9-]+$/i.test(resposta) || resposta.length < 4) resposta = "";
+  out.resposta = resposta;
+  const cot = cotacaoDe({ ...estado, humano: saida.humano }, agora, lang);
   if (cot.itens) {
     out.cotacao = { itens: cot.itens, categorias: cot.categorias };
     out.resposta = resposta = { pt: "Pronto! Veja os valores abaixo e toque em Reservar no carro que preferir.", en: "Done! See the prices below and tap Book on the vehicle you prefer.", es: "¡Listo! Vea los valores abajo y toque Reservar en el vehículo que prefiera." }[lang];
