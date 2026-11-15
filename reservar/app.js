@@ -542,7 +542,7 @@
     var s = svc(it.servico), c = CAT.categorias[it.categoria], parts = [L(c.nome) + " · " + fmtDate(it.data) + " " + it.hora];
     if (s.sentido) parts.push(t(it.sentido));
     if (it.voo) parts.push(t("voo") + ": " + it.voo);
-    parts.push(t("origem").replace(/ \(.*\)/, "") + ": " + it.origem);
+    if (it.origem) parts.push(t("origem").replace(/ \(.*\)/, "") + ": " + it.origem);
     if (it.destino) parts.push(t("destino") + ": " + it.destino);
     if (it.obs) parts.push(t("obsItem").replace(/ \(.*\)/, "") + ": " + it.obs);
     if (it.idaVolta && it.dataVolta) parts.push(t("voltaTxt") + ": " + fmtDate(it.dataVolta) + " " + it.horaVolta);

@@ -2,6 +2,7 @@
 import { CONFIG, CATEGORIAS, SERVICOS, CONSULTA, HORA_EXTRA, POR_HORA, POR_KM, DIARIA, datasEspeciais } from "./precos.js";
 import { normalizarItem, cotar, cotarTodas, valorAgora, servico, aplicarPrecos, PRECOS_PADRAO } from "./cotacao.js";
 import { buscarLugares, resolverRota } from "./rota.js";
+import { assistente } from "./assistente.js";
 import { EmailMessage } from "cloudflare:email";
 
 export const STATUS = ["solicitacao", "pagamento_pendente", "aprovado", "aguardando_confirmacao", "confirmada", "concluida", "cancelada"];
@@ -90,6 +91,9 @@ async function prepararBanco(env) {
     env.DB.prepare(`CREATE TABLE IF NOT EXISTS cupons (
       codigo TEXT PRIMARY KEY, pct REAL NOT NULL, ativo INTEGER NOT NULL DEFAULT 1, inicio TEXT, fim TEXT,
       usos_max INTEGER, usos INTEGER NOT NULL DEFAULT 0, descricao TEXT, criado_em TEXT NOT NULL, autor TEXT)`),
+    // assistente de IA: só conta mensagens por IP (para limitar abuso); não guarda a conversa
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS ia_uso (ip_hash TEXT NOT NULL, em TEXT NOT NULL)`),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_ia_uso ON ia_uso(ip_hash, em)`),
   ]);
   // coluna nova em tabela antiga: só cria se ainda não existir
   const cols = (await env.DB.prepare("PRAGMA table_info(pedidos)").all()).results.map((c) => c.name);
@@ -1010,6 +1014,19 @@ async function api(req, env, ctx, url) {
   if (p.startsWith("/api/parceiro/") && m === "GET") return areaParceiro(req, env, url);
   if (p.startsWith("/api/motorista/")) return areaMotorista(req, env, url);
   if (p === "/api/pagamentos/infinitepay" && m === "POST") return avisoInfinitePay(req, env, ctx, url);
+  if (p === "/api/assistente" && m === "POST") {
+    let b; try { b = await lerJson(req, 12000); } catch { return erro("json_invalido"); }
+    await prepararBanco(env);
+    const ip = req.headers.get("cf-connecting-ip") || "";
+    const ipHash = ip ? await sha256(ip + (env.IP_SALT || "iet")) : "sem-ip";
+    const desde = new Date(Date.now() - 3600e3).toISOString();
+    const u = await env.DB.prepare("SELECT COUNT(*) n FROM ia_uso WHERE ip_hash = ? AND em > ?").bind(ipHash, desde).first();
+    if (u && u.n >= 40) return erro("muitas_mensagens", 429);
+    await env.DB.prepare("INSERT INTO ia_uso (ip_hash, em) VALUES (?, ?)").bind(ipHash, agoraIso()).run();
+    if (Math.random() < 0.02) ctx.waitUntil(env.DB.prepare("DELETE FROM ia_uso WHERE em < ?").bind(new Date(Date.now() - 2 * 864e5).toISOString()).run());
+    try { const r = await assistente(env, b); return json(r, r.ok ? 200 : 400); }
+    catch (e) { console.error("assistente", e && e.stack); return json({ ok: false, erro: "ia_indisponivel" }, 503); }
+  }
   if (p === "/api/cupom" && m === "POST") {
     let b; try { b = await lerJson(req, 500); } catch { return erro("json_invalido"); }
     const r = await buscarCupom(env, b.codigo);
@@ -1070,7 +1087,7 @@ function previaReserva(res, url) {
 }
 
 /* App instalável: manifesto, ícone e script de instalação em todas as páginas públicas (não no painel nem nas áreas de parceiro e motorista) */
-const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=1" defer></script>';
+const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=1" defer></script><script src="/js/assistente.js?v=1" defer></script>';
 /* Vídeos: o Safari (iPhone) só toca se o servidor responder a pedidos por partes (Range → 206). */
 async function videoParcial(req, env) {
   const base = await env.ASSETS.fetch(new Request(req.url, { method: "GET" }));

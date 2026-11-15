@@ -21,6 +21,8 @@
   "send_email": [
     { "name": "AVISOS", "destination_address": "atendimento@g7.taxi.br" }
   ],
+  // IA da Cloudflare (Workers AI) para o assistente de reservas do site
+  "ai": { "binding": "AI" },
   "vars": {
     "EMAIL_AVISOS": "atendimento@g7.taxi.br",
     "EMAIL_REMETENTE": "reservas@iguacuexecutivetransfer.com.br",
@@ -49,6 +51,7 @@
     ],
     "send_email": [
       { "name": "AVISOS", "destination_address": "atendimento@g7.taxi.br" }
-    ]
+    ],
+    "ai": { "binding": "AI" }
   }
 }
