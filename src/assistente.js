@@ -32,6 +32,8 @@ SEU TRABALHO: entender qual serviço o cliente quer e coletar, uma ou duas pergu
 REGRAS IMPORTANTES:
 - NUNCA diga valores, preços, descontos ou números de dinheiro. O sistema do site calcula e mostra o preço sozinho logo abaixo da sua mensagem quando os dados estiverem completos. Quando estiverem completos, diga apenas algo como "Pronto, veja os valores abaixo".
 - Não invente serviços, regras, horários, nomes de motoristas, carros ou promessas que não estejam aqui.
+- Nunca responda só "preciso de mais detalhes": sempre diga exatamente quais dados faltam, em forma de pergunta.
+- "Amanhã", "depois de amanhã" e dias da semana são relativos a hoje (veja a data acima).
 - Se o pedido não estiver na lista (outra cidade, evento, algo especial), ou o cliente pedir para falar com uma pessoa, marque humano=true e diga que a equipe responde pelo WhatsApp.
 - Não fale de assuntos fora de transfer e turismo em Foz do Iguaçu. Não peça nome, telefone, e-mail ou documentos: isso é feito na reserva.
 - Converta datas para AAAA-MM-DD (ex.: "sábado que vem", "dia 20") e horários para HH:MM (24 h). Se a data ficar ambígua, pergunte.
@@ -198,8 +200,18 @@ export async function assistente(env, body, agora = Date.now()) {
     out.servicoNome = servico(cot.servicoId).nome[lang] || servico(cot.servicoId).nome.pt;
   } else if (!out.humano) {
     // a IA não pode dizer "veja os valores" se o sistema ainda não calculou: pergunta o que falta
-    const promete = /abaixo|below|abajo|valores|prices|precios|pre[cç]o|price|precio/i.test(resposta);
-    if (!resposta || promete) out.resposta = resposta = perguntaFalta(cot.faltando, lang) || resposta;
+    // sem preço calculado: a resposta precisa dizer CLARAMENTE o que falta (nada de "preciso de mais detalhes")
+    const promete = /abaixo|below|abajo|valor|prices|precios|pre[cç]o|price|precio|detalhe|detail/i.test(resposta);
+    const ultimaIA = [...hist].reverse().find((m) => m.role === "assistant");
+    const repetiu = ultimaIA && ultimaIA.content.trim() === resposta.trim();
+    const pergunta = perguntaFalta(cot.faltando, lang);
+    const nUser = hist.filter((m) => m.role === "user").length;
+    if (cot.faltando.includes("servico") && nUser >= 4) {
+      out.humano = true;
+      out.resposta = resposta = { pt: "Não encontrei esse trajeto na lista do site. Nossa equipe responde pelo WhatsApp com o valor.", en: "I couldn't find this route on the website list. Our team will reply on WhatsApp with the price.", es: "No encontré este trayecto en la lista del sitio. Nuestro equipo responde por WhatsApp con el valor." }[lang];
+    } else if (pergunta && (!resposta || promete || repetiu || !resposta.includes("?"))) {
+      out.resposta = resposta = pergunta;
+    }
     console.log("assistente: faltando", JSON.stringify(cot.faltando), "campos", Object.keys(saida).join(","));
   }
   if (!out.resposta) out.resposta = out.cotacao ? "" : (lang === "en" ? "Sorry, could you rephrase that?" : lang === "es" ? "Disculpe, ¿puede repetirlo de otra forma?" : "Desculpe, pode explicar de outro jeito?");
