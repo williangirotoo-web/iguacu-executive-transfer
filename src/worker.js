@@ -1071,6 +1071,26 @@ function previaReserva(res, url) {
 
 /* App instalável: manifesto, ícone e script de instalação em todas as páginas públicas (não no painel nem nas áreas de parceiro e motorista) */
 const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=1" defer></script>';
+/* Vídeos: o Safari (iPhone) só toca se o servidor responder a pedidos por partes (Range → 206). */
+async function videoParcial(req, env) {
+  const base = await env.ASSETS.fetch(new Request(req.url, { method: "GET" }));
+  const range = req.headers.get("range");
+  if (!base.ok) return base;
+  const h = new Headers(base.headers);
+  h.set("accept-ranges", "bytes");
+  h.set("cache-control", "public, max-age=604800");
+  if (!range) return new Response(req.method === "HEAD" ? null : base.body, { status: 200, headers: h });
+  const buf = await base.arrayBuffer(), tam = buf.byteLength;
+  const m = /^bytes=(\d*)-(\d*)$/.exec(range.trim());
+  let ini, fim;
+  if (m && m[1] !== "") { ini = +m[1]; fim = m[2] !== "" ? Math.min(+m[2], tam - 1) : tam - 1; }
+  else if (m && m[2] !== "") { ini = Math.max(0, tam - +m[2]); fim = tam - 1; }
+  if (ini === undefined || ini > fim || ini >= tam) { h.set("content-range", "bytes */" + tam); return new Response(null, { status: 416, headers: h }); }
+  h.set("content-range", `bytes ${ini}-${fim}/${tam}`);
+  h.set("content-length", String(fim - ini + 1));
+  return new Response(req.method === "HEAD" ? null : buf.slice(ini, fim + 1), { status: 206, headers: h });
+}
+
 function comApp(res, url) {
   const p = url.pathname;
   if (!res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
@@ -1086,7 +1106,7 @@ export default {
       try { await carregarPrecos(env); res = await api(req, env, ctx, url); }
       catch (e) { console.error("api", e && e.stack); res = erro("interno", 500); }
     } else {
-      res = await env.ASSETS.fetch(req);
+      res = url.pathname.startsWith("/video/") ? await videoParcial(req, env) : await env.ASSETS.fetch(req);
       if ((url.pathname === "/reservar/" || url.pathname === "/reservar/index.html") && req.method === "GET" && res.ok) { await carregarPrecos(env); res = previaReserva(res, url); }
       if (req.method === "GET") res = comApp(res, url);
     }
