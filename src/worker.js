@@ -1108,11 +1108,31 @@ async function videoParcial(req, env) {
   return new Response(req.method === "HEAD" ? null : buf.slice(ini, fim + 1), { status: 206, headers: h });
 }
 
+/* Vídeos de fundo no topo de algumas páginas (gerados com IA a partir do Corolla preto) */
+const HERO_VIDEO = {
+  "/reservar/": "reservas-foz", "/reservar/index.html": "reservas-foz",
+  "/pt/transfer-itaipu-foz-do-iguacu.html": "itaipu-corolla", "/en/itaipu-dam-tour-transfer.html": "itaipu-corolla",
+  "/pt/transfer-vip-foz-do-iguacu.html": "itaipu-corolla", "/pt/taxi-corporativo-foz-do-iguacu.html": "itaipu-corolla",
+  "/passeios/passeio-marco-trifronteira.html": "marco-corolla", "/en/triple-frontier-landmark-tour.html": "marco-corolla",
+  "/passeios/passeio-compras-ciudad-del-este.html": "ponte-corolla", "/en/ciudad-del-este-shopping-tour.html": "ponte-corolla",
+  "/pt/taxi-para-fronteira-foz-do-iguacu.html": "ponte-corolla", "/passeios/passeio-3-paises-1-dia.html": "ponte-corolla", "/en/three-countries-one-day-tour.html": "ponte-corolla",
+};
+const HV_CSS = '<style>.hv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;opacity:0;transition:opacity 1.2s ease;pointer-events:none}.hv.on{opacity:1}.a-hero:has(.hv.on)::after{background:linear-gradient(90deg,rgba(8,9,10,.9) 0%,rgba(8,9,10,.6) 48%,rgba(8,9,10,.22) 100%),linear-gradient(180deg,rgba(8,9,10,.35) 0%,transparent 28%,transparent 62%,var(--bg))}.r-hero:has(.hv.on)::after{background:linear-gradient(180deg,rgba(8,9,10,.5) 0%,rgba(8,9,10,.58) 55%,var(--bg) 100%)}@media(max-width:760px){.a-hero:has(.hv.on)::after{background:linear-gradient(180deg,rgba(8,9,10,.45) 0%,rgba(8,9,10,.66) 45%,rgba(8,9,10,.9) 82%,var(--bg))}}@media(prefers-reduced-motion:reduce){.hv{transition:none}}</style><script src="/js/hero-video.js?v=1" defer></script>';
+function heroVideo(k) {
+  return `<video class="hv" data-hero-video muted loop playsinline autoplay preload="none" aria-hidden="true" tabindex="-1" poster="/img/${k}-poster.webp" data-src-d="/video/${k}-1280.mp4" data-src-m="/video/${k}-mobile.mp4" data-poster-m="/img/${k}-poster-m.webp"></video>`;
+}
+
 function comApp(res, url) {
   const p = url.pathname;
   if (!res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
   if (p.startsWith("/admin") || p.startsWith("/parceiro/") || p.startsWith("/motorista/") || p === "/offline.html") return res;
-  return new HTMLRewriter().on("head", { element(el) { el.append(APP_HEAD, { html: true }); } }).transform(res);
+  const k = HERO_VIDEO[p];
+  let rw = new HTMLRewriter().on("head", { element(el) { el.append(APP_HEAD + (k ? HV_CSS : ""), { html: true }); } });
+  if (k) {
+    let feito = false;
+    rw = rw.on("section.a-hero, section.r-hero", { element(el) { if (!feito) { feito = true; el.prepend(heroVideo(k), { html: true }); } } });
+  }
+  return rw.transform(res);
 }
 
 export default {
