@@ -3,6 +3,8 @@
 (function () {
   "use strict";
   if (window.__ietAssist) return; window.__ietAssist = 1;
+  // no celular fica desligado: lá já existe a barra com WhatsApp e o chat cobriria a página
+  if (window.matchMedia && matchMedia("(max-width: 900px)").matches) return;
   var WA = "5545991185798";
   var L = (document.documentElement.lang || "pt").slice(0, 2); if (L !== "en" && L !== "es") L = "pt";
   var T = {
