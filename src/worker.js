@@ -104,6 +104,7 @@ async function prepararBanco(env) {
   if (!cols.includes("desconto")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN desconto REAL").run();
   const colsItens = (await env.DB.prepare("PRAGMA table_info(itens)").all()).results.map((c) => c.name);
   if (!colsItens.includes("obs")) await env.DB.prepare("ALTER TABLE itens ADD COLUMN obs TEXT").run();
+  if (!colsItens.includes("malas_mao")) await env.DB.prepare("ALTER TABLE itens ADD COLUMN malas_mao INTEGER").run();
   schemaPronto = true;
 }
 
@@ -212,7 +213,7 @@ function resumoTexto(p, itens, comLinks, origem) {
     if (it.voo) linhas.push(`   Voo: ${it.voo}`);
     if (it.origem) linhas.push(`   Buscar em: ${it.origem}`);
     if (it.destino) linhas.push(`   Levar para: ${it.destino}`);
-    linhas.push(`   Passageiros: ${it.pax} · Malas: ${it.malas}` + (it.cadeirinhas ? ` · Cadeirinhas: ${it.cadeirinhas}` : "") + (it.pet ? " · Com pet" : ""));
+    linhas.push(`   Passageiros: ${it.pax} · Malas grandes: ${it.malas}` + (it.malasMao ? ` · Malas de bordo: ${it.malasMao}` : "") + (it.malasAcima ? " · ATENÇÃO: bagagem acima do padrão do carro, combinar com o cliente" : "") + (it.cadeirinhas ? ` · Cadeirinhas: ${it.cadeirinhas}` : "") + (it.pet ? " · Com pet" : ""));
     if (it.obs) linhas.push(`   Obs.: ${it.obs}`);
     if (it.horas_extras) linhas.push(`   Horas extras: ${it.horas_extras}`);
     if (it.km && comLinks) linhas.push(`   Distância (só para a equipe): ${it.km} km por trecho` + (it.km_fora ? " · com taxa de fronteira" : ""));
@@ -310,11 +311,11 @@ async function criarPedido(req, env, ctx) {
   if (!pedidoId) return erro("falha_codigo", 500);
 
   const stmts = itens.map(({ it, cot, svc }, i) => env.DB.prepare(`INSERT INTO itens (pedido_id, ordem, servico_id, servico_nome, categoria, data, hora, inicio_utc,
-    sentido, voo, origem, destino, pax, malas, cadeirinhas, pet, horas_extras, horas, dias, data_especial, valor, modo, valor_agora, linhas_json, obs)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(pedidoId, i + 1, it.servico, svc.nome.pt, it.categoria, it.data, it.hora, cot.inicio,
+    sentido, voo, origem, destino, pax, malas, cadeirinhas, pet, horas_extras, horas, dias, data_especial, valor, modo, valor_agora, linhas_json, obs, malas_mao)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(pedidoId, i + 1, it.servico, svc.nome.pt, it.categoria, it.data, it.hora, cot.inicio,
     svc.sentido ? it.sentido : null, it.voo || null, it.origem || null, it.destino || null, it.pax, it.malas, it.cadeirinhas, it.pet ? 1 : 0,
     it.horasExtras, svc.tipo === "hora" ? it.horas : null, svc.tipo === "diaria" ? it.dias : null, cot.dataEspecial ? 1 : 0,
-    cot.valor, pag.detalhes[i].modo, pag.detalhes[i].due, JSON.stringify(cot.linhas), it.obs || null));
+    cot.valor, pag.detalhes[i].modo, pag.detalhes[i].due, JSON.stringify(cot.linhas), it.obs || null, it.malasMao || 0));
   stmts.push(env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, status_para, autor, texto) VALUES (?,?,?,?,?,?)")
     .bind(pedidoId, now, "criado", "solicitacao", parceiro ? "parceiro " + parceiro.codigo : "cliente", parceiro ? `Reserva feita pelo parceiro ${parceiro.empresa || parceiro.responsavel} (${parceiro.codigo})` : "Pedido feito pelo site"));
   if (cupom) stmts.push(env.DB.prepare("UPDATE cupons SET usos = usos + 1 WHERE codigo = ?").bind(cupom.codigo));
@@ -322,7 +323,7 @@ async function criarPedido(req, env, ctx) {
 
   const pedido = { codigo, ...cliente, total: pag.total, valor_agora: pag.agora, cupom: cupom ? cupom.codigo + " (-" + cupom.pct + "%)" : null };
   const itensDb = itens.map(({ it, cot, svc }, i) => ({ servico_id: it.servico, servico_nome: svc.nome.pt, categoria: it.categoria, data: it.data, hora: it.hora,
-    sentido: it.sentido, voo: it.voo, origem: it.origem, destino: it.destino, pax: it.pax, malas: it.malas, cadeirinhas: it.cadeirinhas, pet: it.pet,
+    sentido: it.sentido, voo: it.voo, origem: it.origem, destino: it.destino, pax: it.pax, malas: it.malas, malasMao: it.malasMao, malasAcima: !!cot.malasAcima, cadeirinhas: it.cadeirinhas, pet: it.pet,
     horas_extras: it.horasExtras, horas: it.horas, dias: it.dias, data_especial: cot.dataEspecial, valor: cot.valor, modo: pag.detalhes[i].modo, obs: it.obs,
     km: cot.km || null, km_fora: it.rota ? !!it.rota.fora : false }));
   const origem = new URL(req.url).origin;
@@ -346,7 +347,7 @@ async function criarPedido(req, env, ctx) {
 }
 
 /* ---------------- pacote compartilhado (link curto com os itens do carrinho, sem dados pessoais) ---------------- */
-const CAMPOS_PACOTE = ["servico", "categoria", "data", "hora", "sentido", "voo", "origem", "destino", "pax", "malas", "cadeirinhas", "pet", "horasExtras", "horas", "dias", "idaVolta", "dataVolta", "horaVolta", "de", "para"];
+const CAMPOS_PACOTE = ["servico", "categoria", "data", "hora", "sentido", "voo", "origem", "destino", "pax", "malas", "malasMao", "cadeirinhas", "pet", "horasExtras", "horas", "dias", "idaVolta", "dataVolta", "horaVolta", "de", "para"];
 async function criarPacote(req, env) {
   let body;
   try { body = await lerJson(req, 12000); } catch { return erro("json_invalido"); }
@@ -480,12 +481,12 @@ function corridaParaMotorista(c) {
   return {
     id: c.id, status: c.status, repasse: c.repasse, obs: c.obs, criado_em: c.criado_em, respondido_em: c.respondido_em,
     pedido: c.pedido_codigo, pedido_status: c.pedido_status, servico: c.servico_nome, categoria: c.categoria, data: c.data, hora: c.hora, inicio: c.inicio_utc,
-    sentido: c.sentido, origem: c.origem, destino: c.destino, obs_item: c.obs_item, pax: c.pax, malas: c.malas, cadeirinhas: c.cadeirinhas, pet: !!c.pet, horas: c.horas, dias: c.dias, horas_extras: c.horas_extras,
+    sentido: c.sentido, origem: c.origem, destino: c.destino, obs_item: c.obs_item, pax: c.pax, malas: c.malas, malas_mao: c.malas_mao, cadeirinhas: c.cadeirinhas, pet: !!c.pet, horas: c.horas, dias: c.dias, horas_extras: c.horas_extras,
     ...(aceita ? { passageiro: c.nome, telefone: c.telefone, voo: c.voo, observacoes: c.observacoes } : {}),
   };
 }
 const SQL_CORRIDA = `SELECT c.*, p.codigo AS pedido_codigo, p.status AS pedido_status, p.nome, p.telefone, p.observacoes,
-  i.servico_nome, i.categoria, i.data, i.hora, i.inicio_utc, i.sentido, i.voo, i.origem, i.destino, i.pax, i.malas, i.cadeirinhas, i.pet, i.horas, i.dias, i.horas_extras, i.obs AS obs_item
+  i.servico_nome, i.categoria, i.data, i.hora, i.inicio_utc, i.sentido, i.voo, i.origem, i.destino, i.pax, i.malas, i.malas_mao, i.cadeirinhas, i.pet, i.horas, i.dias, i.horas_extras, i.obs AS obs_item
   FROM corridas c JOIN pedidos p ON p.id = c.pedido_id JOIN itens i ON i.id = c.item_id`;
 async function areaMotorista(req, env, url) {
   const mot = await parceiroDaChave(req, env, "atende");

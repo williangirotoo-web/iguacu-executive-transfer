@@ -25,7 +25,7 @@
       consTit: "Grupos e experiências", consDesc: "Atendimento personalizado pelo WhatsApp:",
       data: "Data", hora: "Horário", horaVoo: "Horário do voo", sentido: "Sentido", chegada: "Chegada (aeroporto → hotel)", saida: "Saída (hotel → aeroporto)",
       voo: "Número do voo", localCheg: "Levar para (hotel ou endereço)", localSai: "Buscar em (hotel ou endereço)", obsItem: "Observações (opcional)", stQuando: "Quando", stOnde: "Trajeto", stQuem: "Passageiros e bagagem", stCarro: "Escolha o veículo", footSel: "Escolha o veículo", footTot: "Total deste serviço", cupom: "Cupom de desconto", cupomBtn: "Aplicar", cupomOk: "Cupom {c} aplicado: {p}% de desconto", cupomRem: "remover", desconto: "Desconto", e_cupom_invalido: "Cupom inválido", e_cupom_expirado: "Este cupom expirou", e_cupom_esgotado: "Este cupom esgotou", obsPh: "Ex.: placa com nome, parada no caminho, criança de colo", origem: "Buscar em (hotel ou endereço)", destino: "Levar para", destinoOpc: "Levar para (opcional)",
-      pax: "Passageiros", malas: "Malas grandes", cadeirinhas: "Cadeirinhas infantis (R$ {v} cada)", pet: "Vou levar um pet", cadNota: "Cadeirinha ou assento de elevação: obrigatório para crianças até 10 anos. Disponível do Executivo para cima.", incl: "Incluído: carro exclusivo para você, motorista profissional, pedágios e cancelamento grátis até 48 h antes.", inclFr: "Incluído: carro exclusivo para você, motorista profissional, travessia da fronteira com o motorista, pedágios e cancelamento grátis até 48 h antes. Ingressos dos atrativos são pagos à parte.", duvidas: "Dúvidas antes de reservar",
+      pax: "Passageiros", malas: "Malas grandes", malasBordo: "Malas de bordo / de mão", malasNota: "Pode informar todas as malas: não bloqueamos nenhum carro. Se passar do espaço padrão, combinamos com você depois da reserva.", malasAcima: "Bagagem acima do padrão: combinamos com você", cadeirinhas: "Cadeirinhas infantis (R$ {v} cada)", pet: "Vou levar um pet", cadNota: "Cadeirinha ou assento de elevação: obrigatório para crianças até 10 anos. Disponível do Executivo para cima.", incl: "Incluído: carro exclusivo para você, motorista profissional, pedágios e cancelamento grátis até 48 h antes.", inclFr: "Incluído: carro exclusivo para você, motorista profissional, travessia da fronteira com o motorista, pedágios e cancelamento grátis até 48 h antes. Ingressos dos atrativos são pagos à parte.", duvidas: "Dúvidas antes de reservar",
       horasExtras: "Horas extras de espera", horas: "Quantas horas (o pacote inclui 5 h)", dias: "Quantas diárias",
       categoria: "Categoria do veículo", ate: "até {n} passageiros", malasTxt: "{n} malas grandes", malasMao: " + {n} de mão",
       ref: "Ex.: {m}. Modelos de referência; a categoria é garantida, o modelo não.",
@@ -73,7 +73,7 @@
       consTit: "Groups & experiences", consDesc: "Personal service via WhatsApp:",
       data: "Date", hora: "Time", horaVoo: "Flight time", sentido: "Direction", chegada: "Arrival (airport → hotel)", saida: "Departure (hotel → airport)",
       voo: "Flight number", localCheg: "Drop-off (hotel or address)", localSai: "Pick-up (hotel or address)", obsItem: "Notes (optional)", stQuando: "When", stOnde: "Route", stQuem: "Passengers and luggage", stCarro: "Choose your vehicle", footSel: "Choose a vehicle", footTot: "Total for this service", cupom: "Discount code", cupomBtn: "Apply", cupomOk: "Code {c} applied: {p}% off", cupomRem: "remove", desconto: "Discount", e_cupom_invalido: "Invalid code", e_cupom_expirado: "This code has expired", e_cupom_esgotado: "This code is no longer available", obsPh: "E.g.: name sign, stop on the way, infant", origem: "Pick-up (hotel or address)", destino: "Drop-off", destinoOpc: "Drop-off (optional)",
-      pax: "Passengers", malas: "Large suitcases", cadeirinhas: "Child car seats (R$ {v} each)", pet: "I'm bringing a pet", cadNota: "Child seat or booster: required for children up to 10 years old. Available from Executive upwards.", incl: "Included: private car just for you, professional driver, tolls and free cancellation up to 48 h before.", inclFr: "Included: private car just for you, professional driver, border crossing with the driver, tolls and free cancellation up to 48 h before. Attraction tickets are paid separately.", duvidas: "Questions before booking",
+      pax: "Passengers", malas: "Large suitcases", malasBordo: "Carry-on bags", malasNota: "List all your bags: no vehicle is blocked. If it goes over the standard space, we will sort it out with you after booking.", malasAcima: "Above standard luggage: we will arrange it with you", cadeirinhas: "Child car seats (R$ {v} each)", pet: "I'm bringing a pet", cadNota: "Child seat or booster: required for children up to 10 years old. Available from Executive upwards.", incl: "Included: private car just for you, professional driver, tolls and free cancellation up to 48 h before.", inclFr: "Included: private car just for you, professional driver, border crossing with the driver, tolls and free cancellation up to 48 h before. Attraction tickets are paid separately.", duvidas: "Questions before booking",
       horasExtras: "Extra waiting hours", horas: "How many hours (package includes 5 h)", dias: "How many days",
       categoria: "Vehicle category", ate: "up to {n} passengers", malasTxt: "{n} large suitcases", malasMao: " + {n} carry-on",
       ref: "E.g. {m}. Reference models; the category is guaranteed, the model is not.",
@@ -121,7 +121,7 @@
       consTit: "Grupos y experiencias", consDesc: "Atención personalizada por WhatsApp:",
       data: "Fecha", hora: "Horario", horaVoo: "Horario del vuelo", sentido: "Sentido", chegada: "Llegada (aeropuerto → hotel)", saida: "Salida (hotel → aeropuerto)",
       voo: "Número de vuelo", localCheg: "Llevar a (hotel o dirección)", localSai: "Buscar en (hotel o dirección)", obsItem: "Observaciones (opcional)", stQuando: "Cuándo", stOnde: "Trayecto", stQuem: "Pasajeros y equipaje", stCarro: "Elija el vehículo", footSel: "Elija el vehículo", footTot: "Total de este servicio", cupom: "Cupón de descuento", cupomBtn: "Aplicar", cupomOk: "Cupón {c} aplicado: {p}% de descuento", cupomRem: "quitar", desconto: "Descuento", e_cupom_invalido: "Cupón inválido", e_cupom_expirado: "Este cupón expiró", e_cupom_esgotado: "Este cupón se agotó", obsPh: "Ej.: cartel con nombre, parada en el camino, bebé", origem: "Buscar en (hotel o dirección)", destino: "Llevar a", destinoOpc: "Llevar a (opcional)",
-      pax: "Pasajeros", malas: "Valijas grandes", cadeirinhas: "Sillas para niños (R$ {v} c/u)", pet: "Voy con mascota", cadNota: "Silla o elevador infantil: obligatorio para niños de hasta 10 años. Disponible desde Ejecutivo.", incl: "Incluido: auto exclusivo para usted, chofer profesional, peajes y cancelación gratis hasta 48 h antes.", inclFr: "Incluido: auto exclusivo para usted, chofer profesional, cruce de frontera con el chofer, peajes y cancelación gratis hasta 48 h antes. Las entradas de los atractivos se pagan aparte.", duvidas: "Dudas antes de reservar",
+      pax: "Pasajeros", malas: "Valijas grandes", malasBordo: "Valijas de cabina / de mano", malasNota: "Informe todas las valijas: no bloqueamos ningún vehículo. Si supera el espacio estándar, lo coordinamos con usted después de la reserva.", malasAcima: "Equipaje por encima del estándar: lo coordinamos con usted", cadeirinhas: "Sillas para niños (R$ {v} c/u)", pet: "Voy con mascota", cadNota: "Silla o elevador infantil: obligatorio para niños de hasta 10 años. Disponible desde Ejecutivo.", incl: "Incluido: auto exclusivo para usted, chofer profesional, peajes y cancelación gratis hasta 48 h antes.", inclFr: "Incluido: auto exclusivo para usted, chofer profesional, cruce de frontera con el chofer, peajes y cancelación gratis hasta 48 h antes. Las entradas de los atractivos se pagan aparte.", duvidas: "Dudas antes de reservar",
       horasExtras: "Horas extra de espera", horas: "Cuántas horas (el paquete incluye 5 h)", dias: "Cuántos días",
       categoria: "Categoría del vehículo", ate: "hasta {n} pasajeros", malasTxt: "{n} valijas grandes", malasMao: " + {n} de mano",
       ref: "Ej.: {m}. Modelos de referencia; la categoría está garantizada, el modelo no.",
@@ -331,7 +331,7 @@
   var cur = null, quotes = {}, qTimer = null, qSeq = 0;
   function openSvc(id) {
     var s = svc(id); if (!s) return;
-    cur = { servico: id, categoria: null, pax: 2, malas: 2, cadeirinhas: 0, pet: false, horasExtras: 0, horas: CAT.config.porHora.minimoHoras, dias: 1, sentido: "chegada", data: "", hora: "", voo: "", origem: "", destino: "" };
+    cur = { servico: id, categoria: null, pax: 2, malas: 2, malasMao: 0, cadeirinhas: 0, pet: false, horasExtras: 0, horas: CAT.config.porHora.minimoHoras, dias: 1, sentido: "chegada", data: "", hora: "", voo: "", origem: "", destino: "" };
     quotes = {};
     track("view_item", { item_id: id, item_name: s.nome.pt });
     renderModal(); var m = $("#r-modal"); if (m.showModal) m.showModal(); else m.setAttribute("open", "");
@@ -366,7 +366,8 @@
     f += '<div class="r-row">' + field(t("origem") + " *", '<input name="origem" required maxlength="160" autocomplete="street-address">') +
       field(s.tipo === "transfer" || s.tipo === "viagem" ? t("destino") : t("destinoOpc"), '<input name="destino" maxlength="160">') + "</div>";
     f += "</section>" + step(3, "stQuem");
-    f += '<div class="r-row">' + field(t("pax"), num("pax", cur.pax, 1, 15)) + field(t("malas"), num("malas", cur.malas, 0, 15)) + "</div>";
+    f += '<div class="r-row">' + field(t("pax"), num("pax", cur.pax, 1, 15)) + field(t("malas"), num("malas", cur.malas, 0, 30)) + "</div>" +
+      '<div class="r-row">' + field(t("malasBordo"), num("malasMao", cur.malasMao || 0, 0, 30)) + '<p class="r-note r-mnote">' + esc(t("malasNota")) + "</p></div>";
     if (s.tipo === "hora") f += field(t("horas"), num("horas", cur.horas, cfg.porHora.minimoHoras, cfg.porHora.maximoHoras));
     if (s.tipo === "diaria") f += field(t("dias"), num("dias", cur.dias, 1, 15));
     if (s.espera || s.tipo === "diaria") f += field(t("horasExtras"), num("horasExtras", cur.horasExtras, 0, 8));
@@ -480,7 +481,8 @@
       var ok = q && q.ok, price = !q ? t("calculando") : ok ? brl(q.valor) : errTxt(q);
       out += '<label class="r-cat' + (ok ? "" : " r-off") + (cur.categoria === k && ok ? " on" : "") + '"><input type="radio" name="categoria" value="' + k + '"' +
         (cur.categoria === k && ok ? " checked" : "") + (ok ? "" : " disabled") + ">" + info + '<em class="r-price' + (ok ? "" : " r-pmsg") + '">' + esc(price) +
-        (ok && q.dataEspecial ? ' <small class="r-esp">' + esc(t("especial", { p: CAT.config.feriadoAcrescimoPct })) + "</small>" : "") + (ok ? fxTxt(q.valor) : "") + "</em></label>";
+        (ok && q.dataEspecial ? ' <small class="r-esp">' + esc(t("especial", { p: CAT.config.feriadoAcrescimoPct })) + "</small>" : "") +
+        (ok && q.malasAcima ? ' <small class="r-esp r-macima">' + esc(t("malasAcima")) + "</small>" : "") + (ok ? fxTxt(q.valor) : "") + "</em></label>";
     });
     return out;
   }
@@ -499,7 +501,7 @@
       cur.local = loc;
       var ll = $("#r-local-l"); if (ll) ll.textContent = t(cur.sentido === "saida" ? "localSai" : "localCheg") + " *";
     }
-    ["pax", "malas", "cadeirinhas", "horasExtras", "horas", "dias"].forEach(function (k) { var v = g(k); if (v !== undefined) cur[k] = Math.max(0, parseInt(v, 10) || 0); });
+    ["pax", "malas", "malasMao", "cadeirinhas", "horasExtras", "horas", "dias"].forEach(function (k) { var v = g(k); if (v !== undefined) cur[k] = Math.max(0, parseInt(v, 10) || 0); });
     if (cur.pax < 1) cur.pax = 1;
     cur.pet = !!g("pet");
     if (g("idaVolta") !== undefined) {
@@ -546,7 +548,7 @@
     if (it.destino) parts.push(t("destino") + ": " + it.destino);
     if (it.obs) parts.push(t("obsItem").replace(/ \(.*\)/, "") + ": " + it.obs);
     if (it.idaVolta && it.dataVolta) parts.push(t("voltaTxt") + ": " + fmtDate(it.dataVolta) + " " + it.horaVolta);
-    parts.push(t("pax") + ": " + it.pax + " · " + t("malas") + ": " + it.malas);
+    parts.push(t("pax") + ": " + it.pax + " · " + t("malas") + ": " + it.malas + (it.malasMao ? " · " + t("malasBordo") + ": " + it.malasMao : ""));
     return parts;
   }
   function modosDe(it) { return (it.cot && it.cot.modos) || ["total"]; }
@@ -771,7 +773,7 @@
   });
   $("#r-modal-b").addEventListener("input", function (e) {
     if (e.target.dataset.ac) { acSearch(e.target); return; }
-    if (["pax", "malas", "horas", "dias", "horasExtras", "cadeirinhas"].indexOf(e.target.name) > -1) { readModal(); requestQuotes(); }
+    if (["pax", "malas", "malasMao", "horas", "dias", "horasExtras", "cadeirinhas"].indexOf(e.target.name) > -1) { readModal(); requestQuotes(); }
   });
   $("#r-modal").addEventListener("close", function () { cur = null; });
   $("#r-modal-b").addEventListener("submit", function (e) {

@@ -112,7 +112,7 @@
           "<span>Data e hora</span><span>" + esc(dataBr(it.data)) + " às " + esc(it.hora) + (it.sentido ? " (" + (it.sentido === "saida" ? "saída: hotel → aeroporto" : "chegada: aeroporto → hotel") + ")" : "") + "</span>" +
           (it.voo ? "<span>Voo</span><span>" + esc(it.voo) + "</span>" : "") + "<span>Buscar em</span><span>" + esc(it.origem) + "</span>" +
           (it.destino ? "<span>Levar para</span><span>" + esc(it.destino) + "</span>" : "") +
-          "<span>Passageiros / malas</span><span>" + esc(it.pax) + " / " + esc(it.malas) + (it.cadeirinhas ? " · " + it.cadeirinhas + " cadeirinha(s)" : "") + (it.pet ? " · com pet" : "") + "</span>" +
+          "<span>Passageiros / malas</span><span>" + esc(it.pax) + " / " + esc(it.malas) + (it.malas_mao ? " + " + it.malas_mao + " de bordo" : "") + (it.cadeirinhas ? " · " + it.cadeirinhas + " cadeirinha(s)" : "") + (it.pet ? " · com pet" : "") + "</span>" +
           (it.obs ? "<span>Obs. do cliente</span><span>" + esc(it.obs) + "</span>" : "") + (it.horas_extras ? "<span>Horas extras</span><span>" + esc(it.horas_extras) + "</span>" : "") + (it.horas ? "<span>Horas</span><span>" + esc(it.horas) + "</span>" : "") +
           (it.dias ? "<span>Diárias</span><span>" + esc(it.dias) + "</span>" : "") + (it.data_especial ? "<span>Data especial</span><span>sim (+5%)</span>" : "") +
           "<span>Valor</span><span><b>" + brl(it.valor) + "</b> · " + (it.modo === "total" ? "100% na reserva" : "sinal: " + brl(it.valor_agora)) + "</span></div>" + blocoMotorista(it, r.corridas || [], mots, p) + "</div>";

@@ -7,15 +7,15 @@
   var L = (document.documentElement.lang || "pt").slice(0, 2); if (L !== "en" && L !== "es") L = "pt";
   var T = {
     pt: { abrir: "Tire suas dúvidas", tit: "Assistente de reservas", sub: "Responde na hora · preço do site", ola: "Olá! Sou o assistente da Iguaçu Executive Transfer. Me conte para onde você quer ir, a data e quantas pessoas — eu mostro o preço na hora.",
-      chips: ["Aeroporto → hotel", "Cataratas", "Compras no Paraguai", "Argentina"], ph: "Escreva sua mensagem…", env: "Enviar", wa: "Falar no WhatsApp", waTxt: "Olá! Vim pelo site e gostaria de um orçamento.", res: "Reservar", porCarro: "por carro · preço fechado", ate: "até {p} pessoas e {m} malas",
+      chips: ["Aeroporto → hotel", "Cataratas", "Compras no Paraguai", "Argentina"], ph: "Escreva sua mensagem…", env: "Enviar", wa: "Falar no WhatsApp", waTxt: "Olá! Vim pelo site e gostaria de um orçamento.", res: "Reservar", porCarro: "por carro · preço fechado", ate: "até {p} pessoas · {m} malas grandes", acima: "bagagem acima do padrão: combinamos depois",
       erro: "Não consegui responder agora. Pode tentar de novo ou chamar no WhatsApp.", limite: "Muitas mensagens seguidas. Fale com a gente no WhatsApp.", nenhum: "Para esses dados não consigo reservar pelo site. Fale com a equipe no WhatsApp.", antec: "Esta data precisa de pelo menos {h} h de antecedência para reservar pelo site. Para antes disso, chame no WhatsApp.",
       aviso: "Assistente com IA. Os valores são calculados pelo sistema do site.", limpar: "Nova conversa", fechar: "Fechar", gerando: "Abrindo a reserva…" },
     en: { abrir: "Ask us", tit: "Booking assistant", sub: "Instant answers · site prices", ola: "Hi! I'm the Iguaçu Executive Transfer assistant. Tell me where you want to go, the date and how many people — I'll show the price right away.",
-      chips: ["Airport → hotel", "Iguazu Falls", "Shopping in Paraguay", "Argentina"], ph: "Type your message…", env: "Send", wa: "Chat on WhatsApp", waTxt: "Hello! I found you on the website and would like a quote.", res: "Book", porCarro: "per vehicle · fixed price", ate: "up to {p} people and {m} bags",
+      chips: ["Airport → hotel", "Iguazu Falls", "Shopping in Paraguay", "Argentina"], ph: "Type your message…", env: "Send", wa: "Chat on WhatsApp", waTxt: "Hello! I found you on the website and would like a quote.", res: "Book", porCarro: "per vehicle · fixed price", ate: "up to {p} people · {m} large bags", acima: "extra luggage: we will arrange it",
       erro: "I couldn't answer right now. Please try again or message us on WhatsApp.", limite: "Too many messages. Please message us on WhatsApp.", nenhum: "I can't book this online with these details. Please message our team on WhatsApp.", antec: "This needs at least {h} h notice to book online. For sooner, message us on WhatsApp.",
       aviso: "AI assistant. Prices are calculated by the website's system.", limpar: "New chat", fechar: "Close", gerando: "Opening your booking…" },
     es: { abrir: "Consúltenos", tit: "Asistente de reservas", sub: "Respuesta inmediata · precio del sitio", ola: "¡Hola! Soy el asistente de Iguaçu Executive Transfer. Dígame adónde quiere ir, la fecha y cuántas personas — le muestro el precio al instante.",
-      chips: ["Aeropuerto → hotel", "Cataratas", "Compras en Paraguay", "Argentina"], ph: "Escriba su mensaje…", env: "Enviar", wa: "Hablar por WhatsApp", waTxt: "¡Hola! Los encontré en el sitio y quisiera un presupuesto.", res: "Reservar", porCarro: "por vehículo · precio cerrado", ate: "hasta {p} personas y {m} maletas",
+      chips: ["Aeropuerto → hotel", "Cataratas", "Compras en Paraguay", "Argentina"], ph: "Escriba su mensaje…", env: "Enviar", wa: "Hablar por WhatsApp", waTxt: "¡Hola! Los encontré en el sitio y quisiera un presupuesto.", res: "Reservar", porCarro: "por vehículo · precio cerrado", ate: "hasta {p} personas · {m} valijas grandes", acima: "equipaje extra: lo coordinamos",
       erro: "No pude responder ahora. Intente de nuevo o escríbanos por WhatsApp.", limite: "Demasiados mensajes. Escríbanos por WhatsApp.", nenhum: "Con estos datos no puedo reservar por el sitio. Escriba a nuestro equipo por WhatsApp.", antec: "Esta fecha necesita al menos {h} h de anticipación para reservar por el sitio. Para antes, escríbanos por WhatsApp.",
       aviso: "Asistente con IA. Los valores los calcula el sistema del sitio.", limpar: "Nueva conversación", fechar: "Cerrar", gerando: "Abriendo la reserva…" }
   }[L];
@@ -102,7 +102,7 @@
       }
       var d = document.createElement("div"); d.className = "ia-cot";
       d.innerHTML = ok.slice(0, 4).map(function (x) {
-        return '<div class="c"><div><b>' + esc(x.nome) + "</b><small>" + esc(f(T.ate, { p: x.pax, m: x.malas })) + "</small></div><strong>" + brl(x.valor) + '</strong><button type="button" data-cat="' + esc(x.k) + '">' + esc(T.res) + "</button></div>";
+        return '<div class="c"><div><b>' + esc(x.nome) + "</b><small>" + esc(x.acima ? T.acima : f(T.ate, { p: x.pax, m: x.malas })) + "</small></div><strong>" + brl(x.valor) + '</strong><button type="button" data-cat="' + esc(x.k) + '">' + esc(T.res) + "</button></div>";
       }).join("") + "<p>" + esc(T.porCarro) + "</p>";
       d.addEventListener("click", function (e) {
         var b = e.target.closest("[data-cat]"); if (!b) return;
