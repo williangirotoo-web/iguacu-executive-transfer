@@ -40,6 +40,10 @@
       pagInfo: "Depois que confirmarmos a disponibilidade, enviamos o link de pagamento (Pix, cartão em até 12x (à vista sem acréscimo; parcelado com juros da operadora) ou PayPal) pelo WhatsApp.",
       aceito: "Li e aceito os <a href=\"/termos.html\" target=\"_blank\">Termos de Uso</a> e a <a href=\"/privacidade.html\" target=\"_blank\">Política de Privacidade</a>. Cancelamento grátis até {h} h antes; depois disso, devolvemos {d}%.",
       enviar: "Enviar pedido de reserva", enviando: "Enviando…", enviarPagar: "Reservar e pagar", pagInfoOn: "Ao reservar, você vai para a página segura do InfinitePay para pagar por Pix ou cartão em até 12x (à vista sem acréscimo; parcelado com juros da operadora). A confirmação chega na hora.", okPagTit: "Reserva feita! Falta só o pagamento", okPagTxt: "Código: {c}. Estamos levando você para a página de pagamento. Se não abrir, toque no botão abaixo.", okPagBtn: "Pagar {v} agora",
+      pagCom: "Como você quer pagar?", provBr: "Pix ou cartão brasileiro", provBrS: "Pix na hora ou cartão emitido no Brasil, em até 12x (InfinitePay).",
+      provInt: "Cartão internacional ou PayPal", provIntS: "Para cartões emitidos fora do Brasil ou conta PayPal. Cobrado em reais; o PayPal converte para a sua moeda.",
+      pagInfoInt: "Ao reservar, você vai para a página segura do PayPal para pagar com cartão internacional ou conta PayPal. Cobrado em reais (BRL); o PayPal converte para a sua moeda.",
+      pendTit: "Sua reserva {c} está aguardando o pagamento", pendTxt: "Se o pagamento não deu certo, escolha uma forma de pagar:", pendX: "Fechar", pendAbrindo: "Abrindo a página de pagamento…", e_ja_pago: "Esta reserva já está paga. Obrigado!",
       okTit: "Pedido recebido!", okTxt: "Código do pedido: {c}. Vamos confirmar a disponibilidade e enviar o link de pagamento pelo WhatsApp.",
       okWa: "Enviar o pedido no WhatsApp", okNovo: "Fazer outra reserva",
       especial: "Data especial (+{p}%)", lin_base: "Serviço", lin_hora_extra: "Horas extras ({q} × {u})", lin_cadeirinha: "Cadeirinhas ({q} × {u})",
@@ -88,6 +92,10 @@
       pagInfo: "Once we confirm availability, we'll send you a payment link (Pix, card or PayPal) on WhatsApp.",
       aceito: "I have read and accept the <a href=\"/termos.html\" target=\"_blank\">Terms</a> and the <a href=\"/privacidade.html\" target=\"_blank\">Privacy Policy</a>. Free cancellation up to {h} h before; after that, {d}% is refunded.",
       enviar: "Send booking request", enviando: "Sending…", enviarPagar: "Book and pay", pagInfoOn: "When you book, you go to PayPal's secure page to pay with your PayPal account or card. Charged in Brazilian reais (BRL); PayPal converts to your currency.", okPagTit: "Booked! Only the payment is left", okPagTxt: "Code: {c}. Taking you to the payment page. If it does not open, tap the button below.", okPagBtn: "Pay {v} now",
+      pagCom: "How would you like to pay?", provBr: "Pix or Brazilian card", provBrS: "Pix or a card issued in Brazil, up to 12 installments (InfinitePay).",
+      provInt: "International card or PayPal", provIntS: "For cards issued outside Brazil or a PayPal account. Charged in BRL; PayPal converts to your currency.",
+      pagInfoBr: "When you book, you go to InfinitePay's secure page to pay by Pix or a Brazilian card. Confirmation is instant.",
+      pendTit: "Your booking {c} is waiting for payment", pendTxt: "If the payment did not go through, choose how to pay:", pendX: "Close", pendAbrindo: "Opening the payment page…", e_ja_pago: "This booking is already paid. Thank you!",
       okTit: "Request received!", okTxt: "Booking code: {c}. We'll confirm availability and send the payment link on WhatsApp.",
       okWa: "Send the booking on WhatsApp", okNovo: "Make another booking",
       especial: "Special date (+{p}%)", lin_base: "Service", lin_hora_extra: "Extra hours ({q} × {u})", lin_cadeirinha: "Car seats ({q} × {u})",
@@ -136,6 +144,10 @@
       pagInfo: "Cuando confirmemos la disponibilidad, le enviamos el link de pago (Pix, tarjeta o PayPal) por WhatsApp.",
       aceito: "Leí y acepto los <a href=\"/termos.html\" target=\"_blank\">Términos</a> y la <a href=\"/privacidade.html\" target=\"_blank\">Política de Privacidad</a>. Cancelación gratis hasta {h} h antes; después, devolvemos el {d}%.",
       enviar: "Enviar pedido de reserva", enviando: "Enviando…", enviarPagar: "Reservar y pagar", pagInfoOn: "Al reservar, va a la página segura de PayPal para pagar con su cuenta PayPal o tarjeta. Se cobra en reales (BRL); PayPal convierte a su moneda.", okPagTit: "¡Reserva hecha! Solo falta el pago", okPagTxt: "Código: {c}. Lo estamos llevando a la página de pago. Si no se abre, toque el botón de abajo.", okPagBtn: "Pagar {v} ahora",
+      pagCom: "¿Cómo quiere pagar?", provBr: "Pix o tarjeta brasileña", provBrS: "Pix o tarjeta emitida en Brasil, hasta 12 cuotas (InfinitePay).",
+      provInt: "Tarjeta internacional o PayPal", provIntS: "Para tarjetas emitidas fuera de Brasil o cuenta PayPal. Se cobra en reales; PayPal convierte a su moneda.",
+      pagInfoBr: "Al reservar, va a la página segura de InfinitePay para pagar con Pix o tarjeta brasileña. La confirmación llega al instante.",
+      pendTit: "Su reserva {c} está esperando el pago", pendTxt: "Si el pago no funcionó, elija cómo pagar:", pendX: "Cerrar", pendAbrindo: "Abriendo la página de pago…", e_ja_pago: "Esta reserva ya está pagada. ¡Gracias!",
       okTit: "¡Pedido recibido!", okTxt: "Código del pedido: {c}. Confirmaremos la disponibilidad y enviaremos el link de pago por WhatsApp.",
       okWa: "Enviar el pedido por WhatsApp", okNovo: "Hacer otra reserva",
       especial: "Fecha especial (+{p}%)", lin_base: "Servicio", lin_hora_extra: "Horas extra ({q} × {u})", lin_cadeirinha: "Sillas ({q} × {u})",
@@ -339,7 +351,32 @@
   function field(l, input, cls) { return '<label class="r-f' + (cls ? " " + cls : "") + '"><span>' + esc(l) + "</span>" + input + "</label>"; }
   function num(n, v, mi, ma) { return '<input type="number" inputmode="numeric" name="' + n + '" value="' + v + '" min="' + mi + '" max="' + ma + '">'; }
   function hoje() { var d = new Date(Date.now() - 3 * 3600e3); return d.toISOString().slice(0, 10); } // horário de Foz (UTC-3)
-  function pagOnline() { return S.lang === "pt" ? !!CAT.config.pagamentoOnline : !!CAT.config.paypal; }
+  /* forma de pagamento: o cliente escolhe (Pix/cartão brasileiro no InfinitePay ou cartão internacional/PayPal).
+     A sugestão inicial vem do país digitado, do idioma da página/navegador e do tradutor automático. */
+  function provsDisp() { var c = CAT.config, a = []; if (c.pagamentoOnline) a.push("infinitepay"); if (c.paypal) a.push("paypal"); return a; }
+  function traduzido() { var h = document.documentElement; return /translated/.test(h.className || "") || !!document.querySelector("html.translated-ltr,html.translated-rtl,body.translated-ltr"); }
+  function paisDigitado() {
+    var el = document.querySelector('#r-checkout-f [name="pais"]'), v = el ? el.value.trim().toLowerCase() : "";
+    if (v.length < 2) return null;
+    try { v = v.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); } catch (e) {}
+    return /^(br|bra|brasil|brazil|bresil|brasile|brasilien|brazilie|brazylia)\b/.test(v) ? "br" : "fora";
+  }
+  function provPadrao() {
+    var d = provsDisp(); if (d.length < 2) return d[0] || null;
+    var p = paisDigitado(); if (p) return p === "br" ? "infinitepay" : "paypal";
+    var nl = ((navigator.languages && navigator.languages[0]) || navigator.language || "").toLowerCase();
+    return S.lang !== "pt" || traduzido() || (nl && nl.indexOf("pt") !== 0) ? "paypal" : "infinitepay";
+  }
+  function provAtual() { var d = provsDisp(); if (S.prov && d.indexOf(S.prov) >= 0) return S.prov; return provPadrao(); }
+  function pagOnline() { return !!provAtual(); }
+  function provInfo() { return t(provAtual() === "paypal" ? (S.lang === "pt" ? "pagInfoInt" : "pagInfoOn") : (S.lang === "pt" ? "pagInfoOn" : "pagInfoBr")); }
+  function atualizarProv() {
+    var f = $("#r-checkout-f"); if (!f || !CAT) return;
+    var pv = provAtual();
+    f.querySelectorAll('[name="provedor"]').forEach(function (r) { r.checked = r.value === pv; r.closest(".r-opt").classList.toggle("on", r.checked); });
+    var inf = $("#r-paginfo"); if (inf && pv) inf.textContent = provInfo();
+    var b = $("#r-send"); if (b && !b.disabled) b.textContent = t(pv ? "enviarPagar" : "enviar");
+  }
   function aeroNome(id) { return /^igr/.test(id) ? "Aeroporto de Puerto Iguazú (IGR)" : "Aeroporto de Foz do Iguaçu (IGU)"; }
   function renderModal() {
     var s = svc(cur.servico), m = $("#r-modal-b"), cfg = CAT.config;
@@ -594,13 +631,16 @@
       '<p class="r-lbl">' + esc(t("pagar")) + "</p>" +
       (temEscolha ? '<div class="r-opts">' + opt("modo", "sinal", t("pSinal", { p: cfg.sinalPct }), true) + opt("modo", "total", t("pTotal"), false) + "</div>" : "") +
       '<div class="r-paybox" id="r-paybox"></div><p class="r-sm">' + esc(t("regraPag", { p: cfg.sinalPct })) + "</p>" +
-      '<p class="r-sm">' + esc(t(pagOnline() ? "pagInfoOn" : "pagInfo")) + "</p>" +
+      (provsDisp().length > 1 && !pc ? '<p class="r-lbl">' + esc(t("pagCom")) + '</p><div class="r-opts r-provs">' +
+        ["infinitepay", "paypal"].map(function (v) { var k = v === "paypal" ? "provInt" : "provBr";
+          return '<label class="r-opt"><input type="radio" name="provedor" value="' + v + '"><span><b>' + esc(t(k)) + "</b><small>" + esc(t(k + "S")) + "</small></span></label>"; }).join("") + "</div>" : "") +
+      '<p class="r-sm" id="r-paginfo">' + esc(pagOnline() ? provInfo() : t("pagInfo")) + "</p>" +
       '<label class="r-chk"><input type="checkbox" name="consentimento" required> <span>' + t("aceito", { h: cfg.cancelamento.gratisAteHoras, d: cfg.cancelamento.devolveDepoisPct }) + "</span></label>" +
       (cfg.turnstileSiteKey ? '<div id="r-ts"></div>' : "") +
       '<p class="r-err" id="r-cerr" role="alert"></p><button type="submit" class="r-btn r-big" id="r-send">' + esc(t(pagOnline() ? "enviarPagar" : "enviar")) + '</button><div id="r-done"></div>';
     $("#r-checkout-f").innerHTML = h;
     if (pc) api("/api/parceiro/eu").then(function (r) { if (!r || !r.ok) { store.set("parceiro", null); var b = $(".r-parc"); if (b) b.remove(); } }).catch(function () {});
-    renderCupom(); updatePay();
+    renderCupom(); updatePay(); atualizarProv();
     if (cfg.turnstileSiteKey) loadTurnstile();
   }
   function loadTurnstile() {
@@ -644,7 +684,7 @@
     err.textContent = "";
     var btn = $("#r-send"); btn.disabled = true; btn.textContent = t("enviando");
     var body = {
-      idioma: S.lang, consentimento: true, modoPagamento: escolhaAtual(), website: g("website"), cupom: S.cupom ? S.cupom.codigo : undefined,
+      idioma: S.lang, consentimento: true, modoPagamento: escolhaAtual(), provedor: provAtual() || undefined, website: g("website"), cupom: S.cupom ? S.cupom.codigo : undefined,
       turnstile: tsId != null && window.turnstile ? window.turnstile.getResponse(tsId) : "",
       cliente: { nome: g("nome"), email: g("email"), telefone: g("telefone"), pais: g("pais"), observacoes: g("observacoes") },
       itens: S.cart.map(function (it) { var x = JSON.parse(JSON.stringify(it)); delete x.cot; return x; }),
@@ -792,7 +832,38 @@
     $("#r-cart").scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
   $("#r-checkout-f").addEventListener("submit", submitCheckout);
-  $("#r-checkout-f").addEventListener("change", function (e) { if (e.target.name === "modo") updatePay(); });
+  $("#r-checkout-f").addEventListener("change", function (e) {
+    if (e.target.name === "modo") updatePay();
+    if (e.target.name === "provedor") { S.prov = e.target.value; atualizarProv(); track("select_content", { content_type: "pagamento", item_id: S.prov }); }
+  });
+  // país digitado ou tradutor automático ligado: ajusta a sugestão enquanto o cliente não escolheu sozinho
+  $("#r-checkout-f").addEventListener("input", function (e) { if (e.target.name === "pais" && !S.prov) atualizarProv(); });
+  try { new MutationObserver(function () { if (!S.prov && !$("#r-checkout").hidden) atualizarProv(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["class", "lang"] }); } catch (e) {}
+
+  /* reserva feita aqui que ficou sem pagamento (fechou a página do pagamento, cartão recusado...):
+     mostra um aviso com as duas formas de pagar */
+  function verPendente() {
+    var u = store.get("ultimoPedido", null);
+    if (!u || !u.codigo || !u.token || u.oculto || Date.now() - (u.em || 0) > 4 * 864e5 || !provsDisp().length) return;
+    fetch("/api/pedidos/" + encodeURIComponent(u.codigo) + "?t=" + encodeURIComponent(u.token)).then(function (r) { return r.json(); }).then(function (r) {
+      if (!r || !r.ok || !r.pedido || r.pedido.status !== "pagamento_pendente") return;
+      var box = document.createElement("div"); box.className = "r-pend"; box.id = "r-pend";
+      var botoes = provsDisp().map(function (v) { return '<button type="button" class="r-btn' + (v === provPadrao() ? "" : " r-ghost") + '" data-pagar="' + v + '">' + esc(t(v === "paypal" ? "provInt" : "provBr")) + "</button>"; }).join("");
+      box.innerHTML = "<b>" + esc(t("pendTit", { c: u.codigo })) + "</b><span>" + esc(t("pendTxt")) + '</span><div class="r-actions">' + botoes +
+        '</div><p class="r-err" id="r-pend-e"></p><button type="button" class="r-link" id="r-pend-x">' + esc(t("pendX")) + "</button>";
+      var alvo = $("#r-lista"); alvo.parentNode.insertBefore(box, alvo);
+      box.addEventListener("click", function (e) {
+        var b = e.target.closest("button"); if (!b) return;
+        if (b.id === "r-pend-x") { u.oculto = true; store.set("ultimoPedido", u); box.remove(); return; }
+        var pv = b.getAttribute("data-pagar"); if (!pv) return;
+        box.querySelectorAll("button").forEach(function (x) { x.disabled = true; }); $("#r-pend-e").textContent = t("pendAbrindo");
+        api("/api/pedidos/pagar", { codigo: u.codigo, token: u.token, provedor: pv, idioma: S.lang }).then(function (r2) {
+          if (r2 && r2.ok && r2.url) { track("select_content", { content_type: "pagamento_retomado", item_id: pv }); location.href = r2.url; return; }
+          box.querySelectorAll("button").forEach(function (x) { x.disabled = false; }); $("#r-pend-e").textContent = errTxt(r2);
+        }).catch(function () { box.querySelectorAll("button").forEach(function (x) { x.disabled = false; }); $("#r-pend-e").textContent = t("e_rede"); });
+      });
+    }).catch(function () {});
+  }
 
   function all() { renderStatic(); renderList(); renderCart(); if (!$("#r-checkout").hidden) renderCheckout(); }
 
@@ -812,6 +883,7 @@
     all(); track("view_item_list", { item_list_name: "reservas" });
     if (qs.get("s") && svc(qs.get("s"))) openSvc(qs.get("s"));
     if (/^[A-Z0-9]{7}$/.test(qs.get("pacote") || "")) carregarPacote(qs.get("pacote"));
+    verPendente();
   }).catch(function () {
     $("#r-grid").classList.remove("loading"); $("#r-grid").innerHTML = '<p class="r-err">' + esc(T[S.lang].e_rede) + ' <a class="r-btn r-btn-wa" href="https://wa.me/5545991185798">WhatsApp</a></p>';
   });

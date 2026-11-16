@@ -335,11 +335,14 @@ async function criarPedido(req, env, ctx) {
     km: cot.km || null, km_fora: it.rota ? !!it.rota.fora : false }));
   const origem = new URL(req.url).origin;
   const txtParc = indicador ? `Indicação (cupom ${cupom.codigo}): ${indicador.empresa || indicador.responsavel} (${indicador.codigo}) · comissão ${Number(indicador.comissao_pct) || 0}%\n\n` : parceiro ? `Reserva feita pelo parceiro: ${parceiro.empresa || parceiro.responsavel} (${parceiro.codigo}) · comissão ${Number(parceiro.comissao_pct) || 0}%\n\n` : "";
-  ctx.waitUntil(enviarAviso(env, `Nova reserva ${codigo} — ${cliente.nome} — ${brl(pag.total)}` + (parceiro ? ` — parceiro ${parceiro.codigo}` : ""), txtParc + resumoTexto(pedido, itensDb, true, origem)));
+  // pagamento na hora: o cliente escolhe no checkout (Pix/cartão brasileiro → InfinitePay; cartão internacional → PayPal).
+  // Sem escolha (versão antiga da página), vale o idioma: português → InfinitePay, inglês/espanhol → PayPal.
+  const provEscolhido = body.provedor === "paypal" && temPayPal(env) ? "paypal" : body.provedor === "infinitepay" && env.INFINITEPAY_HANDLE ? "infinitepay" : null;
+  const provReserva = provEscolhido || (idioma === "pt" ? (env.INFINITEPAY_HANDLE ? "infinitepay" : null) : (temPayPal(env) ? "paypal" : null));
+  const txtPag = provReserva && !parceiroChave && pag.agora >= 1 ? "Pagamento escolhido no site: " + (provReserva === "paypal" ? "PayPal / cartão internacional" : "InfinitePay (Pix / cartão brasileiro)") + "\n\n" : "";
+  ctx.waitUntil(enviarAviso(env, `Nova reserva ${codigo} — ${cliente.nome} — ${brl(pag.total)}` + (parceiro ? ` — parceiro ${parceiro.codigo}` : ""), txtParc + txtPag + resumoTexto(pedido, itensDb, true, origem)));
 
-  // pagamento na hora: cliente direto, site em português (estrangeiros recebem o link/PayPal pelo WhatsApp)
   let pagamento = null;
-  const provReserva = idioma === "pt" ? (env.INFINITEPAY_HANDLE ? "infinitepay" : null) : (temPayPal(env) ? "paypal" : null);
   if (provReserva && !parceiroChave && pag.agora >= 1) {
     try {
       const r = await gerarLinkPagamento(env, { id: pedidoId, codigo, nome: cliente.nome, email: cliente.email, telefone: cliente.telefone, status: "solicitacao" },
@@ -393,6 +396,32 @@ async function verPacote(env, codigo) {
   if (Date.parse(p.criado_em) < Date.now() - 120 * 864e5) return erro("expirado", 410);
   await env.DB.prepare("UPDATE pacotes SET aberturas = aberturas + 1 WHERE codigo = ?").bind(codigo).run();
   return json({ ok: true, itens: JSON.parse(p.itens_json), idioma: p.idioma, criado_em: p.criado_em });
+}
+
+/* ---------------- cliente troca a forma de pagamento ----------------
+   Reserva feita pelo site que ficou sem pagamento (fechou a página, cartão estrangeiro recusado no InfinitePay...):
+   o navegador que fez a reserva (código + token) pede um link novo, no InfinitePay ou no PayPal, do mesmo valor. */
+async function pagarPedidoCliente(req, env, origem) {
+  let b; try { b = await lerJson(req, 2000); } catch { return erro("json_invalido"); }
+  const codigo = String(b.codigo || ""), token = String(b.token || "");
+  if (!/^IET-[A-Z0-9]{6}$/.test(codigo) || !token) return erro("nao_encontrado", 404);
+  const prov = b.provedor === "paypal" ? (temPayPal(env) ? "paypal" : null) : b.provedor === "infinitepay" ? (env.INFINITEPAY_HANDLE ? "infinitepay" : null) : null;
+  if (!prov) return erro("sem_pagamento");
+  const idioma = ["pt", "en", "es"].includes(b.idioma) ? b.idioma : "pt";
+  await prepararBanco(env);
+  const p = await env.DB.prepare("SELECT id, codigo, token, status, nome, email, telefone, total, valor_agora FROM pedidos WHERE codigo = ?").bind(codigo).first();
+  if (!p || p.token !== token) return erro("nao_encontrado", 404);
+  const pgs = (await env.DB.prepare("SELECT status, autor FROM pagamentos WHERE pedido_id = ?").bind(p.id).all()).results;
+  if (pgs.some((x) => x.status === "pago")) return erro("ja_pago");
+  // só reservas que já tiveram pagamento online pelo site; pedidos tratados no painel seguem pelo WhatsApp
+  if (!["solicitacao", "pagamento_pendente"].includes(p.status) || !pgs.some((x) => x.autor === "site")) return erro("status");
+  if (pgs.length >= 8) return erro("muitas_tentativas", 429);
+  const valor = Number(p.valor_agora) || 0;
+  if (valor < 1) return erro("status");
+  const desc = valor < Number(p.total) - 0.001 ? (idioma === "pt" ? "Sinal" : "Deposit") : (idioma === "pt" ? "Valor total" : "Total");
+  let r; try { r = await gerarLinkPagamento(env, p, desc, valor, origem, "site", prov, idioma); } catch (e) { console.error("troca pagamento", e && e.message); r = {}; }
+  if (!r || !r.url) return erro("pagamento_falhou", 502);
+  return json({ ok: true, url: r.url });
 }
 
 /* ---------------- consulta do cliente ---------------- */
@@ -1062,6 +1091,7 @@ async function api(req, env, ctx, url) {
     const r = await confirmarPagamento(env, b, url.origin);
     return json(r, r.ok ? 200 : 400);
   }
+  if (p === "/api/pedidos/pagar" && m === "POST") return pagarPedidoCliente(req, env, url.origin);
   if (p === "/api/pacotes" && m === "POST") return criarPacote(req, env);
   const mp = p.match(/^\/api\/pacotes\/([A-Z0-9]{7})$/);
   if (mp && m === "GET") return verPacote(env, mp[1]);
@@ -1107,7 +1137,7 @@ function previaReserva(res, url) {
 }
 
 /* App instalável: manifesto, ícone e script de instalação em todas as páginas públicas (não no painel nem nas áreas de parceiro e motorista) */
-const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=2" defer></script><script src="/js/assistente.js?v=7" defer></script>';
+const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=3" defer></script><script src="/js/assistente.js?v=7" defer></script>';
 /* Vídeos: o Safari (iPhone) só toca se o servidor responder a pedidos por partes (Range → 206). */
 async function videoParcial(req, env) {
   const base = await env.ASSETS.fetch(new Request(req.url, { method: "GET" }));
