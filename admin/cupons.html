@@ -69,12 +69,13 @@ td.n{position:sticky;left:0;background:var(--bg2);z-index:1}
     <label>Começa em<input id="c-ini" type="date"></label>
     <label>Termina em<input id="c-fim" type="date"></label>
     <label>Limite de usos<input id="c-max" inputmode="numeric" placeholder="sem limite"></label>
+    <label class="w">Influenciador ou parceiro (opcional)<select id="c-parc"><option value="">Nenhum: cupom normal</option></select></label>
     <label class="w">Descrição (só para você)<input id="c-desc" maxlength="120" placeholder="Black Friday 2026"></label>
     <button class="btn" id="c-criar" type="button">Criar cupom</button>
   </div>
   <p id="c-msg" class="svc"></p>
-  <div class="tw"><table id="tab"><thead><tr><th>Código</th><th>Desconto</th><th>Validade</th><th>Usos</th><th>Situação</th><th></th></tr></thead><tbody><tr><td class="msg" colspan="6">Carregando…</td></tr></tbody></table></div>
+  <div class="tw"><table id="tab"><thead><tr><th>Código</th><th>Desconto</th><th>Parceiro</th><th>Validade</th><th>Usos</th><th>Situação</th><th></th></tr></thead><tbody><tr><td class="msg" colspan="7">Carregando…</td></tr></tbody></table></div>
 </main>
-<script src="/admin/cupons.js?v=1"></script>
+<script src="/admin/cupons.js?v=2"></script>
 </body>
 </html>

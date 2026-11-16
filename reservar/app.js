@@ -624,6 +624,8 @@
       });
     };
     $("#r-cupom-b").onclick = aplicar;
+    // veio pelo link de um parceiro/influenciador: aplica o cupom dele uma vez (o cliente pode remover)
+    if (!S.refTentado) { S.refTentado = true; try { var rf = JSON.parse(localStorage.getItem("iet_ref") || "null"); if (rf && rf.ate > Date.now() && rf.c) { $("#r-cupom-i").value = rf.c; aplicar(); } } catch (e) {} }
     $("#r-cupom-i").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); aplicar(); } });
   }
   function updatePay() {

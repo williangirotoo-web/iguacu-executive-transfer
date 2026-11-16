@@ -17,17 +17,20 @@
   }
   function carregar() {
     api("/api/admin/cupons").then(function (r) {
+      var sel = $("#c-parc"), atual = sel.value;
+      sel.innerHTML = '<option value="">Nenhum: cupom normal</option>' + (r.parceiros || []).map(function (p) { return '<option value="' + esc(p.codigo) + '">' + esc(p.nome) + " · " + esc(p.codigo) + " · comissão " + String(p.comissao_pct || 0).replace(".", ",") + "%</option>"; }).join("");
+      sel.value = atual;
       $("#tab tbody").innerHTML = r.cupons.length ? r.cupons.map(function (c) {
         var val = c.inicio || c.fim ? (c.inicio ? "de " + dbr(c.inicio) + " " : "") + (c.fim ? "até " + dbr(c.fim) : "") : "sem prazo";
-        return "<tr><td><b>" + esc(c.codigo) + "</b>" + (c.descricao ? '<br><small class="svc">' + esc(c.descricao) + "</small>" : "") + "</td><td>" + String(c.pct).replace(".", ",") + "%</td><td>" + esc(val) +
+        return "<tr><td><b>" + esc(c.codigo) + "</b>" + (c.descricao ? '<br><small class="svc">' + esc(c.descricao) + "</small>" : "") + "</td><td>" + String(c.pct).replace(".", ",") + "%</td><td>" + (c.pc ? esc(c.pn) + '<br><small class="svc">' + esc(c.pc) + " · link: /?ref=" + esc(c.codigo) + "</small>" : '<span class="svc">—</span>') + "</td><td>" + esc(val) +
           "</td><td>" + c.usos + (c.usos_max != null ? " / " + c.usos_max : "") + "</td><td>" + situacao(c, r.hoje) + '</td><td><button class="btn gh" type="button" data-cod="' + esc(c.codigo) + '" data-at="' + (c.ativo ? 0 : 1) + '">' + (c.ativo ? "Desativar" : "Reativar") + "</button></td></tr>";
-      }).join("") : '<tr><td colspan="6" class="svc">Nenhum cupom ainda.</td></tr>';
-    }).catch(function (e) { if (e.message === "401") $("#tab tbody").innerHTML = '<tr><td colspan="6">Sem acesso.</td></tr>'; });
+      }).join("") : '<tr><td colspan="7" class="svc">Nenhum cupom ainda.</td></tr>';
+    }).catch(function (e) { if (e.message === "401") $("#tab tbody").innerHTML = '<tr><td colspan="7">Sem acesso.</td></tr>'; });
   }
   $("#c-criar").onclick = function () {
-    var b = { codigo: $("#c-cod").value, pct: $("#c-pct").value, inicio: $("#c-ini").value, fim: $("#c-fim").value, usos_max: $("#c-max").value.trim(), descricao: $("#c-desc").value };
+    var b = { codigo: $("#c-cod").value, pct: $("#c-pct").value, inicio: $("#c-ini").value, fim: $("#c-fim").value, usos_max: $("#c-max").value.trim(), descricao: $("#c-desc").value, parceiro: $("#c-parc").value };
     api("/api/admin/cupons", b).then(function (x) {
-      if (!x.ok) { $("#c-msg").textContent = { codigo: "Código precisa ter pelo menos 3 letras ou números.", pct: "Desconto entre 1% e 50%.", usos: "Limite de usos inválido.", ja_existe: "Já existe um cupom com esse código." }[x.erro] || "Erro: " + x.erro; return; }
+      if (!x.ok) { $("#c-msg").textContent = { codigo: "Código precisa ter pelo menos 3 letras ou números.", pct: "Desconto entre 1% e 50%.", usos: "Limite de usos inválido.", ja_existe: "Já existe um cupom com esse código.", parceiro: "Parceiro não encontrado." }[x.erro] || "Erro: " + x.erro; return; }
       $("#c-msg").textContent = "Cupom criado.";
       ["#c-cod", "#c-pct", "#c-ini", "#c-fim", "#c-max", "#c-desc"].forEach(function (s) { $(s).value = ""; });
       carregar();

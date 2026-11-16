@@ -19,6 +19,8 @@ h1{font-size:1.6rem;margin:0 0 4px}.mut{color:var(--mut)}
 .card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:14px}.card span{display:block;color:var(--mut);font-size:.8rem}.card b{font-size:1.3rem;color:var(--gold)}
 .btn{display:inline-block;background:var(--gold);color:#000;border:0;border-radius:8px;padding:11px 18px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
 .btn.gh{background:transparent;color:var(--txt);border:1px solid var(--line)}
+.dv{background:var(--bg2);border:1px solid rgba(212,175,55,.45);border-radius:12px;padding:16px;margin:0 0 16px}.dv h2{font-size:1.05rem;margin:0 0 6px}.dv p{margin:6px 0;font-size:.88rem}
+.dv code{display:block;background:#000;border:1px solid var(--line);border-radius:8px;padding:10px;margin:8px 0;word-break:break-all;color:var(--gold)}
 table{width:100%;border-collapse:collapse;background:var(--bg2);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.88rem}
 th,td{padding:10px 12px;text-align:left;border-bottom:1px solid rgba(240,237,232,.08)}th{color:var(--gold);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
 .tw{overflow-x:auto}.st{display:inline-block;border-radius:12px;padding:2px 10px;font-size:.72rem;font-weight:600;background:#333}
@@ -43,6 +45,7 @@ th,td{padding:10px 12px;text-align:left;border-bottom:1px solid rgba(240,237,232
       <div class="card"><span>Comissão a receber</span><b id="c-c">R$ 0</b></div>
       <div class="card"><span>Comissão já recebida</span><b id="c-p">R$ 0</b></div>
     </div>
+    <div id="divulga" hidden></div>
     <p class="mut" style="font-size:.82rem">A comissão é calculada sobre o valor da corrida e paga no fechamento combinado, sobre as corridas realizadas. Reservas canceladas não geram comissão.</p>
     <div class="tw"><table><thead><tr><th>Código</th><th>Viagem</th><th>Passageiro</th><th>Serviço</th><th>Valor</th><th>Comissão</th><th>Status</th></tr></thead><tbody id="rows"><tr><td colspan="7" class="mut">Carregando…</td></tr></tbody></table></div>
   </section>
@@ -65,6 +68,9 @@ th,td{padding:10px 12px;text-align:left;border-bottom:1px solid rgba(240,237,232
     var x=r.parceiro;p.nome=x.empresa||x.responsavel;set(p);
     $("#nome").textContent=p.nome;$("#who").textContent=x.codigo;$("#sub").textContent="Comissão combinada: "+String(x.comissao_pct||0).replace(".",",")+"% · Responsável: "+x.responsavel;
     $("#area").hidden=false;
+    if(r.cupons&&r.cupons.length){var d=$("#divulga");d.hidden=false;d.innerHTML=r.cupons.map(function(c){var l=(r.site||location.origin)+"/?ref="+encodeURIComponent(c.codigo);
+      return '<div class="dv"><h2>Seu link de divulgação</h2><p>Quem entrar pelo link ou usar o cupom <b>'+esc(c.codigo)+'</b> ganha <b>'+String(c.pct).replace(".",",")+'% de desconto</b>, e a reserva aparece aqui com a sua comissão.</p><code>'+esc(l)+'</code><button class="btn" type="button" data-cp="'+esc(l)+'">Copiar link</button> <button class="btn gh" type="button" data-cp="'+esc(c.codigo)+'">Copiar cupom</button><p class="mut" style="font-size:.78rem">No Instagram: use o link na figurinha do story ou na bio, e diga o cupom no vídeo. O link vale por 30 dias depois do clique.</p></div>'}).join("");
+      d.addEventListener("click",function(e){var b=e.target.closest("[data-cp]");if(!b)return;try{navigator.clipboard.writeText(b.dataset.cp);var t=b.textContent;b.textContent="Copiado!";setTimeout(function(){b.textContent=t},1500)}catch(x){}})}
     return api("/api/parceiro/pedidos");
   }).then(function(r){
     var ativos=r.pedidos.filter(function(x){return x.status!=="cancelada"});

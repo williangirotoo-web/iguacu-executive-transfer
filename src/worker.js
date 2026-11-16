@@ -104,6 +104,9 @@ async function prepararBanco(env) {
   if (!cols.includes("desconto")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN desconto REAL").run();
   const colsItens = (await env.DB.prepare("PRAGMA table_info(itens)").all()).results.map((c) => c.name);
   if (!colsItens.includes("obs")) await env.DB.prepare("ALTER TABLE itens ADD COLUMN obs TEXT").run();
+  // cupom de influenciador/parceiro: a reserva com esse cupom gera comissão para o parceiro
+  const colsCup = (await env.DB.prepare("PRAGMA table_info(cupons)").all()).results.map((c) => c.name);
+  if (!colsCup.includes("parceiro_id")) await env.DB.prepare("ALTER TABLE cupons ADD COLUMN parceiro_id INTEGER").run();
   schemaPronto = true;
 }
 
@@ -119,7 +122,7 @@ async function buscarCupom(env, codigo) {
   if (x.inicio && h < x.inicio) return { ok: false, erro: "cupom_invalido" };
   if (x.fim && h > x.fim) return { ok: false, erro: "cupom_expirado" };
   if (x.usos_max != null && x.usos >= x.usos_max) return { ok: false, erro: "cupom_esgotado" };
-  return { ok: true, codigo: x.codigo, pct: x.pct };
+  return { ok: true, codigo: x.codigo, pct: x.pct, parceiro_id: x.parceiro_id || null };
 }
 const comDesconto = (v, pct) => Math.round(v * (1 - pct / 100) * 100) / 100;
 
@@ -281,7 +284,11 @@ async function criarPedido(req, env, ctx) {
       x.cot = { ...x.cot, valor: depois, linhas: [...x.cot.linhas, { k: "cupom", cupom: cupom.codigo, pct: cupom.pct, valor: Math.round((depois - antes) * 100) / 100 }] };
     }
   }
-  const parceiro = await parceiroDaChave(req, env);
+  const parceiroChave = await parceiroDaChave(req, env);
+  // indicação: cupom ligado a um parceiro (influenciador, guia...) que está aprovado
+  const indicador = !parceiroChave && cupom && cupom.parceiro_id
+    ? await env.DB.prepare("SELECT * FROM parceiros WHERE id = ? AND tipo = 'indica' AND status = 'aprovado'").bind(cupom.parceiro_id).first() : null;
+  const parceiro = parceiroChave || indicador;
   const escolha = body.modoPagamento === "total" ? "total" : "sinal";
   const pag = valorAgora(itens, escolha);
 
@@ -316,7 +323,8 @@ async function criarPedido(req, env, ctx) {
     it.horasExtras, svc.tipo === "hora" ? it.horas : null, svc.tipo === "diaria" ? it.dias : null, cot.dataEspecial ? 1 : 0,
     cot.valor, pag.detalhes[i].modo, pag.detalhes[i].due, JSON.stringify(cot.linhas), it.obs || null));
   stmts.push(env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, status_para, autor, texto) VALUES (?,?,?,?,?,?)")
-    .bind(pedidoId, now, "criado", "solicitacao", parceiro ? "parceiro " + parceiro.codigo : "cliente", parceiro ? `Reserva feita pelo parceiro ${parceiro.empresa || parceiro.responsavel} (${parceiro.codigo})` : "Pedido feito pelo site"));
+    .bind(pedidoId, now, "criado", "solicitacao", parceiroChave ? "parceiro " + parceiro.codigo : "cliente",
+      parceiroChave ? `Reserva feita pelo parceiro ${parceiro.empresa || parceiro.responsavel} (${parceiro.codigo})` : indicador ? `Pedido feito pelo site com o cupom ${cupom.codigo}, indicação de ${indicador.empresa || indicador.responsavel} (${indicador.codigo})` : "Pedido feito pelo site"));
   if (cupom) stmts.push(env.DB.prepare("UPDATE cupons SET usos = usos + 1 WHERE codigo = ?").bind(cupom.codigo));
   await env.DB.batch(stmts);
 
@@ -326,13 +334,13 @@ async function criarPedido(req, env, ctx) {
     horas_extras: it.horasExtras, horas: it.horas, dias: it.dias, data_especial: cot.dataEspecial, valor: cot.valor, modo: pag.detalhes[i].modo, obs: it.obs,
     km: cot.km || null, km_fora: it.rota ? !!it.rota.fora : false }));
   const origem = new URL(req.url).origin;
-  const txtParc = parceiro ? `Reserva feita pelo parceiro: ${parceiro.empresa || parceiro.responsavel} (${parceiro.codigo}) · comissão ${Number(parceiro.comissao_pct) || 0}%\n\n` : "";
+  const txtParc = indicador ? `Indicação (cupom ${cupom.codigo}): ${indicador.empresa || indicador.responsavel} (${indicador.codigo}) · comissão ${Number(indicador.comissao_pct) || 0}%\n\n` : parceiro ? `Reserva feita pelo parceiro: ${parceiro.empresa || parceiro.responsavel} (${parceiro.codigo}) · comissão ${Number(parceiro.comissao_pct) || 0}%\n\n` : "";
   ctx.waitUntil(enviarAviso(env, `Nova reserva ${codigo} — ${cliente.nome} — ${brl(pag.total)}` + (parceiro ? ` — parceiro ${parceiro.codigo}` : ""), txtParc + resumoTexto(pedido, itensDb, true, origem)));
 
   // pagamento na hora: cliente direto, site em português (estrangeiros recebem o link/PayPal pelo WhatsApp)
   let pagamento = null;
   const provReserva = idioma === "pt" ? (env.INFINITEPAY_HANDLE ? "infinitepay" : null) : (temPayPal(env) ? "paypal" : null);
-  if (provReserva && !parceiro && pag.agora >= 1) {
+  if (provReserva && !parceiroChave && pag.agora >= 1) {
     try {
       const r = await gerarLinkPagamento(env, { id: pedidoId, codigo, nome: cliente.nome, email: cliente.email, telefone: cliente.telefone, status: "solicitacao" },
         pag.agora < pag.total ? (idioma === "pt" ? "Sinal" : "Deposit") : (idioma === "pt" ? "Valor total" : "Total"), pag.agora, origem, "site", provReserva, idioma);
@@ -401,7 +409,7 @@ async function verPedidoCliente(env, codigo, token) {
    tipo "indica": hotéis, agências, guias e empresas que reservam em nome do cliente e recebem comissão (%).
    tipo "atende": táxis, motoristas particulares, 7 lugares e vans que atendem quando a frota lota.
    O parceiro aprovado recebe um link de acesso pessoal (gerado no painel); no banco fica só o hash da chave. */
-const PARC_TIPOS = { indica: ["hotel", "agencia", "guia", "empresa", "outro"], atende: ["taxi", "particular", "sete", "van"] };
+const PARC_TIPOS = { indica: ["hotel", "agencia", "guia", "influenciador", "empresa", "outro"], atende: ["taxi", "particular", "sete", "van"] };
 const PARC_STATUS = ["novo", "aprovado", "pausado", "recusado"];
 async function cadastrarParceiro(req, env, ctx) {
   let b; try { b = await lerJson(req, 8000); } catch { return erro("json_invalido"); }
@@ -438,7 +446,7 @@ async function cadastrarParceiro(req, env, ctx) {
     } catch (e) { if (!String(e.message).includes("UNIQUE")) throw e; }
   }
   if (!codigo) return erro("falha_codigo", 500);
-  const nomes = { hotel: "Hotel ou pousada", agencia: "Agência", guia: "Guia", empresa: "Empresa", outro: "Outro", taxi: "Táxi", particular: "Motorista particular", sete: "7 lugares", van: "Van" };
+  const nomes = { hotel: "Hotel ou pousada", agencia: "Agência", guia: "Guia", influenciador: "Influenciador / criador de conteúdo", empresa: "Empresa", outro: "Outro", taxi: "Táxi", particular: "Motorista particular", sete: "7 lugares", van: "Van" };
   const linhas = [`Cadastro ${codigo} — ${tipo === "indica" ? "parceiro que indica clientes" : "parceiro que atende corridas"}`, `Tipo: ${nomes[d.categoria]}`,
     d.empresa ? `Empresa: ${d.empresa}` : "", `Responsável: ${d.responsavel}`, `WhatsApp: ${d.telefone}`, `E-mail: ${d.email}`, d.cidade ? `Cidade: ${d.cidade}` : "",
     d.documento ? `CNPJ/Cadastur: ${d.documento}` : "", d.veiculo ? `Veículo: ${d.veiculo}` : "", d.autorizacao ? `Autorização para transporte: ${d.autorizacao}` : "",
@@ -457,15 +465,19 @@ async function areaParceiro(req, env, url) {
   const p = await parceiroDaChave(req, env);
   if (!p) return erro("nao_autorizado", 401);
   const rota = url.pathname.replace(/^\/api\/parceiro\/?/, "");
-  if (rota === "eu") return json({ ok: true, parceiro: { codigo: p.codigo, empresa: p.empresa, responsavel: p.responsavel, comissao_pct: p.comissao_pct } });
+  if (rota === "eu") {
+    const cupons = (await env.DB.prepare("SELECT codigo, pct FROM cupons WHERE parceiro_id = ? AND ativo = 1 ORDER BY criado_em").bind(p.id).all()).results;
+    return json({ ok: true, parceiro: { codigo: p.codigo, empresa: p.empresa, responsavel: p.responsavel, comissao_pct: p.comissao_pct }, cupons, site: new URL(req.url).origin });
+  }
   if (rota === "pedidos") {
-    const { results } = await env.DB.prepare(`SELECT p.codigo, p.status, p.criado_em, p.nome, p.total, p.comissao_valor,
+    const { results } = await env.DB.prepare(`SELECT p.codigo, p.status, p.criado_em, p.nome, p.total, p.comissao_valor, p.cupom,
       (SELECT pago_em FROM comissoes_pagas c WHERE c.id = p.comissao_paga_id) AS comissao_paga_em,
       (SELECT MIN(data || ' ' || hora) FROM itens i WHERE i.pedido_id = p.id) AS primeira,
       (SELECT group_concat(servico_nome, ' + ') FROM itens i WHERE i.pedido_id = p.id) AS servicos
       FROM pedidos p WHERE p.parceiro_id = ? ORDER BY p.criado_em DESC LIMIT 300`).bind(p.id).all();
     const pct = Number(p.comissao_pct) || 0;
-    const pedidos = results.map((x) => ({ ...x, comissao: x.comissao_paga_em ? x.comissao_valor : x.status === "cancelada" ? 0 : Math.round(x.total * pct) / 100 }));
+    // reservas vindas do cupom (seguidores): o parceiro vê só o primeiro nome do cliente
+    const pedidos = results.map((x) => ({ ...x, nome: x.cupom ? String(x.nome || "").split(" ")[0] + " (cupom " + x.cupom + ")" : x.nome, comissao: x.comissao_paga_em ? x.comissao_valor : x.status === "cancelada" ? 0 : Math.round(x.total * pct) / 100 }));
     const pagamentos = (await env.DB.prepare("SELECT mes, valor, n_pedidos, pago_em FROM comissoes_pagas WHERE parceiro_id = ? ORDER BY pago_em DESC LIMIT 60").bind(p.id).all()).results;
     return json({ ok: true, comissao_pct: pct, pedidos, pagamentos });
   }
@@ -793,7 +805,9 @@ async function admin(req, env, url) {
   if (partes[0] === "eu") return json({ ok: true, email: user.email });
   if (partes[0] === "precos") return adminPrecos(req, env, user);
   if (partes[0] === "cupons") {
-    if (req.method === "GET") return json({ ok: true, cupons: (await env.DB.prepare("SELECT * FROM cupons ORDER BY criado_em DESC").all()).results, hoje: hojeFoz() });
+    if (req.method === "GET") return json({ ok: true, hoje: hojeFoz(),
+      cupons: (await env.DB.prepare("SELECT c.*, pa.codigo AS pc, COALESCE(pa.empresa, pa.responsavel) AS pn FROM cupons c LEFT JOIN parceiros pa ON pa.id = c.parceiro_id ORDER BY c.criado_em DESC").all()).results,
+      parceiros: (await env.DB.prepare("SELECT codigo, COALESCE(empresa, responsavel) AS nome, comissao_pct FROM parceiros WHERE tipo = 'indica' AND status = 'aprovado' ORDER BY nome").all()).results });
     let b; try { b = await lerJson(req, 2000); } catch { return erro("json_invalido"); }
     const cod = String(b.codigo || "").trim().toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 30);
     if (cod.length < 3) return erro("codigo");
@@ -806,9 +820,15 @@ async function admin(req, env, url) {
     const data = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v || "") ? v : null;
     const max = b.usos_max === "" || b.usos_max == null ? null : parseInt(b.usos_max, 10);
     if (max != null && !(max >= 1)) return erro("usos");
+    let parcId = null;
+    if (b.parceiro) {
+      const pa = await env.DB.prepare("SELECT id FROM parceiros WHERE codigo = ? AND tipo = 'indica'").bind(String(b.parceiro)).first();
+      if (!pa) return erro("parceiro");
+      parcId = pa.id;
+    }
     try {
-      await env.DB.prepare("INSERT INTO cupons (codigo, pct, ativo, inicio, fim, usos_max, descricao, criado_em, autor) VALUES (?,?,?,?,?,?,?,?,?)")
-        .bind(cod, pct, 1, data(b.inicio), data(b.fim), max, String(b.descricao || "").slice(0, 120) || null, agoraIso(), user.email).run();
+      await env.DB.prepare("INSERT INTO cupons (codigo, pct, ativo, inicio, fim, usos_max, descricao, criado_em, autor, parceiro_id) VALUES (?,?,?,?,?,?,?,?,?,?)")
+        .bind(cod, pct, 1, data(b.inicio), data(b.fim), max, String(b.descricao || "").slice(0, 120) || null, agoraIso(), user.email, parcId).run();
     } catch (e) { return erro("ja_existe"); }
     return json({ ok: true });
   }
@@ -1087,7 +1107,7 @@ function previaReserva(res, url) {
 }
 
 /* App instalável: manifesto, ícone e script de instalação em todas as páginas públicas (não no painel nem nas áreas de parceiro e motorista) */
-const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=1" defer></script><script src="/js/assistente.js?v=6" defer></script>';
+const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=2" defer></script><script src="/js/assistente.js?v=6" defer></script>';
 /* Vídeos: o Safari (iPhone) só toca se o servidor responder a pedidos por partes (Range → 206). */
 async function videoParcial(req, env) {
   const base = await env.ASSETS.fetch(new Request(req.url, { method: "GET" }));

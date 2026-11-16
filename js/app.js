@@ -1,6 +1,11 @@
 /* Instalar o site como app no celular (Android: botão; iPhone: instrução "Adicionar à Tela de Início") */
 (function () {
   "use strict";
+  /* link de indicação (?ref=CUPOM): guarda por 30 dias; o cupom é aplicado sozinho na reserva */
+  try {
+    var ref = new URLSearchParams(location.search).get("ref");
+    if (ref && /^[A-Za-z0-9-]{3,30}$/.test(ref)) localStorage.setItem("iet_ref", JSON.stringify({ c: ref.toUpperCase(), ate: Date.now() + 30 * 864e5 }));
+  } catch (e) {}
   if ("serviceWorker" in navigator) addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
   var pedido = null;
   var instalado = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
