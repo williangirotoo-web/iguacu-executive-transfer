@@ -1,5 +1,5 @@
 /* Iguaçu Executive Transfer — Worker (API de reservas + site estático) */
-import { CONFIG, CATEGORIAS, SERVICOS, CONSULTA, HORA_EXTRA, POR_HORA, POR_KM, DIARIA, datasEspeciais } from "./precos.js";
+import { CONFIG, CATEGORIAS, SERVICOS, CONSULTA, HORA_EXTRA, POR_HORA, POR_KM, DIARIA, datasEspeciais, malasRef } from "./precos.js";
 import { normalizarItem, cotar, cotarTodas, valorAgora, servico, aplicarPrecos, PRECOS_PADRAO } from "./cotacao.js";
 import { buscarLugares, resolverRota } from "./rota.js";
 import { assistente } from "./assistente.js";
@@ -226,7 +226,7 @@ function resumoTexto(p, itens, comLinks, origem) {
     if (it.origem) linhas.push(`   Buscar em: ${it.origem}`);
     if (it.destino) linhas.push(`   Levar para: ${it.destino}`);
     linhas.push(`   Passageiros: ${it.pax} · Bagagens: ${bagagensTxt(it)}` + (it.cadeirinhas ? ` · Cadeirinhas: ${it.cadeirinhas}` : "") + (it.pet ? " · Com pet" : ""));
-    if (comLinks && c && it.malas > c.malas) linhas.push(`   ⚠ ATENÇÃO: ${it.malas} malas grandes, acima da referência do carro (${c.malas}). Verificar espaço antes da viagem.`);
+    if (comLinks && c && it.malas > malasRef(it.categoria, it.pax)) linhas.push(`   ⚠ ATENÇÃO: ${it.malas} malas grandes, acima do que cabe com folga nesse carro com ${it.pax} passageiro(s) (${malasRef(it.categoria, it.pax)}). Verificar espaço antes da viagem.`);
     if (it.obs) linhas.push(`   Obs.: ${it.obs}`);
     if (it.horas_extras) linhas.push(`   Horas extras: ${it.horas_extras}`);
     if (it.km && comLinks) linhas.push(`   Distância (só para a equipe): ${it.km} km por trecho` + (it.km_fora ? " · com taxa de fronteira" : ""));

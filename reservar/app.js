@@ -25,7 +25,7 @@
       consTit: "Grupos e experiências", consDesc: "Atendimento personalizado pelo WhatsApp:",
       data: "Data", hora: "Horário", horaVoo: "Horário do voo", sentido: "Sentido", chegada: "Chegada (aeroporto → hotel)", saida: "Saída (hotel → aeroporto)",
       voo: "Número do voo", localCheg: "Levar para (hotel ou endereço)", localSai: "Buscar em (hotel ou endereço)", obsItem: "Observações (opcional)", stQuando: "Quando", stOnde: "Trajeto", stQuem: "Passageiros e bagagem", stCarro: "Escolha o veículo", footSel: "Escolha o veículo", footTot: "Total deste serviço", cupom: "Cupom de desconto", cupomBtn: "Aplicar", cupomOk: "Cupom {c} aplicado: {p}% de desconto", cupomRem: "remover", desconto: "Desconto", e_cupom_invalido: "Cupom inválido", e_cupom_expirado: "Este cupom expirou", e_cupom_esgotado: "Este cupom esgotou", obsPh: "Ex.: placa com nome, parada no caminho, criança de colo", origem: "Buscar em (hotel ou endereço)", destino: "Levar para", destinoOpc: "Levar para (opcional)",
-      pax: "Passageiros", malas: "Malas grandes (despachadas)", malasBordo: "Malas de bordo", mochilas: "Mochilas / bolsas", bagagens: "Bagagens", bagagensNota: "Mochilas e bolsas cabem à vontade.", malasAviso: "Atenção: são {n} malas grandes. O porta-malas de sedan, SUV e 7 lugares comporta até {max} com folga. Você pode reservar normalmente, mas pode ser necessário um carro maior ou um segundo carro; nossa equipe confirma com você antes da viagem.", malasCard: "⚠ {n} malas: acima do porta-malas", cadeirinhas: "Cadeirinhas infantis (R$ {v} cada)", pet: "Vou levar um pet", cadNota: "Cadeirinha ou assento de elevação: obrigatório para crianças até 10 anos. Disponível do Executivo para cima.", incl: "Incluído: carro exclusivo para você, motorista profissional, pedágios e cancelamento grátis até 48 h antes.", inclFr: "Incluído: carro exclusivo para você, motorista profissional, travessia da fronteira com o motorista, pedágios e cancelamento grátis até 48 h antes. Ingressos dos atrativos são pagos à parte.", duvidas: "Dúvidas antes de reservar",
+      pax: "Passageiros", malas: "Malas grandes (despachadas)", malasBordo: "Malas de bordo", mochilas: "Mochilas / bolsas", bagagens: "Bagagens", bagagensNota: "Mochilas e bolsas cabem à vontade.", malasAviso: "Atenção: são {n} malas grandes{pc}. Sedan e SUV levam até 3 com folga. Com essa bagagem, cabem melhor: {ok}. Se preferir, adicione mais um carro. Você pode reservar normalmente; nossa equipe confirma com você antes da viagem.", malasAvisoNenhum: "Atenção: são {n} malas grandes{pc}, mais do que cabe com folga em um carro. Recomendamos adicionar mais um carro. Você pode reservar normalmente; nossa equipe confirma com você antes da viagem.", pcSuf: " em cada carro", malasCard: "⚠ {n} malas: acima do porta-malas", malasTxt7: "até {n} malas grandes com até {p} passageiros ({c} com o carro cheio)", carros: "Quantidade de carros", carrosNota: "Grupo grande ou muita bagagem? Reserve mais de um carro do mesmo serviço; dividimos passageiros e malas entre eles.", maisCarro: "+ Adicionar mais 1 carro", porCarro: "{v} por carro × {n}", carroDe: "Carro {i} de {n}", e_itens_demais: "Máximo de 6 itens por reserva. Para mais carros, fale com a gente pelo WhatsApp.", cadeirinhas: "Cadeirinhas infantis (R$ {v} cada)", pet: "Vou levar um pet", cadNota: "Cadeirinha ou assento de elevação: obrigatório para crianças até 10 anos. Disponível do Executivo para cima.", incl: "Incluído: carro exclusivo para você, motorista profissional, pedágios e cancelamento grátis até 48 h antes.", inclFr: "Incluído: carro exclusivo para você, motorista profissional, travessia da fronteira com o motorista, pedágios e cancelamento grátis até 48 h antes. Ingressos dos atrativos são pagos à parte.", duvidas: "Dúvidas antes de reservar",
       horasExtras: "Horas extras de espera", horas: "Quantas horas (o pacote inclui 5 h)", dias: "Quantas diárias",
       categoria: "Categoria do veículo", ate: "até {n} passageiros", malasTxt: "{n} malas grandes + mochilas", malasMao: " + {n} de mão",
       ref: "Ex.: {m}. Modelos de referência; a categoria é garantida, o modelo não.",
@@ -77,7 +77,7 @@
       consTit: "Groups & experiences", consDesc: "Personal service via WhatsApp:",
       data: "Date", hora: "Time", horaVoo: "Flight time", sentido: "Direction", chegada: "Arrival (airport → hotel)", saida: "Departure (hotel → airport)",
       voo: "Flight number", localCheg: "Drop-off (hotel or address)", localSai: "Pick-up (hotel or address)", obsItem: "Notes (optional)", stQuando: "When", stOnde: "Route", stQuem: "Passengers and luggage", stCarro: "Choose your vehicle", footSel: "Choose a vehicle", footTot: "Total for this service", cupom: "Discount code", cupomBtn: "Apply", cupomOk: "Code {c} applied: {p}% off", cupomRem: "remove", desconto: "Discount", e_cupom_invalido: "Invalid code", e_cupom_expirado: "This code has expired", e_cupom_esgotado: "This code is no longer available", obsPh: "E.g.: name sign, stop on the way, infant", origem: "Pick-up (hotel or address)", destino: "Drop-off", destinoOpc: "Drop-off (optional)",
-      pax: "Passengers", malas: "Large suitcases (checked)", malasBordo: "Carry-on suitcases", mochilas: "Backpacks / bags", bagagens: "Luggage", bagagensNota: "Backpacks and bags are no problem.", malasAviso: "Please note: {n} large suitcases. Sedans, SUVs and 7-seaters fit up to {max} comfortably. You can still book, but a bigger vehicle or a second car may be needed; our team will confirm with you before the trip.", malasCard: "⚠ {n} suitcases: more than the trunk fits", cadeirinhas: "Child car seats (R$ {v} each)", pet: "I'm bringing a pet", cadNota: "Child seat or booster: required for children up to 10 years old. Available from Executive upwards.", incl: "Included: private car just for you, professional driver, tolls and free cancellation up to 48 h before.", inclFr: "Included: private car just for you, professional driver, border crossing with the driver, tolls and free cancellation up to 48 h before. Attraction tickets are paid separately.", duvidas: "Questions before booking",
+      pax: "Passengers", malas: "Large suitcases (checked)", malasBordo: "Carry-on suitcases", mochilas: "Backpacks / bags", bagagens: "Luggage", bagagensNota: "Backpacks and bags are no problem.", malasAviso: "Please note: {n} large suitcases{pc}. Sedans and SUVs fit up to 3 comfortably. For this luggage, these fit better: {ok}. You can also add another car. You can still book; our team will confirm with you before the trip.", malasAvisoNenhum: "Please note: {n} large suitcases{pc}, more than one car fits comfortably. We recommend adding another car. You can still book; our team will confirm with you before the trip.", pcSuf: " per car", malasCard: "⚠ {n} suitcases: more than the trunk fits", malasTxt7: "up to {n} large suitcases with up to {p} passengers ({c} when full)", carros: "Number of cars", carrosNota: "Large group or lots of luggage? Book more than one car for the same service; we split passengers and luggage between them.", maisCarro: "+ Add 1 more car", porCarro: "{v} per car × {n}", carroDe: "Car {i} of {n}", e_itens_demais: "Up to 6 items per booking. For more cars, message us on WhatsApp.", cadeirinhas: "Child car seats (R$ {v} each)", pet: "I'm bringing a pet", cadNota: "Child seat or booster: required for children up to 10 years old. Available from Executive upwards.", incl: "Included: private car just for you, professional driver, tolls and free cancellation up to 48 h before.", inclFr: "Included: private car just for you, professional driver, border crossing with the driver, tolls and free cancellation up to 48 h before. Attraction tickets are paid separately.", duvidas: "Questions before booking",
       horasExtras: "Extra waiting hours", horas: "How many hours (package includes 5 h)", dias: "How many days",
       categoria: "Vehicle category", ate: "up to {n} passengers", malasTxt: "{n} large suitcases + backpacks", malasMao: " + {n} carry-on",
       ref: "E.g. {m}. Reference models; the category is guaranteed, the model is not.",
@@ -129,7 +129,7 @@
       consTit: "Grupos y experiencias", consDesc: "Atención personalizada por WhatsApp:",
       data: "Fecha", hora: "Horario", horaVoo: "Horario del vuelo", sentido: "Sentido", chegada: "Llegada (aeropuerto → hotel)", saida: "Salida (hotel → aeropuerto)",
       voo: "Número de vuelo", localCheg: "Llevar a (hotel o dirección)", localSai: "Buscar en (hotel o dirección)", obsItem: "Observaciones (opcional)", stQuando: "Cuándo", stOnde: "Trayecto", stQuem: "Pasajeros y equipaje", stCarro: "Elija el vehículo", footSel: "Elija el vehículo", footTot: "Total de este servicio", cupom: "Cupón de descuento", cupomBtn: "Aplicar", cupomOk: "Cupón {c} aplicado: {p}% de descuento", cupomRem: "quitar", desconto: "Descuento", e_cupom_invalido: "Cupón inválido", e_cupom_expirado: "Este cupón expiró", e_cupom_esgotado: "Este cupón se agotó", obsPh: "Ej.: cartel con nombre, parada en el camino, bebé", origem: "Buscar en (hotel o dirección)", destino: "Llevar a", destinoOpc: "Llevar a (opcional)",
-      pax: "Pasajeros", malas: "Valijas grandes (despachadas)", malasBordo: "Valijas de cabina", mochilas: "Mochilas / bolsos", bagagens: "Equipaje", bagagensNota: "Mochilas y bolsos entran sin problema.", malasAviso: "Atención: son {n} valijas grandes. El baúl de sedán, SUV y 7 plazas lleva hasta {max} con holgura. Puede reservar igual, pero puede hacer falta un vehículo más grande o un segundo auto; nuestro equipo lo confirma con usted antes del viaje.", malasCard: "⚠ {n} valijas: más de lo que entra en el baúl", cadeirinhas: "Sillas para niños (R$ {v} c/u)", pet: "Voy con mascota", cadNota: "Silla o elevador infantil: obligatorio para niños de hasta 10 años. Disponible desde Ejecutivo.", incl: "Incluido: auto exclusivo para usted, chofer profesional, peajes y cancelación gratis hasta 48 h antes.", inclFr: "Incluido: auto exclusivo para usted, chofer profesional, cruce de frontera con el chofer, peajes y cancelación gratis hasta 48 h antes. Las entradas de los atractivos se pagan aparte.", duvidas: "Dudas antes de reservar",
+      pax: "Pasajeros", malas: "Valijas grandes (despachadas)", malasBordo: "Valijas de cabina", mochilas: "Mochilas / bolsos", bagagens: "Equipaje", bagagensNota: "Mochilas y bolsos entran sin problema.", malasAviso: "Atención: son {n} valijas grandes{pc}. Sedán y SUV llevan hasta 3 con holgura. Con este equipaje, entran mejor: {ok}. También puede agregar otro auto. Puede reservar igual; nuestro equipo lo confirma con usted antes del viaje.", malasAvisoNenhum: "Atención: son {n} valijas grandes{pc}, más de lo que entra con holgura en un auto. Recomendamos agregar otro auto. Puede reservar igual; nuestro equipo lo confirma con usted antes del viaje.", pcSuf: " por auto", malasCard: "⚠ {n} valijas: más de lo que entra en el baúl", malasTxt7: "hasta {n} valijas grandes con hasta {p} pasajeros ({c} con el auto lleno)", carros: "Cantidad de autos", carrosNota: "¿Grupo grande o mucho equipaje? Reserve más de un auto para el mismo servicio; dividimos pasajeros y valijas entre ellos.", maisCarro: "+ Agregar 1 auto más", porCarro: "{v} por auto × {n}", carroDe: "Auto {i} de {n}", e_itens_demais: "Máximo 6 ítems por reserva. Para más autos, escríbanos por WhatsApp.", cadeirinhas: "Sillas para niños (R$ {v} c/u)", pet: "Voy con mascota", cadNota: "Silla o elevador infantil: obligatorio para niños de hasta 10 años. Disponible desde Ejecutivo.", incl: "Incluido: auto exclusivo para usted, chofer profesional, peajes y cancelación gratis hasta 48 h antes.", inclFr: "Incluido: auto exclusivo para usted, chofer profesional, cruce de frontera con el chofer, peajes y cancelación gratis hasta 48 h antes. Las entradas de los atractivos se pagan aparte.", duvidas: "Dudas antes de reservar",
       horasExtras: "Horas extra de espera", horas: "Cuántas horas (el paquete incluye 5 h)", dias: "Cuántos días",
       categoria: "Categoría del vehículo", ate: "hasta {n} pasajeros", malasTxt: "{n} valijas grandes + mochilas", malasMao: " + {n} de mano",
       ref: "Ej.: {m}. Modelos de referencia; la categoría está garantizada, el modelo no.",
@@ -343,15 +343,33 @@
   var cur = null, quotes = {}, qTimer = null, qSeq = 0;
   function openSvc(id) {
     var s = svc(id); if (!s) return;
-    cur = { servico: id, categoria: null, pax: 2, malas: 0, malasBordo: 0, mochilas: 0, cadeirinhas: 0, pet: false, horasExtras: 0, horas: CAT.config.porHora.minimoHoras, dias: 1, sentido: "chegada", data: "", hora: "", voo: "", origem: "", destino: "" };
+    cur = { servico: id, categoria: null, pax: 2, malas: 0, malasBordo: 0, mochilas: 0, carros: 1, cadeirinhas: 0, pet: false, horasExtras: 0, horas: CAT.config.porHora.minimoHoras, dias: 1, sentido: "chegada", data: "", hora: "", voo: "", origem: "", destino: "" };
     quotes = {};
     track("view_item", { item_id: id, item_name: s.nome.pt });
     renderModal(); var m = $("#r-modal"); if (m.showModal) m.showModal(); else m.setAttribute("open", "");
   }
   function field(l, input, cls) { return '<label class="r-f' + (cls ? " " + cls : "") + '"><span>' + esc(l) + "</span>" + input + "</label>"; }
   /* bagagem nunca bloqueia: acima da referência dos carros (4 malas grandes) só mostra um aviso forte */
-  function refMalas() { var r = 0; Object.keys(CAT.categorias).forEach(function (k) { if (k !== "van") r = Math.max(r, CAT.categorias[k].malas || 0); }); return r || 4; }
-  function avisoMalas() { var mx = refMalas(); return cur && cur.malas > mx ? t("malasAviso", { n: cur.malas, max: mx }) : ""; }
+  // vários carros do mesmo serviço: passageiros e malas divididos entre eles (o preço é por carro)
+  function nCarros() { return Math.min(5, Math.max(1, (cur && cur.carros) || 1)); }
+  function divisao() { var n = nCarros(); return { n: n, pax: Math.ceil(cur.pax / n), malas: Math.ceil((cur.malas || 0) / n) }; }
+  function refCat(k, pax) { var c = CAT.categorias[k]; return c.malasCheio != null && pax > (c.paxFolga || 0) ? c.malasCheio : c.malas; }
+  function avisoMalas() {
+    if (!cur || !cur.malas) return "";
+    var s = svc(cur.servico), d = divisao();
+    var cats = Object.keys(s.precos).filter(function (k) { return s.precos[k] != null && CAT.categorias[k] && d.pax <= CAT.categorias[k].pax; });
+    if (!cats.length) return "";
+    var cabe = cats.filter(function (k) { return refCat(k, d.pax) >= d.malas; });
+    if (cur.categoria && cats.indexOf(cur.categoria) >= 0 ? cabe.indexOf(cur.categoria) >= 0 : cabe.length === cats.length) return "";
+    var v = { n: d.malas, pc: d.n > 1 ? t("pcSuf") : "", ok: cabe.map(function (k) { return L(CAT.categorias[k].nome); }).join(", ") };
+    return t(cabe.length ? "malasAviso" : "malasAvisoNenhum", v);
+  }
+  function mostrarAvisoMalas() {
+    var av = $("#r-malas-av"); if (!av) return; var tx = avisoMalas();
+    av.hidden = !tx; av.innerHTML = tx ? esc(tx) + (nCarros() < 5 ? ' <button type="button" class="r-maiscarro" data-maiscarro>' + esc(t("maisCarro")) + "</button>" : "") : "";
+  }
+  function semCad(q) { var l = (q.linhas || []).filter(function (x) { return x.k === "cadeirinha"; })[0]; return q.valor - (l ? l.valor : 0); }
+  function totalQ(q) { return q.valor + semCad(q) * (nCarros() - 1); } // cadeirinhas vão no 1º carro
   function bagTxt(it) {
     var p = [it.malas + " " + t("malas").replace(/\s*\(.*\)/, "").toLowerCase()];
     if (it.malasBordo) p.push(it.malasBordo + " " + t("malasBordo").toLowerCase());
@@ -415,7 +433,8 @@
     f += "</section>" + step(3, "stQuem");
     f += field(t("pax"), num("pax", cur.pax, 1, 15));
     f += '<p class="r-lbl">' + esc(t("bagagens")) + '</p><div class="r-row r-row3">' + field(t("malas"), num("malas", cur.malas, 0, 30)) + field(t("malasBordo"), num("malasBordo", cur.malasBordo || 0, 0, 30)) +
-      field(t("mochilas"), num("mochilas", cur.mochilas || 0, 0, 30)) + '</div><p class="r-malas-av" id="r-malas-av" role="status"' + (avisoMalas() ? "" : " hidden") + ">" + esc(avisoMalas()) + "</p>";
+      field(t("mochilas"), num("mochilas", cur.mochilas || 0, 0, 30)) + '</div><div class="r-malas-av" id="r-malas-av" role="status" hidden></div>' +
+      field(t("carros"), num("carros", nCarros(), 1, 5)) + '<p class="r-sm r-carros-n">' + esc(t("carrosNota")) + "</p>";
     if (s.tipo === "hora") f += field(t("horas"), num("horas", cur.horas, cfg.porHora.minimoHoras, cfg.porHora.maximoHoras));
     if (s.tipo === "diaria") f += field(t("dias"), num("dias", cur.dias, 1, 15));
     if (s.espera || s.tipo === "diaria") f += field(t("horasExtras"), num("horasExtras", cur.horasExtras, 0, 8));
@@ -435,7 +454,7 @@
     f += '<div class="r-foot"><div class="r-foot-p"><small id="r-foot-l">' + esc(t("footSel")) + '</small><b id="r-foot-v"></b></div><p class="r-err" id="r-merr" role="alert"></p>' +
       '<div class="r-actions"><button type="button" class="r-btn r-ghost" data-close>' + esc(t("cancelar")) + '</button><button type="submit" class="r-btn">' + esc(t("add")) + "</button></div></div>";
     m.innerHTML = f;
-    renderCats(); requestQuotes();
+    renderCats(); requestQuotes(); mostrarAvisoMalas();
   }
   /* ---------- busca de lugares (viagem por km) ---------- */
   function acField(n, label) {
@@ -507,30 +526,30 @@
       if (!i || !em || em.classList.contains("r-pmsg")) return;
       var q = quotes[i.value]; if (!q || !q.ok) return;
       var chave = cur.servico + ":" + i.value, antes = precosVistos[chave];
-      precosVistos[chave] = q.valor;
-      if (antes === q.valor) return;
+      var tot = totalQ(q); precosVistos[chave] = tot;
+      if (antes === tot) return;
       var txt = em.firstChild; if (!txt || txt.nodeType !== 3) return;
       em.classList.remove("r-flash"); void em.offsetWidth; em.classList.add("r-flash");
-      contar({ set textContent(v) { txt.nodeValue = v; }, isConnected: true }, q.valor, 700, function (v) { return brl(Math.round(v)); });
+      contar({ set textContent(v) { txt.nodeValue = v; }, isConnected: true }, tot, 700, function (v) { return brl(Math.round(v)); });
     });
   }
   function catsHtml() {
-    var s = svc(cur.servico), out = "";
+    var s = svc(cur.servico), out = "", dv = divisao();
     Object.keys(CAT.categorias).forEach(function (k) {
       if (!(k in s.precos)) return;
       var c = CAT.categorias[k], q = quotes[k];
       var info = "<b>" + esc(L(c.nome)) + "</b><span>" + esc(L(c.desc)) + "</span><span>" + esc(t("ate", { n: c.pax })) + " · " +
-        esc(t("malasTxt", { n: c.malas }) + (c.malasMao ? t("malasMao", { n: c.malasMao }) : "")) + "</span>" +
-        (cur.malas > c.malas ? '<span class="r-malas-x">' + esc(t("malasCard", { n: cur.malas })) + "</span>" : "") +
+        esc(c.malasCheio != null ? t("malasTxt7", { n: c.malas, p: c.paxFolga, c: c.malasCheio }) : t("malasTxt", { n: c.malas }) + (c.malasMao ? t("malasMao", { n: c.malasMao }) : "")) + "</span>" +
+        (dv.malas > refCat(k, dv.pax) ? '<span class="r-malas-x">' + esc(t("malasCard", { n: dv.malas })) + "</span>" : "") +
         '<span class="r-ref">' + esc(t("ref", { m: c.ref })) + "</span>";
       if (s.precos[k] == null || (q && q.consulta)) {
         out += '<div class="r-cat r-cat-q">' + info + '<a target="_blank" rel="noopener" href="' + waLink(t("pedir") + ": " + L(s.nome) + " — " + L(c.nome)) + '">' + esc(t("consulta")) + " →</a></div>";
         return;
       }
-      var ok = q && q.ok, price = !q ? t("calculando") : ok ? brl(q.valor) : errTxt(q);
+      var ok = q && q.ok, price = !q ? t("calculando") : ok ? brl(totalQ(q)) : errTxt(q);
       out += '<label class="r-cat' + (ok ? "" : " r-off") + (cur.categoria === k && ok ? " on" : "") + '"><input type="radio" name="categoria" value="' + k + '"' +
         (cur.categoria === k && ok ? " checked" : "") + (ok ? "" : " disabled") + ">" + info + '<em class="r-price' + (ok ? "" : " r-pmsg") + '">' + esc(price) +
-        (ok && q.dataEspecial ? ' <small class="r-esp">' + esc(t("especial", { p: CAT.config.feriadoAcrescimoPct })) + "</small>" : "") + (ok ? fxTxt(q.valor) : "") + "</em></label>";
+        (ok && q.dataEspecial ? ' <small class="r-esp">' + esc(t("especial", { p: CAT.config.feriadoAcrescimoPct })) + "</small>" : "") + (ok && dv.n > 1 ? '<small class="r-pcarro">' + esc(t("porCarro", { v: brl(semCad(q)), n: dv.n })) + "</small>" : "") + (ok ? fxTxt(totalQ(q)) : "") + "</em></label>";
     });
     return out;
   }
@@ -538,7 +557,7 @@
   function updateFoot() {
     var v = $("#r-foot-v"), l = $("#r-foot-l"); if (!v) return;
     var q = cur && cur.categoria && quotes[cur.categoria];
-    if (q && q.ok) { l.textContent = t("footTot"); v.textContent = brl(q.valor); } else { l.textContent = t("footSel"); v.textContent = ""; }
+    if (q && q.ok) { l.textContent = t("footTot"); v.textContent = brl(totalQ(q)); } else { l.textContent = t("footSel"); v.textContent = ""; }
   }
   function readModal() {
     var fm = $("#r-modal-b"), g = function (n) { var el = fm.querySelector('[name="' + n + '"]'); return el ? (el.type === "checkbox" ? el.checked : el.value) : undefined; };
@@ -549,7 +568,8 @@
       cur.local = loc;
       var ll = $("#r-local-l"); if (ll) ll.textContent = t(cur.sentido === "saida" ? "localSai" : "localCheg") + " *";
     }
-    ["pax", "malas", "malasBordo", "mochilas", "cadeirinhas", "horasExtras", "horas", "dias"].forEach(function (k) { var v = g(k); if (v !== undefined) cur[k] = Math.max(0, parseInt(v, 10) || 0); });
+    ["pax", "malas", "malasBordo", "mochilas", "carros", "cadeirinhas", "horasExtras", "horas", "dias"].forEach(function (k) { var v = g(k); if (v !== undefined) cur[k] = Math.max(0, parseInt(v, 10) || 0); });
+    cur.carros = Math.min(5, Math.max(1, cur.carros || 1));
     if (cur.pax < 1) cur.pax = 1;
     cur.pet = !!g("pet");
     if (g("idaVolta") !== undefined) {
@@ -566,7 +586,8 @@
     clearTimeout(qTimer);
     qTimer = setTimeout(function () {
       if (!cur) return;
-      var seq = ++qSeq, body = JSON.parse(JSON.stringify(cur)); delete body.categoria;
+      var seq = ++qSeq, body = JSON.parse(JSON.stringify(cur)), dv = divisao(); delete body.categoria; delete body.carros;
+      body.pax = dv.pax; body.malas = dv.malas;
       var ehKm = svc(cur.servico).tipo === "km";
       function todas(e) { quotes = {}; Object.keys(svc(cur.servico).precos).forEach(function (k) { quotes[k] = { ok: false, erro: e }; }); renderCats(); }
       if (ehKm && (!cur.de || !cur.para)) { renderKmInfo(null); todas("rota_falta"); return; }
@@ -826,7 +847,13 @@
   });
   $("#r-modal-b").addEventListener("input", function (e) {
     if (e.target.dataset.ac) { acSearch(e.target); return; }
-    if (["pax", "malas", "malasBordo", "mochilas", "horas", "dias", "horasExtras", "cadeirinhas"].indexOf(e.target.name) > -1) { readModal(); requestQuotes(); var av = $("#r-malas-av"); if (av) { var tx = avisoMalas(); av.textContent = tx; av.hidden = !tx; } }
+    if (["pax", "malas", "malasBordo", "mochilas", "carros", "horas", "dias", "horasExtras", "cadeirinhas"].indexOf(e.target.name) > -1) { readModal(); requestQuotes(); mostrarAvisoMalas(); }
+  });
+  $("#r-modal-b").addEventListener("click", function (e) {
+    if (!e.target.closest || !e.target.closest("[data-maiscarro]") || !cur) return;
+    var i = $('#r-modal-b [name="carros"]'); if (!i) return;
+    i.value = Math.min(5, nCarros() + 1); readModal(); requestQuotes(); mostrarAvisoMalas();
+    i.scrollIntoView({ behavior: "smooth", block: "center" }); track("select_content", { content_type: "mais_carro", item_id: cur.servico });
   });
   $("#r-modal").addEventListener("close", function () { cur = null; });
   $("#r-modal-b").addEventListener("submit", function (e) {
@@ -838,8 +865,19 @@
     if (!cur.origem || !cur.data || !cur.hora || (svc(cur.servico).sentido && !cur.local)) { er.textContent = t("e_campos"); return; }
     var q = cur.categoria && quotes[cur.categoria];
     if (!q || !q.ok) { er.textContent = t("e_cat"); return; }
-    var item = JSON.parse(JSON.stringify(cur)); item.cot = { valor: q.valor, modos: q.modos, km: q.km };
-    S.cart.push(item); saveCart(); closeModal();
+    var n = nCarros();
+    if (S.cart.length + n > 6) { er.textContent = t("e_itens_demais"); return; }
+    for (var ci = 0; ci < n; ci++) {
+      var item = JSON.parse(JSON.stringify(cur)); delete item.carros; item.cot = { valor: ci === 0 ? q.valor : semCad(q), modos: q.modos, km: q.km };
+      if (n > 1) {
+        var rep = function (tot) { return Math.floor(tot / n) + (ci < tot % n ? 1 : 0); };
+        item.pax = Math.max(1, rep(cur.pax)); item.malas = rep(cur.malas || 0); item.malasBordo = rep(cur.malasBordo || 0); item.mochilas = rep(cur.mochilas || 0);
+        item.cadeirinhas = ci === 0 ? cur.cadeirinhas : 0;
+        item.obs = (t("carroDe", { i: ci + 1, n: n }) + (cur.obs ? " · " + cur.obs : "")).slice(0, 300);
+      }
+      S.cart.push(item);
+    }
+    saveCart(); closeModal();
     ["#r-cart", "#r-bar"].forEach(function (sel) { var el = $(sel); if (el) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); } });
     track("add_to_cart", { value: q.valor, currency: "BRL", items: [{ item_id: item.servico, item_variant: item.categoria }] });
     $("#r-cart").scrollIntoView({ behavior: "smooth", block: "nearest" });

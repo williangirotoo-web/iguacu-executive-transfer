@@ -31,18 +31,19 @@ export const CONFIG = {
 };
 
 // malas: REFERÊNCIA de malas grandes (despachadas) que cabem com folga, além de mochilas.
+// 7 lugares: com até paxFolga passageiros o porta-malas fica grande (malas); com o carro cheio cabem malasCheio.
 // Não bloqueia a reserva: acima disso o site mostra um aviso forte e a equipe resolve no dia.
 export const CATEGORIAS = {
-  comum: { pax: 4, malas: 4, malasMao: 0, nome: { pt: "Comum", en: "Standard", es: "Estándar" },
+  comum: { pax: 4, malas: 3, malasMao: 0, nome: { pt: "Comum", en: "Standard", es: "Estándar" },
     desc: { pt: "Carro de passeio com ar-condicionado", en: "Air-conditioned car", es: "Auto con aire acondicionado" },
     ref: "Virtus, Yaris Sedan, Voyage" },
-  exec: { pax: 4, malas: 4, malasMao: 0, nome: { pt: "Executivo", en: "Executive Sedan", es: "Ejecutivo Sedán" },
+  exec: { pax: 4, malas: 3, malasMao: 1, nome: { pt: "Executivo", en: "Executive Sedan", es: "Ejecutivo Sedán" },
     desc: { pt: "Sedã médio, silencioso e confortável", en: "Quiet, comfortable mid-size sedan", es: "Sedán mediano, silencioso y cómodo" },
     ref: "Corolla, Jetta" },
-  suv: { pax: 4, malas: 4, malasMao: 0, nome: { pt: "Executivo SUV", en: "Executive SUV", es: "SUV Ejecutivo" },
+  suv: { pax: 4, malas: 3, malasMao: 1, nome: { pt: "Executivo SUV", en: "Executive SUV", es: "SUV Ejecutivo" },
     desc: { pt: "SUV com mais espaço e posição alta", en: "More space, higher seating", es: "Más espacio y asiento alto" },
     ref: "Corolla Cross, HR-V, Haval H6, Tiggo 7" },
-  sete: { pax: 6, malas: 4, malasMao: 0, nome: { pt: "7 Lugares", en: "7-Seater", es: "7 Plazas" },
+  sete: { pax: 6, malas: 5, malasCheio: 3, paxFolga: 4, malasMao: 0, nome: { pt: "7 Lugares", en: "7-Seater", es: "7 Plazas" },
     desc: { pt: "Até 6 passageiros + motorista", en: "Up to 6 passengers + driver", es: "Hasta 6 pasajeros + chofer" },
     ref: "Spin, Tiguan 7 lugares" },
   luxo: { pax: 4, malas: 4, malasMao: 0, nome: { pt: "Executivo Luxo", en: "Luxury", es: "Lujo" },
@@ -252,4 +253,10 @@ export function datasEspeciais(ano) {
   for (let k = -50; k <= -47; k++) moveis.push(iso(p + k * DIA)); // Carnaval (sábado a terça)
   for (let k = -3; k <= 0; k++) moveis.push(iso(p + k * DIA));    // Semana Santa (quinta a domingo de Páscoa)
   return [...new Set([...fixas, ...moveis])].sort();
+}
+
+/* malas grandes que cabem com folga num carro da categoria, para esse número de passageiros */
+export function malasRef(cat, pax) {
+  const C = CATEGORIAS[cat]; if (!C) return 0;
+  return C.malasCheio != null && pax > (C.paxFolga || 0) ? C.malasCheio : C.malas;
 }
