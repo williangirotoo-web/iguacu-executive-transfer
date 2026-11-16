@@ -49,7 +49,8 @@ export function normalizarItem(x) {
     servico: s(x.servico, 40), categoria: s(x.categoria, 10),
     data: s(x.data, 10), hora: s(x.hora, 5), sentido: x.sentido === "saida" ? "saida" : "chegada",
     voo: s(x.voo, 20), origem: s(x.origem), destino: s(x.destino), obs: s(x.obs, 300),
-    pax: Math.max(1, int(x.pax, 1)), malas: Math.max(0, int(x.malas, 0)),
+    pax: Math.max(1, int(x.pax, 1)), malas: Math.min(30, Math.max(0, int(x.malas, 0))),
+    malasBordo: Math.min(30, Math.max(0, int(x.malasBordo, 0))), mochilas: Math.min(30, Math.max(0, int(x.mochilas, 0))),
     cadeirinhas: Math.max(0, int(x.cadeirinhas, 0)), pet: !!x.pet,
     horasExtras: Math.max(0, int(x.horasExtras, 0)), horas: int(x.horas, POR_HORA.minimoHoras),
     dias: Math.max(1, int(x.dias, 1)),
@@ -75,7 +76,7 @@ export function cotar(item, agora = Date.now()) {
   if (!(cat in svc.precos)) return { ok: false, erro: "categoria_nao_atende" };
   if (svc.precos[cat] == null) return { ok: false, erro: "sob_consulta", consulta: true };
   if (item.pax > C.pax) return { ok: false, erro: "lotacao", max: C.pax };
-  if (item.malas > C.malas) return { ok: false, erro: "malas", max: C.malas };
+  // bagagem não bloqueia: acima da referência (C.malas) o site avisa e a equipe é alertada no e-mail/painel
 
   // data e horário (horário de Foz do Iguaçu)
   if (!/^\d{4}-\d{2}-\d{2}$/.test(item.data) || !/^\d{2}:\d{2}$/.test(item.hora)) return { ok: false, erro: "data_hora" };

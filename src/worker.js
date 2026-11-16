@@ -104,6 +104,8 @@ async function prepararBanco(env) {
   if (!cols.includes("desconto")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN desconto REAL").run();
   const colsItens = (await env.DB.prepare("PRAGMA table_info(itens)").all()).results.map((c) => c.name);
   if (!colsItens.includes("obs")) await env.DB.prepare("ALTER TABLE itens ADD COLUMN obs TEXT").run();
+  if (!colsItens.includes("malas_bordo")) await env.DB.prepare("ALTER TABLE itens ADD COLUMN malas_bordo INTEGER").run();
+  if (!colsItens.includes("mochilas")) await env.DB.prepare("ALTER TABLE itens ADD COLUMN mochilas INTEGER").run();
   // cupom de influenciador/parceiro: a reserva com esse cupom gera comissão para o parceiro
   const colsCup = (await env.DB.prepare("PRAGMA table_info(cupons)").all()).results.map((c) => c.name);
   if (!colsCup.includes("parceiro_id")) await env.DB.prepare("ALTER TABLE cupons ADD COLUMN parceiro_id INTEGER").run();
@@ -203,6 +205,14 @@ async function enviarAviso(env, assunto, texto) {
 
 const brl = (v) => "R$ " + Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const dataBr = (d) => d.split("-").reverse().join("/");
+/* "4 malas grandes · 1 de bordo · 2 mochilas" (itens antigos só têm malas grandes) */
+function bagagensTxt(it) {
+  const p = [`${Number(it.malas) || 0} mala(s) grande(s)`];
+  const b = Number(it.malas_bordo ?? it.malasBordo) || 0, m = Number(it.mochilas) || 0;
+  if (b) p.push(`${b} de bordo`);
+  if (m) p.push(`${m} mochila(s)/bolsa(s)`);
+  return p.join(" · ");
+}
 function resumoTexto(p, itens, comLinks, origem) {
   const linhas = [`Pedido ${p.codigo}`, `Cliente: ${p.nome}`, `WhatsApp/telefone: ${p.telefone}`, `E-mail: ${p.email}`];
   if (p.pais) linhas.push(`País: ${p.pais}`);
@@ -215,7 +225,8 @@ function resumoTexto(p, itens, comLinks, origem) {
     if (it.voo) linhas.push(`   Voo: ${it.voo}`);
     if (it.origem) linhas.push(`   Buscar em: ${it.origem}`);
     if (it.destino) linhas.push(`   Levar para: ${it.destino}`);
-    linhas.push(`   Passageiros: ${it.pax} · Malas: ${it.malas}` + (it.cadeirinhas ? ` · Cadeirinhas: ${it.cadeirinhas}` : "") + (it.pet ? " · Com pet" : ""));
+    linhas.push(`   Passageiros: ${it.pax} · Bagagens: ${bagagensTxt(it)}` + (it.cadeirinhas ? ` · Cadeirinhas: ${it.cadeirinhas}` : "") + (it.pet ? " · Com pet" : ""));
+    if (comLinks && c && it.malas > c.malas) linhas.push(`   ⚠ ATENÇÃO: ${it.malas} malas grandes, acima da referência do carro (${c.malas}). Verificar espaço antes da viagem.`);
     if (it.obs) linhas.push(`   Obs.: ${it.obs}`);
     if (it.horas_extras) linhas.push(`   Horas extras: ${it.horas_extras}`);
     if (it.km && comLinks) linhas.push(`   Distância (só para a equipe): ${it.km} km por trecho` + (it.km_fora ? " · com taxa de fronteira" : ""));
@@ -317,11 +328,11 @@ async function criarPedido(req, env, ctx) {
   if (!pedidoId) return erro("falha_codigo", 500);
 
   const stmts = itens.map(({ it, cot, svc }, i) => env.DB.prepare(`INSERT INTO itens (pedido_id, ordem, servico_id, servico_nome, categoria, data, hora, inicio_utc,
-    sentido, voo, origem, destino, pax, malas, cadeirinhas, pet, horas_extras, horas, dias, data_especial, valor, modo, valor_agora, linhas_json, obs)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(pedidoId, i + 1, it.servico, svc.nome.pt, it.categoria, it.data, it.hora, cot.inicio,
+    sentido, voo, origem, destino, pax, malas, cadeirinhas, pet, horas_extras, horas, dias, data_especial, valor, modo, valor_agora, linhas_json, obs, malas_bordo, mochilas)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(pedidoId, i + 1, it.servico, svc.nome.pt, it.categoria, it.data, it.hora, cot.inicio,
     svc.sentido ? it.sentido : null, it.voo || null, it.origem || null, it.destino || null, it.pax, it.malas, it.cadeirinhas, it.pet ? 1 : 0,
     it.horasExtras, svc.tipo === "hora" ? it.horas : null, svc.tipo === "diaria" ? it.dias : null, cot.dataEspecial ? 1 : 0,
-    cot.valor, pag.detalhes[i].modo, pag.detalhes[i].due, JSON.stringify(cot.linhas), it.obs || null));
+    cot.valor, pag.detalhes[i].modo, pag.detalhes[i].due, JSON.stringify(cot.linhas), it.obs || null, it.malasBordo || 0, it.mochilas || 0));
   stmts.push(env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, status_para, autor, texto) VALUES (?,?,?,?,?,?)")
     .bind(pedidoId, now, "criado", "solicitacao", parceiroChave ? "parceiro " + parceiro.codigo : "cliente",
       parceiroChave ? `Reserva feita pelo parceiro ${parceiro.empresa || parceiro.responsavel} (${parceiro.codigo})` : indicador ? `Pedido feito pelo site com o cupom ${cupom.codigo}, indicação de ${indicador.empresa || indicador.responsavel} (${indicador.codigo})` : "Pedido feito pelo site"));
@@ -330,7 +341,7 @@ async function criarPedido(req, env, ctx) {
 
   const pedido = { codigo, ...cliente, total: pag.total, valor_agora: pag.agora, cupom: cupom ? cupom.codigo + " (-" + cupom.pct + "%)" : null };
   const itensDb = itens.map(({ it, cot, svc }, i) => ({ servico_id: it.servico, servico_nome: svc.nome.pt, categoria: it.categoria, data: it.data, hora: it.hora,
-    sentido: it.sentido, voo: it.voo, origem: it.origem, destino: it.destino, pax: it.pax, malas: it.malas, cadeirinhas: it.cadeirinhas, pet: it.pet,
+    sentido: it.sentido, voo: it.voo, origem: it.origem, destino: it.destino, pax: it.pax, malas: it.malas, malas_bordo: it.malasBordo, mochilas: it.mochilas, cadeirinhas: it.cadeirinhas, pet: it.pet,
     horas_extras: it.horasExtras, horas: it.horas, dias: it.dias, data_especial: cot.dataEspecial, valor: cot.valor, modo: pag.detalhes[i].modo, obs: it.obs,
     km: cot.km || null, km_fora: it.rota ? !!it.rota.fora : false }));
   const origem = new URL(req.url).origin;
@@ -357,7 +368,7 @@ async function criarPedido(req, env, ctx) {
 }
 
 /* ---------------- pacote compartilhado (link curto com os itens do carrinho, sem dados pessoais) ---------------- */
-const CAMPOS_PACOTE = ["servico", "categoria", "data", "hora", "sentido", "voo", "origem", "destino", "pax", "malas", "cadeirinhas", "pet", "horasExtras", "horas", "dias", "idaVolta", "dataVolta", "horaVolta", "de", "para"];
+const CAMPOS_PACOTE = ["servico", "categoria", "data", "hora", "sentido", "voo", "origem", "destino", "pax", "malas", "malasBordo", "mochilas", "cadeirinhas", "pet", "horasExtras", "horas", "dias", "idaVolta", "dataVolta", "horaVolta", "de", "para"];
 async function criarPacote(req, env) {
   let body;
   try { body = await lerJson(req, 12000); } catch { return erro("json_invalido"); }
@@ -521,12 +532,12 @@ function corridaParaMotorista(c) {
   return {
     id: c.id, status: c.status, repasse: c.repasse, obs: c.obs, criado_em: c.criado_em, respondido_em: c.respondido_em,
     pedido: c.pedido_codigo, pedido_status: c.pedido_status, servico: c.servico_nome, categoria: c.categoria, data: c.data, hora: c.hora, inicio: c.inicio_utc,
-    sentido: c.sentido, origem: c.origem, destino: c.destino, obs_item: c.obs_item, pax: c.pax, malas: c.malas, cadeirinhas: c.cadeirinhas, pet: !!c.pet, horas: c.horas, dias: c.dias, horas_extras: c.horas_extras,
+    sentido: c.sentido, origem: c.origem, destino: c.destino, obs_item: c.obs_item, pax: c.pax, malas: c.malas, malas_bordo: c.malas_bordo || 0, mochilas: c.mochilas || 0, cadeirinhas: c.cadeirinhas, pet: !!c.pet, horas: c.horas, dias: c.dias, horas_extras: c.horas_extras,
     ...(aceita ? { passageiro: c.nome, telefone: c.telefone, voo: c.voo, observacoes: c.observacoes } : {}),
   };
 }
 const SQL_CORRIDA = `SELECT c.*, p.codigo AS pedido_codigo, p.status AS pedido_status, p.nome, p.telefone, p.observacoes,
-  i.servico_nome, i.categoria, i.data, i.hora, i.inicio_utc, i.sentido, i.voo, i.origem, i.destino, i.pax, i.malas, i.cadeirinhas, i.pet, i.horas, i.dias, i.horas_extras, i.obs AS obs_item
+  i.servico_nome, i.categoria, i.data, i.hora, i.inicio_utc, i.sentido, i.voo, i.origem, i.destino, i.pax, i.malas, i.malas_bordo, i.mochilas, i.cadeirinhas, i.pet, i.horas, i.dias, i.horas_extras, i.obs AS obs_item
   FROM corridas c JOIN pedidos p ON p.id = c.pedido_id JOIN itens i ON i.id = c.item_id`;
 async function areaMotorista(req, env, url) {
   const mot = await parceiroDaChave(req, env, "atende");
