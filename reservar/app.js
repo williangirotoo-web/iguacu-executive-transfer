@@ -392,7 +392,8 @@
     var f = '<button type="button" class="r-x" data-close aria-label="' + esc(t("cancelar")) + '">×</button><h3>' + esc(L(s.nome)) + "</h3><p class=\"r-sm\">" + esc(L(s.desc)) + "</p>";
     var ok = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
     var step = function (n, tit) { return '<section class="r-step"><h4><i>' + n + "</i>" + esc(t(tit)) + "</h4>"; };
-    f += step(1, "stQuando");
+    // no computador: formulário à esquerda e escolha do carro à direita (no celular fica tudo em uma coluna)
+    f += '<div class="r-mgrid"><div class="r-mcol">' + step(1, "stQuando");
     if (s.sentido) f += field(t("sentido"), '<select name="sentido"><option value="chegada">' + esc(t("chegada")) + '</option><option value="saida">' + esc(t("saida")) + "</option></select>");
     f += '<div class="r-row">' + field(t("data") + " *", '<input type="date" name="data" min="' + hoje() + '" required>') +
       field((s.voo ? t("horaVoo") : t("hora")) + " *", '<input type="time" name="hora" required>') + "</div>";
@@ -429,8 +430,8 @@
     if (s.voo) info.push(esc(t("espAero", { v: cfg.esperaAeroporto.valorHora })));
     if (s.tipo === "diaria" && cfg.diaria) info.push('<span id="r-dianota">' + esc(t("diariaNota", { h: cfg.diaria.horas, km: cfg.diaria.km, v: brl(cfg.porKm.valorKm[cur.categoria || "comum"]) })) + "</span>");
     if (s.fronteira) info.push(esc(t("fronteira")));
-    f += step(4, "stCarro") + '<div class="r-cats" id="r-cats"></div></section>';
-    f += '<ul class="r-info">' + info.map(function (x) { return "<li>" + ok + "<span>" + x + "</span></li>"; }).join("") + "</ul>";
+    f += '</div><div class="r-mcol r-mcol-car">' + step(4, "stCarro") + '<div class="r-cats" id="r-cats"></div></section>';
+    f += '<ul class="r-info">' + info.map(function (x) { return "<li>" + ok + "<span>" + x + "</span></li>"; }).join("") + "</ul></div></div>";
     f += '<div class="r-foot"><div class="r-foot-p"><small id="r-foot-l">' + esc(t("footSel")) + '</small><b id="r-foot-v"></b></div><p class="r-err" id="r-merr" role="alert"></p>' +
       '<div class="r-actions"><button type="button" class="r-btn r-ghost" data-close>' + esc(t("cancelar")) + '</button><button type="submit" class="r-btn">' + esc(t("add")) + "</button></div></div>";
     m.innerHTML = f;

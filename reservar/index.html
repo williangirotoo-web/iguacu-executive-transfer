@@ -252,7 +252,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:'Montserrat',sys
 .r-f input,.r-f select,.r-f textarea,.r-checkout textarea{background:#0c0d0e;border:1px solid var(--line2);border-radius:10px;color:var(--txt);padding:11px 12px;font:inherit;font-size:.88rem;width:100%;transition:border-color .2s}
 .r-f input:focus,.r-f select:focus,.r-f textarea:focus{outline:none;border-color:var(--gold)}
 .r-row{display:flex;gap:12px;flex-wrap:wrap}.r-row .r-f{min-width:140px}
-.r-row3 .r-f{flex:1 1 120px;min-width:110px}.r-malas-av{margin:2px 0 12px;padding:11px 13px;border:1px solid #ff8a80;border-left-width:4px;border-radius:8px;background:rgba(255,82,82,.10);color:#ffcdd2;font-size:.82rem;line-height:1.45;font-weight:600}
+.r-row3{align-items:flex-end}.r-row3 .r-f{flex:1 1 120px;min-width:110px}.r-malas-av{margin:2px 0 12px;padding:11px 13px;border:1px solid #ff8a80;border-left-width:4px;border-radius:8px;background:rgba(255,82,82,.10);color:#ffcdd2;font-size:.82rem;line-height:1.45;font-weight:600}
 .r-cat .r-malas-x{color:#ff8a80;font-size:.7rem;font-weight:700}
 .r-lbl{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:10px 0 8px}
 .r-cats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
@@ -332,6 +332,14 @@ input[type="date"],input[type="time"]{cursor:pointer}
 .r-foot-p b{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:600;color:var(--gold);line-height:1.1;min-height:1px}
 .r-foot .r-err{grid-column:1/-1;margin:0;min-height:0}.r-foot .r-err:empty{display:none}
 .r-foot .r-actions{margin:0}
+@media(min-width:1100px){
+  dialog#r-modal{width:min(1240px,95vw)}
+  #r-modal-b{padding:32px 36px 0}
+  .r-mgrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:0 40px;align-items:start}
+  .r-mcol-car{position:sticky;top:0;padding-top:0}
+  .r-mcol-car .r-cats{grid-template-columns:1fr 1fr}
+  .r-foot{margin:18px -36px 0;padding:14px 36px 18px}
+}
 @media(max-width:560px){#r-modal-b{padding:24px 18px 0}.r-foot{margin:18px -18px 0;padding:12px 18px 16px;grid-template-columns:1fr}.r-foot .r-actions .r-btn{flex:1}}
 .r-cupom{margin:4px 0 6px}.r-cupin{display:flex;gap:8px}.r-cupin input{flex:1}.r-cupin .r-btn{padding:0 18px}
 .r-cupok{font-size:.82rem;color:#a5d6a7;margin:4px 0 10px}.r-link{background:none;border:0;color:var(--mut);text-decoration:underline;cursor:pointer;font:inherit;font-size:.78rem}
@@ -422,7 +430,7 @@ input[type="date"],input[type="time"]{cursor:pointer}
 <dialog id="r-modal"><form id="r-modal-b" novalidate></form></dialog>
 <div class="r-bar" id="r-bar" hidden><span><b id="r-bar-n">0</b> · <span id="r-bar-v"></span></span><button type="button" class="r-btn" id="r-bar-go">→</button></div>
 <p class="r-legal">Iguaçu Executive Transfer · CNPJ 57.169.205/0001-12 · CNPJ 57.168.941/0001-56 · Foz do Iguaçu, PR, Brasil · +55 45 99118-5798</p>
-<script src="/reservar/app.js?v=28"></script>
+<script src="/reservar/app.js?v=29"></script>
 <script>(function(){var n=document.getElementById("nav"),m=document.getElementById("mobileMenu");addEventListener("scroll",function(){n.classList.toggle("scrolled",scrollY>40)},{passive:true});document.getElementById("hamburger").addEventListener("click",function(){m.classList.toggle("open")})})();</script>
 </body>
 </html>
