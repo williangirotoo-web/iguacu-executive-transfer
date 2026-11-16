@@ -77,7 +77,7 @@ function lerSentido(txt) {
   const t = sa(txt);
   if (/\b(do aeroporto (para|pro|ao|ate) o? ?hotel|del aeropuerto al hotel|from the airport to (the|my) hotel)\b/.test(t)) return "chegada";
   if (/\b(do hotel (para|pro|ao|ate) o? ?aeroporto|del hotel al aeropuerto|from (the|my) hotel to the airport)\b/.test(t)) return "saida";
-  if (/\b(chego|chegada|chegando|chegamos|desembarco|desembarque|pouso|arriv\w*|land\w*|llego|llegada|llegamos|aterrizo)\b/.test(t)) return "chegada";
+  if (/\b(cheg\w*|desembarc\w*|pouso|pousa\w*|arriv\w*|land\w*|lleg\w*|aterriz\w*)\b/.test(t)) return "chegada";
   if (/\b(volta|voltar|embarque|embarco|meu voo sai|o voo sai|ir para o aeroporto|levar ao aeroporto|levar para o aeroporto|depart\w*|leave|leaving|flight leaves|to the airport|salgo|salida|regreso|al aeropuerto)\b/.test(t)) return "saida";
   return "";
 }
@@ -126,7 +126,7 @@ function lerServico(txt, atual) {
   if (aero) {
     if (tem(/\b(igr|aeropuerto de puerto iguazu|aeroporto de puerto iguazu|aeroporto argentino)\b/)) return pi || tem(/hotel (em|en|in) puerto/) ? "igr-pi" : "igr-foz";
     if (cde) return "igu-cde";
-    if (pi) return "igu-pi";
+    if (pi || (arg && !tem(/\b(cataratas|falls|parque)\b/))) return "igu-pi";
     if (!tem(/\b(cataratas|falls|itaipu|marco)\b/)) return "igu-foz";
   }
   if (tem(/\b(rodoviaria|bus station|terminal de onibus|terminal de omnibus)\b/)) return "rod-foz";
@@ -222,10 +222,15 @@ function aplicar(est, ia, regras) {
   const e = JSON.parse(JSON.stringify(est));
   const vazio = (v) => v === undefined || v === null || v === "";
   const svcIa = ia.servico && servico(String(ia.servico).trim());
-  if (vazio(e.servico) && svcIa && !svcIa.oculto && svcIa.tipo !== "km") e.servico = svcIa.id;
+  // a IA só escolhe o serviço se o cliente falou de algum lugar ou passeio nesta mensagem
+  const tx = sa(regras.texto || "");
+  const falouLugar = /\b(aeroport\w*|airport|aeropuerto|hotel|cataratas|falls|argentin\w*|paragua\w*|ciudad|itaipu|marco|parque|rodoviaria|terminal|passeio|tour|paseo|cidade|city|viagem|trip|viaje|compras|shopping|centro|puerto|foz|motorista|driver|chofer|transfer|traslado|taxi)\b/.test(tx);
+  if (vazio(e.servico) && falouLugar && svcIa && !svcIa.oculto && svcIa.tipo !== "km") e.servico = svcIa.id;
   // a IA só preenche números se o cliente escreveu algum número/quantidade nesta mensagem (evita "0 malas" inventado)
-  const temNum = /\d|\b(um|uma|dois|duas|tres|quatro|cinco|seis|one|two|three|four|five|six|dos|cuatro|sem|sin|no|nenhuma)\b/.test(sa(regras.texto || ""));
-  for (const k of ["pax", "malas", "horas", "dias"]) { const v = parseInt(ia[k], 10); if (temNum && vazio(e[k]) && Number.isFinite(v) && v >= (k === "pax" ? 1 : 0)) e[k] = v; }
+  const temNum = /\d|\b(um|uma|dois|duas|tres|quatro|cinco|seis|one|two|three|four|five|six|dos|cuatro|nenhuma)\b|\b(sem|sin|no) (malas?|bagagem|luggage|bags|maletas|valijas|equipaje)\b/.test(sa(regras.texto || ""));
+  // e cada número só se o cliente falou daquele assunto (evita "0 malas" inventado)
+  const assunto = { pax: /\b(pesso\w*|pax|people|person\w*|passag\w*|passeng\w*|adult\w*|pasaj\w*|somos|casal|couple|pareja|crianc\w*|child\w*|kids?|ninos?)\b/, malas: /\b(mala\w*|bag\w*|bagag\w*|luggage|suitcase\w*|maleta\w*|valija\w*|equipaje)\b/, horas: /\b(hora|horas|hours?|hs)\b/, dias: /\b(dia|dias|days?|diaria\w*)\b/ };
+  for (const k of ["pax", "malas", "horas", "dias"]) { const v = parseInt(ia[k], 10); if (temNum && assunto[k].test(tx) && vazio(e[k]) && Number.isFinite(v) && v >= (k === "pax" ? 1 : 0)) e[k] = v; }
   if (!e.local && typeof ia.local === "string" && ia.local.trim().length >= 3) e.local = ia.local.trim().slice(0, 120);
   if (Array.isArray(ia.trechos)) ia.trechos.slice(0, 2).forEach((t, i) => {
     if (!t) return; e.trechos[i] = e.trechos[i] || { data: "", hora: "", sentido: "" };
@@ -414,6 +419,7 @@ export async function assistente(env, body, agora = Date.now()) {
   const partes = [];
   if (duvida) partes.push(duvida);
   if (estado.servico && mudou) partes.push(resumo(estado, lang, T));
+  else if (!estado.servico && mudou && estado.trechos[0] && estado.trechos[0].data) partes.push(T.anotei + ": " + dataBr(estado.trechos[0].data, lang) + (estado.trechos[0].hora ? " " + T.as + " " + estado.trechos[0].hora : "") + ".");
   partes.push(proximaPergunta(f, T, estado));
   out.resposta = saudacao + partes.join("\n");
   return out;
