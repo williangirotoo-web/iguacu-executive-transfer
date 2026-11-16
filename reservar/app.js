@@ -343,7 +343,7 @@
   var cur = null, quotes = {}, qTimer = null, qSeq = 0;
   function openSvc(id) {
     var s = svc(id); if (!s) return;
-    cur = { servico: id, categoria: null, pax: 2, malas: 2, malasBordo: 0, mochilas: 0, cadeirinhas: 0, pet: false, horasExtras: 0, horas: CAT.config.porHora.minimoHoras, dias: 1, sentido: "chegada", data: "", hora: "", voo: "", origem: "", destino: "" };
+    cur = { servico: id, categoria: null, pax: 2, malas: 0, malasBordo: 0, mochilas: 0, cadeirinhas: 0, pet: false, horasExtras: 0, horas: CAT.config.porHora.minimoHoras, dias: 1, sentido: "chegada", data: "", hora: "", voo: "", origem: "", destino: "" };
     quotes = {};
     track("view_item", { item_id: id, item_name: s.nome.pt });
     renderModal(); var m = $("#r-modal"); if (m.showModal) m.showModal(); else m.setAttribute("open", "");
