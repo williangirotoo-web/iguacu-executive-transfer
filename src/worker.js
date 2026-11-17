@@ -237,7 +237,7 @@ function resumoTexto(p, itens, comLinks, origem) {
     linhas.push(`   Valor: ${brl(it.valor)} (${it.modo === "total" ? "100% na reserva" : CONFIG.sinalPct + "% de sinal"})`);
   });
   if (p.cupom) linhas.push("", `Cupom: ${p.cupom}`);
-  if (p.taxa_pagamento) linhas.push("", `Taxa do PayPal (${CONFIG.paypalTaxaPct}%): ${brl(p.taxa_pagamento)}`);
+  if (p.taxa_pagamento && comLinks) linhas.push("", `Taxa do PayPal (${CONFIG.paypalTaxaPct}%): ${brl(p.taxa_pagamento)}`);
   linhas.push("", `Total: ${brl(p.total)}`, `A pagar na reserva: ${brl(p.valor_agora)}`, `Restante no dia: ${brl(p.total - p.valor_agora)}`);
   if (p.observacoes) linhas.push("", `Observações: ${p.observacoes}`);
   if (comLinks) {

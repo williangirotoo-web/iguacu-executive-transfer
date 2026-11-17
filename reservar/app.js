@@ -41,7 +41,7 @@
       aceito: "Li e aceito os <a href=\"/termos.html\" target=\"_blank\">Termos de Uso</a> e a <a href=\"/privacidade.html\" target=\"_blank\">Política de Privacidade</a>. Cancelamento grátis até {h} h antes; depois disso, devolvemos {d}%.",
       enviar: "Enviar pedido de reserva", enviando: "Enviando…", enviarPagar: "Reservar e pagar", pagInfoOn: "Ao reservar, você vai para a página segura do InfinitePay para pagar por Pix ou cartão em até 12x (à vista sem acréscimo; parcelado com juros da operadora). A confirmação chega na hora.", okPagTit: "Reserva feita! Falta só o pagamento", okPagTxt: "Código: {c}. Estamos levando você para a página de pagamento. Se não abrir, toque no botão abaixo.", okPagBtn: "Pagar {v} agora",
       pagCom: "Como você quer pagar?", provBr: "Pix ou cartão brasileiro", provBrS: "Pix na hora ou cartão emitido no Brasil, em até 12x (InfinitePay).",
-      provInt: "Cartão internacional ou PayPal", provIntS: "Para cartões emitidos fora do Brasil ou conta PayPal. Cobrado em reais; o PayPal converte para a sua moeda. Acréscimo de {p}% referente à taxa do PayPal.", taxaPP: "Taxa do PayPal ({p}%)",
+      provInt: "Cartão internacional ou PayPal", provIntS: "Para cartões emitidos fora do Brasil ou conta PayPal. Cobrado em reais; o PayPal converte para a sua moeda.", taxaPP: "Taxa do PayPal ({p}%)",
       pagInfoInt: "Ao reservar, você vai para a página segura do PayPal para pagar com cartão internacional ou conta PayPal. Cobrado em reais (BRL); o PayPal converte para a sua moeda.",
       pendTit: "Sua reserva {c} está aguardando o pagamento", pendTxt: "Se o pagamento não deu certo, escolha uma forma de pagar:", pendX: "Fechar", pendAbrindo: "Abrindo a página de pagamento…", e_ja_pago: "Esta reserva já está paga. Obrigado!",
       okTit: "Pedido recebido!", okTxt: "Código do pedido: {c}. Vamos confirmar a disponibilidade e enviar o link de pagamento pelo WhatsApp.",
@@ -93,7 +93,7 @@
       aceito: "I have read and accept the <a href=\"/termos.html\" target=\"_blank\">Terms</a> and the <a href=\"/privacidade.html\" target=\"_blank\">Privacy Policy</a>. Free cancellation up to {h} h before; after that, {d}% is refunded.",
       enviar: "Send booking request", enviando: "Sending…", enviarPagar: "Book and pay", pagInfoOn: "When you book, you go to PayPal's secure page to pay with your PayPal account or card. Charged in Brazilian reais (BRL); PayPal converts to your currency.", okPagTit: "Booked! Only the payment is left", okPagTxt: "Code: {c}. Taking you to the payment page. If it does not open, tap the button below.", okPagBtn: "Pay {v} now",
       pagCom: "How would you like to pay?", provBr: "Pix or Brazilian card", provBrS: "Pix or a card issued in Brazil, up to 12 installments (InfinitePay).",
-      provInt: "International card or PayPal", provIntS: "For cards issued outside Brazil or a PayPal account. Charged in BRL; PayPal converts to your currency. A {p}% PayPal fee is added.", taxaPP: "PayPal fee ({p}%)",
+      provInt: "International card or PayPal", provIntS: "For cards issued outside Brazil or a PayPal account. Charged in BRL; PayPal converts to your currency.", taxaPP: "PayPal fee ({p}%)",
       pagInfoBr: "When you book, you go to InfinitePay's secure page to pay by Pix or a Brazilian card. Confirmation is instant.",
       pendTit: "Your booking {c} is waiting for payment", pendTxt: "If the payment did not go through, choose how to pay:", pendX: "Close", pendAbrindo: "Opening the payment page…", e_ja_pago: "This booking is already paid. Thank you!",
       okTit: "Request received!", okTxt: "Booking code: {c}. We'll confirm availability and send the payment link on WhatsApp.",
@@ -145,7 +145,7 @@
       aceito: "Leí y acepto los <a href=\"/termos.html\" target=\"_blank\">Términos</a> y la <a href=\"/privacidade.html\" target=\"_blank\">Política de Privacidad</a>. Cancelación gratis hasta {h} h antes; después, devolvemos el {d}%.",
       enviar: "Enviar pedido de reserva", enviando: "Enviando…", enviarPagar: "Reservar y pagar", pagInfoOn: "Al reservar, va a la página segura de PayPal para pagar con su cuenta PayPal o tarjeta. Se cobra en reales (BRL); PayPal convierte a su moneda.", okPagTit: "¡Reserva hecha! Solo falta el pago", okPagTxt: "Código: {c}. Lo estamos llevando a la página de pago. Si no se abre, toque el botón de abajo.", okPagBtn: "Pagar {v} ahora",
       pagCom: "¿Cómo quiere pagar?", provBr: "Pix o tarjeta brasileña", provBrS: "Pix o tarjeta emitida en Brasil, hasta 12 cuotas (InfinitePay).",
-      provInt: "Tarjeta internacional o PayPal", provIntS: "Para tarjetas emitidas fuera de Brasil o cuenta PayPal. Se cobra en reales; PayPal convierte a su moneda. Se suma un {p}% por la comisión de PayPal.", taxaPP: "Comisión de PayPal ({p}%)",
+      provInt: "Tarjeta internacional o PayPal", provIntS: "Para tarjetas emitidas fuera de Brasil o cuenta PayPal. Se cobra en reales; PayPal convierte a su moneda.", taxaPP: "Comisión de PayPal ({p}%)",
       pagInfoBr: "Al reservar, va a la página segura de InfinitePay para pagar con Pix o tarjeta brasileña. La confirmación llega al instante.",
       pendTit: "Su reserva {c} está esperando el pago", pendTxt: "Si el pago no funcionó, elija cómo pagar:", pendX: "Cerrar", pendAbrindo: "Abriendo la página de pago…", e_ja_pago: "Esta reserva ya está pagada. ¡Gracias!",
       okTit: "¡Pedido recibido!", okTxt: "Código del pedido: {c}. Confirmaremos la disponibilidad y enviaremos el link de pago por WhatsApp.",
@@ -723,7 +723,8 @@
     var box = $("#r-paybox"); if (!box) return;
     var p = pagamento(escolhaAtual()), taxa = taxaPayPal(p.agora);
     if (taxa) { p.total = Math.round((p.total + taxa) * 100) / 100; p.agora = Math.round((p.agora + taxa) * 100) / 100; }
-    box.innerHTML = (taxa ? '<div class="r-taxa"><span>' + esc(t("taxaPP", { p: CAT.config.paypalTaxaPct })) + "</span><b>+ " + brl(taxa) + "</b></div>" : "") + (p.desconto > 0 ? '<div class="r-desc"><span>' + esc(t("desconto")) + " (" + esc(S.cupom.codigo) + ")</span><b>− " + brl(p.desconto) + "</b></div>" : "") + "<div><span>" + esc(t("total")) + "</span><b>" + brl(p.total) + fxTxt(p.total) + "</b></div><div><span>" + esc(t("aPagar")) + "</span><b>" + brl(p.agora) + fxTxt(p.agora) + "</b></div>" +
+    // a taxa do PayPal entra no valor (sem linha separada): o cliente vê o total da forma de pagamento escolhida
+    box.innerHTML = (p.desconto > 0 ? '<div class="r-desc"><span>' + esc(t("desconto")) + " (" + esc(S.cupom.codigo) + ")</span><b>− " + brl(p.desconto) + "</b></div>" : "") + "<div><span>" + esc(t("total")) + "</span><b>" + brl(p.total) + fxTxt(p.total) + "</b></div><div><span>" + esc(t("aPagar")) + "</span><b>" + brl(p.agora) + fxTxt(p.agora) + "</b></div>" +
       (p.total - p.agora > 0.001 ? '<div class="r-sm"><span>' + esc(t("restante")) + "</span><span>" + brl(p.total - p.agora) + "</span></div>" : "") +
       (fxStr(p.total) ? '<p class="r-fxpag">' + esc(t("fxPag")) + "</p>" : "");
   }
