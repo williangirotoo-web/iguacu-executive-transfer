@@ -593,6 +593,39 @@ async function areaMotorista(req, env, url) {
   return erro("rota", 404);
 }
 
+/* cadastro inicial do parceiro Ariel (Argentina), roda uma única vez */
+async function seedAriel(env) {
+  if (await env.DB.prepare("SELECT 1 FROM config_admin WHERE chave = 'seed_ariel_v1'").first()) return;
+  const agora = agoraIso();
+  await env.DB.prepare("INSERT INTO config_admin (chave, valor, atualizado_em) VALUES ('seed_ariel_v1', '1', ?)").bind(agora).run();
+  if (await env.DB.prepare("SELECT 1 FROM fornecedores WHERE nome = 'Ariel Transfer Iguazú'").first()) return;
+  if (!(await env.DB.prepare("SELECT 1 FROM config_admin WHERE chave = 'cambio'").first()))
+    await env.DB.prepare("INSERT INTO config_admin (chave, valor, atualizado_em) VALUES ('cambio', ?, ?)").bind(JSON.stringify({ ARS: 300, USD: null, PYG: null }), agora).run();
+  const r = await env.DB.prepare("INSERT INTO fornecedores (nome, pais, telefone, veiculos, pagamento, notas, ativo, criado_em, atualizado_em) VALUES (?,?,?,?,?,?,1,?,?)")
+    .bind("Ariel Transfer Iguazú", "AR", "+54 9 3757 62-4576", "6 carros (4 e 5/6 lugares)", "Mercado Pago, CBU ou transferência (em pesos)", "Habilitação nacional e internacional · primeiro parceiro na Argentina", agora, agora).run();
+  const fid = r.meta.last_row_id;
+  const Q = "carro 4 lugares", S = "carro 5/6 lugares";
+  const T = [
+    ["Aeroporto IGR → hotel em Puerto Iguazú", 30000, Q, "igr-pi", "comum"], ["Hotel em Puerto Iguazú → Aeroporto IGR", 30000, Q, "igr-pi", "comum"],
+    ["Hotel em Puerto Iguazú → Cataratas argentinas (ida e volta)", 60000, Q], ["Hotel em Puerto Iguazú → Aeroporto de Foz", 50000, Q, "igu-pi", "comum"],
+    ["Hotel em Puerto Iguazú → Cataratas Brasil (ida e volta)", 95000, Q], ["Hotel em Puerto Iguazú → Ciudad del Este (ida e volta, espera até 5 h)", 150000, Q],
+    ["Hotel em Puerto Iguazú → Minas de Wanda (ida e volta)", 105000, Q], ["Aeroporto IGR → Aeroporto de Foz", 75000, Q, "igu-igr", "comum"],
+    ["Centro de Puerto Iguazú", 12000, S], ["Hito Tres Fronteras", 12000, S], ["Duty Free", 14000, S],
+    ["Aeroporto IGR ⇄ hotel em Puerto Iguazú", 38000, S, "igr-pi", "sete"], ["Aeroporto IGR ⇄ hotel em Puerto Iguazú — madrugada", 45000, S],
+    ["Hotel em Puerto Iguazú → Aeroporto de Foz", 55000, S, "igu-pi", "sete"], ["Hotel em Puerto Iguazú → Aeroporto de Foz — madrugada", 65000, S],
+    ["Cataratas argentinas (ida e volta)", 90000, S], ["Cataratas argentinas — só ida", 45000, S],
+    ["Lua Cheia nas Cataratas argentinas (ida e volta)", 100000, S], ["Lua Cheia nas Cataratas argentinas — só ida", 60000, S],
+    ["Itaipu Panorâmica (ida e volta)", 110000, S], ["Cataratas Brasil (ida e volta)", 110000, S], ["Cataratas Brasil — só ida", 65000, S],
+    ["Centro ou rodoviária de Foz (ida e volta)", 90000, S], ["Centro ou rodoviária de Foz — só ida", 55000, S, "foz-pi", "sete"],
+    ["Ciudad del Este com 3 h de espera", 160000, S], ["Ciudad del Este — hora adicional de espera", 20000, S],
+    ["Rafain (show/jantar em Foz)", 90000, S], ["Hotel Rafain (Foz)", 110000, S], ["Minas de Wanda (ida e volta)", 110000, S],
+    ["Minas de Wanda + Ruínas de San Ignacio", 435000, S], ["Saltos do Moconá", 620000, S], ["Rodoviária de Ciudad del Este — só ida", 140000, S],
+    ["Erva-mate em Andresito + Minas de Wanda", 390000, S], ["Blue Park (ida e volta)", 115000, S], ["Museu de Cera", 100000, S],
+    ["Viagem a Posadas", 480000, S], ["Viagem a Eldorado (Misiones)", 240000, S]];
+  await env.DB.batch(T.map(([rota, valor, obs, sid, cat]) => env.DB.prepare("INSERT INTO fornecedor_tarifas (fornecedor_id, rota, servico_id, categoria, valor, moeda, obs, atualizado_em) VALUES (?,?,?,?,?,'ARS',?,?)")
+    .bind(fid, rota, sid || null, cat || null, valor, obs, agora)));
+}
+
 /* ---------------- conversas com o assistente (histórico para a equipe) ----------------
    O cliente informa nome e WhatsApp e concorda com o registro antes de conversar. Apagadas após 180 dias. */
 async function salvarConversa(env, c, mensagens, r) {
@@ -924,6 +957,7 @@ async function admin(req, env, url) {
   if (partes[0] === "tarifas") {
     const txt = (v, n = 200) => String(v == null ? "" : v).replace(/\s+/g, " ").trim().slice(0, n);
     if (req.method === "GET") {
+      await seedAriel(env);
       const fs = (await env.DB.prepare("SELECT * FROM fornecedores ORDER BY ativo DESC, pais, nome").all()).results;
       const ts = (await env.DB.prepare("SELECT * FROM fornecedor_tarifas ORDER BY rota").all()).results;
       const cb = await env.DB.prepare("SELECT valor, atualizado_em FROM config_admin WHERE chave = 'cambio'").first();
