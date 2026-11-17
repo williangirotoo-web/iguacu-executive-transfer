@@ -101,6 +101,8 @@ async function prepararBanco(env) {
       telefone TEXT, veiculos TEXT, pagamento TEXT, notas TEXT, ativo INTEGER NOT NULL DEFAULT 1, criado_em TEXT NOT NULL, atualizado_em TEXT NOT NULL)`),
     env.DB.prepare(`CREATE TABLE IF NOT EXISTS fornecedor_tarifas (id INTEGER PRIMARY KEY AUTOINCREMENT, fornecedor_id INTEGER NOT NULL, rota TEXT NOT NULL,
       servico_id TEXT, categoria TEXT, valor REAL NOT NULL, moeda TEXT NOT NULL DEFAULT 'BRL', obs TEXT, atualizado_em TEXT NOT NULL)`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS stories (id INTEGER PRIMARY KEY AUTOINCREMENT, titulo TEXT NOT NULL, tipo TEXT NOT NULL,
+      midia TEXT NOT NULL, capa TEXT, link TEXT, cta TEXT, ordem INTEGER NOT NULL DEFAULT 0, ativo INTEGER NOT NULL DEFAULT 1, criado_em TEXT NOT NULL)`),
     env.DB.prepare(`CREATE TABLE IF NOT EXISTS config_admin (chave TEXT PRIMARY KEY, valor TEXT, atualizado_em TEXT)`),
     env.DB.prepare(`CREATE TABLE IF NOT EXISTS visitas_dia (dia TEXT NOT NULL, pagina TEXT NOT NULL, views INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (dia, pagina))`),
     env.DB.prepare(`CREATE TABLE IF NOT EXISTS visitantes_dia (dia TEXT NOT NULL, vhash TEXT NOT NULL, PRIMARY KEY (dia, vhash))`),
@@ -954,6 +956,7 @@ async function admin(req, env, url) {
   const partes = url.pathname.replace(/^\/api\/admin\/?/, "").split("/").filter(Boolean);
 
   if (partes[0] === "eu") return json({ ok: true, email: user.email });
+  if (partes[0] === "stories") return adminStories(req, env, partes);
   if (partes[0] === "tarifas") {
     const txt = (v, n = 200) => String(v == null ? "" : v).replace(/\s+/g, " ").trim().slice(0, n);
     if (req.method === "GET") {
@@ -1303,6 +1306,7 @@ async function api(req, env, ctx, url) {
   }
   if (p === "/api/pedidos/pagar" && m === "POST") return pagarPedidoCliente(req, env, url.origin);
   if (p === "/api/visita" && m === "POST") return registrarVisita(req, env, ctx);
+  if (p === "/api/stories" && m === "GET") return listarStories(env);
   if (p === "/api/pacotes" && m === "POST") return criarPacote(req, env);
   const mp = p.match(/^\/api\/pacotes\/([A-Z0-9]{7})$/);
   if (mp && m === "GET") return verPacote(env, mp[1]);
@@ -1350,6 +1354,71 @@ function previaReserva(res, url) {
 /* App instalável: manifesto, ícone e script de instalação em todas as páginas públicas (não no painel nem nas áreas de parceiro e motorista) */
 const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=5" defer></script><script src="/js/assistente.js?v=8" defer></script>';
 /* Vídeos: o Safari (iPhone) só toca se o servidor responder a pedidos por partes (Range → 206). */
+/* ---------------- stories da página inicial (mídia guardada no Workers KV "MIDIA") ---------------- */
+async function servirMidia(req, env, url) {
+  if (!env.MIDIA) return new Response("not found", { status: 404 });
+  const chave = url.pathname.slice(3);
+  if (!/^[a-z0-9]{20,40}\.(webp|jpg|png|mp4|webm|mov)$/.test(chave)) return new Response("not found", { status: 404 });
+  const { value, metadata } = await env.MIDIA.getWithMetadata(chave, { type: "arrayBuffer", cacheTtl: 86400 });
+  if (!value) return new Response("not found", { status: 404 });
+  const h = new Headers({ "content-type": (metadata && metadata.mime) || "application/octet-stream", "cache-control": "public, max-age=31536000, immutable", "accept-ranges": "bytes" });
+  const tam = value.byteLength, range = req.headers.get("range");
+  if (!range) { h.set("content-length", String(tam)); return new Response(req.method === "HEAD" ? null : value, { status: 200, headers: h }); }
+  const m = /^bytes=(\d*)-(\d*)$/.exec(range.trim());
+  let ini, fim;
+  if (m && m[1] !== "") { ini = +m[1]; fim = m[2] !== "" ? Math.min(+m[2], tam - 1) : tam - 1; }
+  else if (m && m[2] !== "") { ini = Math.max(0, tam - +m[2]); fim = tam - 1; }
+  if (ini === undefined || ini > fim || ini >= tam) { h.set("content-range", "bytes */" + tam); return new Response(null, { status: 416, headers: h }); }
+  h.set("content-range", `bytes ${ini}-${fim}/${tam}`); h.set("content-length", String(fim - ini + 1));
+  return new Response(req.method === "HEAD" ? null : value.slice(ini, fim + 1), { status: 206, headers: h });
+}
+async function listarStories(env) {
+  await prepararBanco(env);
+  const r = (await env.DB.prepare("SELECT id, titulo, tipo, midia, capa, link, cta FROM stories WHERE ativo = 1 ORDER BY ordem, id DESC LIMIT 20").all()).results;
+  return json({ ok: true, stories: env.MIDIA ? r : [] }, 200, { "cache-control": "public, max-age=60" });
+}
+async function adminStories(req, env, partes) {
+  if (req.method === "GET" && !partes[1]) return json({ ok: true, armazenamento: !!env.MIDIA, stories: (await env.DB.prepare("SELECT * FROM stories ORDER BY ordem, id DESC").all()).results });
+  if (partes[1] === "midia" && req.method === "PUT") {
+    if (!env.MIDIA) return erro("sem_armazenamento", 503);
+    const mime = String(req.headers.get("content-type") || "").split(";")[0].trim();
+    const ext = { "image/webp": "webp", "image/jpeg": "jpg", "image/png": "png", "video/mp4": "mp4", "video/webm": "webm", "video/quicktime": "mov" }[mime];
+    if (!ext) return erro("tipo_arquivo");
+    const buf = await req.arrayBuffer();
+    const max = mime.startsWith("video/") ? 24 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (!buf.byteLength || buf.byteLength > max) return erro("tamanho");
+    const chave = aleatorio(24).toLowerCase() + "." + ext;
+    await env.MIDIA.put(chave, buf, { metadata: { mime, tam: buf.byteLength } });
+    return json({ ok: true, chave, url: "/m/" + chave });
+  }
+  let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
+  const txt = (v, n) => String(v == null ? "" : v).replace(/\s+/g, " ").trim().slice(0, n);
+  const okChave = (c) => /^[a-z0-9]{20,40}\.(webp|jpg|png|mp4|webm|mov)$/.test(String(c || ""));
+  const okLink = (l) => !l || /^(\/[^\s]*|https:\/\/[^\s]+)$/.test(l);
+  if (partes[1] === "excluir") {
+    const st = await env.DB.prepare("SELECT midia, capa FROM stories WHERE id = ?").bind(parseInt(b.id, 10)).first();
+    if (st && env.MIDIA) { for (const c of [st.midia, st.capa]) if (c) await env.MIDIA.delete(c); }
+    await env.DB.prepare("DELETE FROM stories WHERE id = ?").bind(parseInt(b.id, 10)).run();
+    return json({ ok: true });
+  }
+  if (partes[1] === "ordem" && Array.isArray(b.ids)) {
+    await env.DB.batch(b.ids.slice(0, 50).map((id, i) => env.DB.prepare("UPDATE stories SET ordem = ? WHERE id = ?").bind(i, parseInt(id, 10))));
+    return json({ ok: true });
+  }
+  const titulo = txt(b.titulo, 24), link = txt(b.link, 300), cta = txt(b.cta, 30);
+  if (titulo.length < 2) return erro("titulo");
+  if (!okLink(link)) return erro("link");
+  if (b.id) {
+    await env.DB.prepare("UPDATE stories SET titulo = ?, link = ?, cta = ?, ativo = ? WHERE id = ?").bind(titulo, link || null, cta || null, b.ativo === false || b.ativo === 0 ? 0 : 1, parseInt(b.id, 10)).run();
+    return json({ ok: true });
+  }
+  if (!okChave(b.midia) || (b.capa && !okChave(b.capa))) return erro("midia");
+  const tipo = /\.(mp4|webm|mov)$/.test(b.midia) ? "video" : "imagem";
+  await env.DB.prepare("INSERT INTO stories (titulo, tipo, midia, capa, link, cta, ordem, ativo, criado_em) VALUES (?,?,?,?,?,?,?,1,?)")
+    .bind(titulo, tipo, b.midia, b.capa || null, link || null, cta || null, -Date.now() % 1e9, agoraIso()).run();
+  return json({ ok: true });
+}
+
 async function videoParcial(req, env) {
   const base = await env.ASSETS.fetch(new Request(req.url, { method: "GET" }));
   const range = req.headers.get("range");
@@ -1404,7 +1473,7 @@ export default {
       try { await carregarPrecos(env); res = await api(req, env, ctx, url); }
       catch (e) { console.error("api", e && e.stack); res = erro("interno", 500); }
     } else {
-      res = url.pathname.startsWith("/video/") ? await videoParcial(req, env) : await env.ASSETS.fetch(req);
+      res = url.pathname.startsWith("/m/") ? await servirMidia(req, env, url) : url.pathname.startsWith("/video/") ? await videoParcial(req, env) : await env.ASSETS.fetch(req);
       if ((url.pathname === "/reservar/" || url.pathname === "/reservar/index.html") && req.method === "GET" && res.ok) { await carregarPrecos(env); res = previaReserva(res, url); }
       if (req.method === "GET") res = comApp(res, url);
     }
