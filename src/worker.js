@@ -1127,7 +1127,7 @@ async function api(req, env, ctx, url) {
 /* Prévia do link (WhatsApp, Facebook etc.): /reservar/?s=SERVICO mostra a foto, o nome e o preço "a partir de" do serviço */
 const OG_FOTOS = new Set(["transfer-aeroporto-suv-executivo-corolla-cross", "marco-das-tres-fronteiras", "cataratas-do-iguacu-arco-iris", "cataratas-do-iguacu-vista-do-rio",
   "foz-do-iguacu-cidade-rio-parana", "cataratas-do-iguacu-vista-aerea", "passarela-garganta-do-diabo", "itaipu-binacional-vista-aerea", "templo-budista-foz-do-iguacu",
-  "suv-executivo-corolla-cross-preto", "frota-suv-executivo-corolla-cross", "sedan-executivo-corolla-preto-avenida", "motorista-executivo-corolla-cross-cinza"]);
+  "suv-executivo-corolla-cross-preto", "frota-suv-executivo-corolla-cross", "sedan-executivo-corolla-preto-avenida", "motorista-executivo-corolla-cross-cinza", "feirinha-puerto-iguazu-vinhos-queijos-alfajores", "jantar-parrilla-puerto-iguazu-argentina", "cassino-puerto-iguazu-transfer-executivo", "duty-free-puerto-iguazu-compras", "jantar-romantico-puerto-iguazu", "transfer-carro-comum-prata-foz-do-iguacu", "transfer-carro-7-lugares-preto-foz-do-iguacu", "van-executiva-preta-transfer-foz-do-iguacu"]);
 const OG_TXT = {
   pt: { de: "a partir de", carro: "por carro, preço fechado na reserva", pacote: "Pacote de viagem em Foz do Iguaçu", pacoteD: "Abra o link para ver o pacote montado para você, com o preço fechado de cada serviço." },
   en: { de: "from", carro: "per vehicle, fixed price when you book", pacote: "Your Foz do Iguaçu trip package", pacoteD: "Open the link to see the package prepared for you, with a fixed price for each service." },

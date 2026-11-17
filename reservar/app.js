@@ -310,7 +310,7 @@
     txt("#r-count", t("nRes", { n: list.length }));
     var html = list.map(function (s, i) {
       var mp = minPrice(s, pm);
-      return '<article class="r-card reveal" style="--d:' + Math.min(i, 8) * 40 + 'ms"><div class="r-img"><img src="/img/' + s.foto + '-900.webp" alt="' + esc(L(s.nome)) + '" loading="lazy" width="900" height="506">' +
+      return '<article class="r-card reveal" style="--d:' + Math.min(i, 8) * 40 + 'ms"><div class="r-img"><img src="/img/' + s.foto + '-900.webp" alt="' + esc(L(s.fotoAlt) || L(s.nome)) + '" loading="lazy" width="900" height="506">' +
         '<div class="r-badges">' + badges(s) + "</div></div>" +
         '<div class="r-card-b"><span class="r-grp">' + esc(t("g_" + s.grupo)) + '<span class="r-flags">' + (s.paises || ["br"]).map(function (p) { return '<span title="' + esc(t("p_" + p)) + '">' + FLAG[p] + "</span>"; }).join("") + "</span></span><h3>" + (pagUrl(s) ? '<a href="' + pagUrl(s) + '">' + esc(L(s.nome)) + "</a>" : esc(L(s.nome))) + "</h3><p>" + esc(L(s.desc)) + "</p>" +
         (pagUrl(s) ? '<a class="r-det" href="' + pagUrl(s) + '">' + esc(t("detalhes")) + ' <span aria-hidden="true">→</span></a>' : "") +
