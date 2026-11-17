@@ -36,7 +36,7 @@
       dados: "Seus dados", nome: "Nome completo", email: "E-mail", tel: "WhatsApp com DDD/código do país", pais: "País", obs: "Observações (opcional)",
       pagar: "Pagamento na reserva", pSinal: "Pagar {p}% de sinal na reserva e o restante ao motorista no dia",
       pTotal: "Pagar 100% na reserva", aPagar: "A pagar na reserva", restante: "Restante no dia",
-      regraPag: "Categoria Comum e 7 lugares: 100% na reserva. Executivo Luxo e viagens para outras cidades: {p}% de sinal.",
+      regraPag: "Categoria Comum e 7 lugares: 100% na reserva. Executivo Luxo e viagens para outras cidades: {p}% de sinal.", regraTotal: "Nesta reserva, o pagamento é de 100% no momento da reserva.", regraSinal: "Nesta reserva, você paga o sinal agora e o restante ao motorista no dia.", regraEscolha: "Nesta reserva, você pode pagar {p}% de sinal agora e o restante ao motorista no dia, ou pagar o total.",
       pagInfo: "Depois que confirmarmos a disponibilidade, enviamos o link de pagamento (Pix, cartão em até 12x (à vista sem acréscimo; parcelado com juros da operadora) ou PayPal) pelo WhatsApp.",
       aceito: "Li e aceito os <a href=\"/termos.html\" target=\"_blank\">Termos de Uso</a> e a <a href=\"/privacidade.html\" target=\"_blank\">Política de Privacidade</a>. Cancelamento grátis até {h} h antes; depois disso, devolvemos {d}%.",
       enviar: "Enviar pedido de reserva", enviando: "Enviando…", enviarPagar: "Reservar e pagar", pagInfoOn: "Ao reservar, você vai para a página segura do InfinitePay para pagar por Pix ou cartão em até 12x (à vista sem acréscimo; parcelado com juros da operadora). A confirmação chega na hora.", okPagTit: "Reserva feita! Falta só o pagamento", okPagTxt: "Código: {c}. Estamos levando você para a página de pagamento. Se não abrir, toque no botão abaixo.", okPagBtn: "Pagar {v} agora",
@@ -88,7 +88,7 @@
       dados: "Your details", nome: "Full name", email: "Email", tel: "WhatsApp with country code", pais: "Country", obs: "Notes (optional)",
       pagar: "Payment at booking", pSinal: "Pay a {p}% deposit at booking and the rest to the driver on the day",
       pTotal: "Pay 100% at booking", aPagar: "Due at booking", restante: "Due on the day",
-      regraPag: "Standard and 7-seater: 100% at booking. Luxury and trips to other cities: {p}% deposit.",
+      regraPag: "Standard and 7-seater: 100% at booking. Luxury and trips to other cities: {p}% deposit.", regraTotal: "For this booking, 100% is paid when you book.", regraSinal: "For this booking, you pay a deposit now and the rest to the driver on the day.", regraEscolha: "For this booking, you can pay a {p}% deposit now and the rest to the driver on the day, or pay in full.",
       pagInfo: "Once we confirm availability, we'll send you a payment link (Pix, card or PayPal) on WhatsApp.",
       aceito: "I have read and accept the <a href=\"/termos.html\" target=\"_blank\">Terms</a> and the <a href=\"/privacidade.html\" target=\"_blank\">Privacy Policy</a>. Free cancellation up to {h} h before; after that, {d}% is refunded.",
       enviar: "Send booking request", enviando: "Sending…", enviarPagar: "Book and pay", pagInfoOn: "When you book, you go to PayPal's secure page to pay with your PayPal account or card. Charged in Brazilian reais (BRL); PayPal converts to your currency.", okPagTit: "Booked! Only the payment is left", okPagTxt: "Code: {c}. Taking you to the payment page. If it does not open, tap the button below.", okPagBtn: "Pay {v} now",
@@ -140,7 +140,7 @@
       dados: "Sus datos", nome: "Nombre completo", email: "Email", tel: "WhatsApp con código de país", pais: "País", obs: "Observaciones (opcional)",
       pagar: "Pago en la reserva", pSinal: "Pagar una seña del {p}% en la reserva y el resto al chofer el día del viaje",
       pTotal: "Pagar el 100% en la reserva", aPagar: "A pagar en la reserva", restante: "Resto el día del viaje",
-      regraPag: "Estándar y 7 plazas: 100% en la reserva. Lujo y viajes a otras ciudades: seña del {p}%.",
+      regraPag: "Estándar y 7 plazas: 100% en la reserva. Lujo y viajes a otras ciudades: seña del {p}%.", regraTotal: "En esta reserva, se paga el 100% al reservar.", regraSinal: "En esta reserva, paga la seña ahora y el resto al chofer el día del viaje.", regraEscolha: "En esta reserva, puede pagar una seña del {p}% ahora y el resto al chofer el día del viaje, o pagar el total.",
       pagInfo: "Cuando confirmemos la disponibilidad, le enviamos el link de pago (Pix, tarjeta o PayPal) por WhatsApp.",
       aceito: "Leí y acepto los <a href=\"/termos.html\" target=\"_blank\">Términos</a> y la <a href=\"/privacidade.html\" target=\"_blank\">Política de Privacidad</a>. Cancelación gratis hasta {h} h antes; después, devolvemos el {d}%.",
       enviar: "Enviar pedido de reserva", enviando: "Enviando…", enviarPagar: "Reservar y pagar", pagInfoOn: "Al reservar, va a la página segura de PayPal para pagar con su cuenta PayPal o tarjeta. Se cobra en reales (BRL); PayPal convierte a su moneda.", okPagTit: "¡Reserva hecha! Solo falta el pago", okPagTxt: "Código: {c}. Lo estamos llevando a la página de pago. Si no se abre, toque el botón de abajo.", okPagBtn: "Pagar {v} ahora",
@@ -681,7 +681,7 @@
       (pc ? "" : '<div class="r-cupom" id="r-cupom"></div>') +
       '<p class="r-lbl">' + esc(t("pagar")) + "</p>" +
       (temEscolha ? '<div class="r-opts">' + opt("modo", "sinal", t("pSinal", { p: cfg.sinalPct }), true) + opt("modo", "total", t("pTotal"), false) + "</div>" : "") +
-      '<div class="r-paybox" id="r-paybox"></div><p class="r-sm">' + esc(t("regraPag", { p: cfg.sinalPct })) + "</p>" +
+      '<div class="r-paybox" id="r-paybox"></div><p class="r-sm" id="r-regra"></p>' +
       (provsDisp().length > 1 && !pc ? '<p class="r-lbl">' + esc(t("pagCom")) + '</p><div class="r-opts r-provs">' +
         ["infinitepay", "paypal"].map(function (v) { var k = v === "paypal" ? "provInt" : "provBr";
           return '<label class="r-opt"><input type="radio" name="provedor" value="' + v + '"><span><b>' + esc(t(k)) + "</b><small>" + esc(t(k + "S", { p: CAT.config.paypalTaxaPct || 0 })) + "</small></span></label>"; }).join("") + "</div>" : "") +
@@ -721,6 +721,12 @@
   }
   function updatePay() {
     var box = $("#r-paybox"); if (!box) return;
+    // regra de pagamento só desta reserva (evita o cliente ler "sinal" quando o carrinho é 100%)
+    var rg = $("#r-regra");
+    if (rg) {
+      var temEsc = S.cart.some(function (it) { return modosDe(it).length > 1; }), temSinal = S.cart.some(function (it) { return modosDe(it).indexOf("sinal") > -1; });
+      rg.textContent = t(temEsc ? "regraEscolha" : temSinal ? "regraSinal" : "regraTotal", { p: CAT.config.sinalPct });
+    }
     var p = pagamento(escolhaAtual()), taxa = taxaPayPal(p.agora);
     if (taxa) { p.total = Math.round((p.total + taxa) * 100) / 100; p.agora = Math.round((p.agora + taxa) * 100) / 100; }
     // a taxa do PayPal entra no valor (sem linha separada): o cliente vê o total da forma de pagamento escolhida

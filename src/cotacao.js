@@ -63,7 +63,8 @@ function antecedencia(svc, cat) {
 }
 
 export function modosPagamento(svc, cat) {
-  const regra = svc.tipo === "viagem" || svc.tipo === "km" ? CONFIG.pagamentoViagens : CONFIG.pagamento[cat];
+  // categoria Comum: sempre 100% na reserva, em qualquer serviço (inclusive viagens)
+  const regra = cat === "comum" ? CONFIG.pagamento.comum : svc.tipo === "viagem" || svc.tipo === "km" ? CONFIG.pagamentoViagens : CONFIG.pagamento[cat];
   return regra === "escolha" ? ["sinal", "total"] : [regra];
 }
 
