@@ -5,7 +5,7 @@
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function quando(iso) { if (!iso) return ""; var d = new Date(iso); return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo" }) + " " + d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" }); }
   function api(path) { return fetch(path, { credentials: "same-origin" }).then(function (r) { if (r.status === 401) throw new Error("401"); return r.json(); }); }
-  function wa(t) { var n = String(t || "").replace(/\D/g, ""); if (n.length >= 10 && n.length <= 11) n = "55" + n; return "https://wa.me/" + n; }
+  function wa(t) { var n = String(t || "").replace(/\D/g, ""); if (n.length >= 10 && n.length <= 11 && String(t || "").trim().charAt(0) !== "+") n = "55" + n; return "https://wa.me/" + n; }
   var IDI = { pt: "Português", en: "Inglês", es: "Espanhol" };
   function carregar() {
     var q = $("#q").value.trim();

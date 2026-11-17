@@ -14,7 +14,7 @@
   }
   function semAcesso() { $("#rows").innerHTML = '<p class="msg">Sem acesso. Entre com o e-mail autorizado.</p>'; }
   function badge(st) { return '<span class="st st-' + esc(st) + '">' + esc(ST[st] || st) + "</span>"; }
-  function tel(t) { var n = String(t || "").replace(/\D/g, ""); return n.length <= 11 ? "55" + n : n; }
+  function tel(t) { var n = String(t || "").replace(/\D/g, ""); return n.length <= 11 && String(t || "").trim().charAt(0) !== "+" ? "55" + n : n; }
   function carregar() {
     var q = new URLSearchParams(); if (filtro.status) q.set("status", filtro.status); if (filtro.tipo) q.set("tipo", filtro.tipo);
     api("/api/admin/parceiros?" + q).then(function (r) {

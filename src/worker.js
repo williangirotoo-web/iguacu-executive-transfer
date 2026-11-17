@@ -254,7 +254,7 @@ function resumoTexto(p, itens, comLinks, origem) {
   if (comLinks) {
     const tel = String(p.telefone).replace(/\D/g, "");
     linhas.push("", `Painel: ${origem}/admin/#${p.codigo}`);
-    if (tel.length >= 10) linhas.push(`WhatsApp do cliente: https://wa.me/${tel.length <= 11 ? "55" + tel : tel}`);
+    if (tel.length >= 10) linhas.push(`WhatsApp do cliente: https://wa.me/${tel.length <= 11 && !String(p.telefone || "").trim().startsWith("+") ? "55" + tel : tel}`);
   }
   return linhas.join("\n");
 }

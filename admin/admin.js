@@ -45,11 +45,11 @@
 
   function waCliente(p, texto) {
     var n = String(p.telefone || "").replace(/\D/g, "");
-    if (n.length >= 10 && n.length <= 11) n = "55" + n;
+    if (n.length >= 10 && n.length <= 11 && String(p.telefone || "").trim().charAt(0) !== "+") n = "55" + n;
     return "https://wa.me/" + n + (texto ? "?text=" + encodeURIComponent(texto) : "");
   }
   var CST = { ofertada: "Aguardando resposta", aceita: "Aceita", recusada: "Recusada", cancelada: "Retirada" };
-  function tel55(t) { var n = String(t || "").replace(/\D/g, ""); return n.length >= 10 && n.length <= 11 ? "55" + n : n; }
+  function tel55(t) { var n = String(t || "").replace(/\D/g, ""); return n.length >= 10 && n.length <= 11 && String(t || "").trim().charAt(0) !== "+" ? "55" + n : n; }
   function blocoMotorista(it, corridas, mots, p) {
     var cs = corridas.filter(function (c) { return c.item_id === it.id; });
     var ativa = cs.filter(function (c) { return c.status === "ofertada" || c.status === "aceita"; })[0];

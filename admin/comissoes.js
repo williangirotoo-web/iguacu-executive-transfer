@@ -9,7 +9,7 @@
   function dataBr(d) { return String(d || "").split("-").reverse().join("/"); }
   function quando(iso) { var d = new Date(iso); return d.toLocaleDateString("pt-BR"); }
   function nomeMes(m) { var p = m.split("-"); return MESES[+p[1] - 1] + " de " + p[0]; }
-  function tel(t) { var n = String(t || "").replace(/\D/g, ""); return n.length <= 11 ? "55" + n : n; }
+  function tel(t) { var n = String(t || "").replace(/\D/g, ""); return n.length <= 11 && String(t || "").trim().charAt(0) !== "+" ? "55" + n : n; }
   function api(path, body) {
     return fetch(path, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body), credentials: "same-origin" } : { credentials: "same-origin" })
       .then(function (r) { if (r.status === 401) throw new Error("401"); return r.json(); });
