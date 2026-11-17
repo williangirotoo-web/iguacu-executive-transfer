@@ -97,6 +97,11 @@ async function prepararBanco(env) {
     env.DB.prepare(`CREATE TABLE IF NOT EXISTS conversas (id TEXT PRIMARY KEY, criado_em TEXT NOT NULL, atualizado_em TEXT NOT NULL,
       nome TEXT, telefone TEXT, idioma TEXT, pagina TEXT, n_msgs INTEGER DEFAULT 0, cotou INTEGER DEFAULT 0, humano INTEGER DEFAULT 0, msgs_json TEXT, ip_hash TEXT)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_conversas_at ON conversas(atualizado_em)`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS fornecedores (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL, pais TEXT NOT NULL DEFAULT 'BR',
+      telefone TEXT, veiculos TEXT, pagamento TEXT, notas TEXT, ativo INTEGER NOT NULL DEFAULT 1, criado_em TEXT NOT NULL, atualizado_em TEXT NOT NULL)`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS fornecedor_tarifas (id INTEGER PRIMARY KEY AUTOINCREMENT, fornecedor_id INTEGER NOT NULL, rota TEXT NOT NULL,
+      servico_id TEXT, categoria TEXT, valor REAL NOT NULL, moeda TEXT NOT NULL DEFAULT 'BRL', obs TEXT, atualizado_em TEXT NOT NULL)`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS config_admin (chave TEXT PRIMARY KEY, valor TEXT, atualizado_em TEXT)`),
     env.DB.prepare(`CREATE TABLE IF NOT EXISTS visitas_dia (dia TEXT NOT NULL, pagina TEXT NOT NULL, views INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (dia, pagina))`),
     env.DB.prepare(`CREATE TABLE IF NOT EXISTS visitantes_dia (dia TEXT NOT NULL, vhash TEXT NOT NULL, PRIMARY KEY (dia, vhash))`),
     env.DB.prepare(`CREATE TABLE IF NOT EXISTS origens_dia (dia TEXT NOT NULL, origem TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (dia, origem))`),
@@ -916,6 +921,53 @@ async function admin(req, env, url) {
   const partes = url.pathname.replace(/^\/api\/admin\/?/, "").split("/").filter(Boolean);
 
   if (partes[0] === "eu") return json({ ok: true, email: user.email });
+  if (partes[0] === "tarifas") {
+    const txt = (v, n = 200) => String(v == null ? "" : v).replace(/\s+/g, " ").trim().slice(0, n);
+    if (req.method === "GET") {
+      const fs = (await env.DB.prepare("SELECT * FROM fornecedores ORDER BY ativo DESC, pais, nome").all()).results;
+      const ts = (await env.DB.prepare("SELECT * FROM fornecedor_tarifas ORDER BY rota").all()).results;
+      const cb = await env.DB.prepare("SELECT valor, atualizado_em FROM config_admin WHERE chave = 'cambio'").first();
+      return json({ ok: true, fornecedores: fs.map((f) => ({ ...f, tarifas: ts.filter((t) => t.fornecedor_id === f.id) })), cambio: cb ? { ...JSON.parse(cb.valor || "{}"), atualizado_em: cb.atualizado_em } : {} });
+    }
+    let b; try { b = await lerJson(req, 6000); } catch { return erro("json_invalido"); }
+    const agora = agoraIso();
+    if (partes[1] === "fornecedor") {
+      const nome = txt(b.nome, 80); if (nome.length < 2) return erro("nome");
+      const pais = ["BR", "AR", "PY"].includes(b.pais) ? b.pais : "BR";
+      const v = [nome, pais, txt(b.telefone, 30), txt(b.veiculos, 300), txt(b.pagamento, 300), txt(b.notas, 600), b.ativo === false || b.ativo === 0 ? 0 : 1];
+      if (b.id) await env.DB.prepare("UPDATE fornecedores SET nome=?, pais=?, telefone=?, veiculos=?, pagamento=?, notas=?, ativo=?, atualizado_em=? WHERE id=?").bind(...v, agora, parseInt(b.id, 10)).run();
+      else await env.DB.prepare("INSERT INTO fornecedores (nome, pais, telefone, veiculos, pagamento, notas, ativo, criado_em, atualizado_em) VALUES (?,?,?,?,?,?,?,?,?)").bind(...v, agora, agora).run();
+      return json({ ok: true });
+    }
+    if (partes[1] === "tarifa") {
+      const rota = txt(b.rota, 120); if (rota.length < 3) return erro("rota");
+      const valor = Number(String(b.valor).replace(/\./g, "").replace(",", "."));
+      if (!(valor > 0 && valor < 1e9)) return erro("valor");
+      const moeda = ["BRL", "ARS", "USD", "PYG"].includes(b.moeda) ? b.moeda : "BRL";
+      const sid = b.servico_id && servico(String(b.servico_id)) ? String(b.servico_id) : null;
+      const cat = sid && CATEGORIAS[b.categoria] ? String(b.categoria) : null;
+      const fid = parseInt(b.fornecedor_id, 10);
+      if (!(await env.DB.prepare("SELECT id FROM fornecedores WHERE id = ?").bind(fid).first())) return erro("fornecedor");
+      const v = [fid, rota, sid, cat, valor, moeda, txt(b.obs, 200), agora];
+      if (b.id) await env.DB.prepare("UPDATE fornecedor_tarifas SET fornecedor_id=?, rota=?, servico_id=?, categoria=?, valor=?, moeda=?, obs=?, atualizado_em=? WHERE id=?").bind(...v, parseInt(b.id, 10)).run();
+      else await env.DB.prepare("INSERT INTO fornecedor_tarifas (fornecedor_id, rota, servico_id, categoria, valor, moeda, obs, atualizado_em) VALUES (?,?,?,?,?,?,?,?)").bind(...v).run();
+      return json({ ok: true });
+    }
+    if (partes[1] === "excluir") {
+      const id = parseInt(b.id, 10);
+      if (b.tipo === "tarifa") await env.DB.prepare("DELETE FROM fornecedor_tarifas WHERE id = ?").bind(id).run();
+      else if (b.tipo === "fornecedor") await env.DB.batch([env.DB.prepare("DELETE FROM fornecedor_tarifas WHERE fornecedor_id = ?").bind(id), env.DB.prepare("DELETE FROM fornecedores WHERE id = ?").bind(id)]);
+      else return erro("tipo");
+      return json({ ok: true });
+    }
+    if (partes[1] === "cambio") {
+      const num = (x) => { const n = Number(String(x || "").replace(",", ".")); return n > 0 && n < 1e7 ? n : null; };
+      const val = { ARS: num(b.ARS), USD: num(b.USD), PYG: num(b.PYG) };
+      await env.DB.prepare("INSERT INTO config_admin (chave, valor, atualizado_em) VALUES ('cambio', ?, ?) ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor, atualizado_em = excluded.atualizado_em").bind(JSON.stringify(val), agora).run();
+      return json({ ok: true });
+    }
+    return erro("rota", 404);
+  }
   if (partes[0] === "conversas") {
     if (partes[1]) {
       const c = await env.DB.prepare("SELECT * FROM conversas WHERE id = ?").bind(partes[1]).first();
