@@ -145,6 +145,13 @@ function lerServico(txt, atual) {
   if (tem(/\b(dia inteiro|o dia todo|diaria|full day|all day|dia completo|todo el dia)\b/)) return "diaria";
   if (tem(/\b(motorista|driver|chofer)\b.*\b(\d{1,2}|algumas|some|unas)\s*(horas|hours)\b|\bpor \d{1,2} horas\b|\bfor \d{1,2} hours\b/)) return "por-hora";
   if (tem(/\b(meio periodo|half day|medio dia|por hora|a disposicao por)\b/)) return "por-hora";
+  // pacotes de Puerto Iguazú (feirinha, cassino, duty free, pôr do sol no Hito)
+  const piPac = pi || tem(/\b(feirinha|cassino|casino|duty ?free|hito)\b/);
+  if (piPac && tem(/\b(cassino|casino)\b/)) return "pi-cassino";
+  if (piPac && tem(/\bduty ?free\b/)) return "pi-dutyfree";
+  if (piPac && tem(/\bfeirinha\b/) && tem(/\b(jantar|dinner|cena)\b/)) return "pi-noite";
+  if (piPac && tem(/\bhito\b/)) return tem(/\b(jantar|dinner|cena)\b/) ? "pi-hito-jantar" : "pi-hito-feirinha";
+  if (piPac && tem(/\bfeirinha\b/)) return "pi-feirinha";
   if (pi && tem(/\b(jantar|dinner|cena)\b/)) return "jantar-pi";
   if (pi && tem(/\b(compras|shopping|centro)\b/)) return "pi-compras";
   if (pi && tem(/\bhotel\b/)) return "foz-pi";

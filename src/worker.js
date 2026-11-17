@@ -104,6 +104,7 @@ async function prepararBanco(env) {
   if (!cols.includes("desconto")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN desconto REAL").run();
   const colsItens = (await env.DB.prepare("PRAGMA table_info(itens)").all()).results.map((c) => c.name);
   if (!colsItens.includes("obs")) await env.DB.prepare("ALTER TABLE itens ADD COLUMN obs TEXT").run();
+  if (!cols.includes("taxa_pagamento")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN taxa_pagamento REAL").run();
   if (!colsItens.includes("malas_bordo")) await env.DB.prepare("ALTER TABLE itens ADD COLUMN malas_bordo INTEGER").run();
   if (!colsItens.includes("mochilas")) await env.DB.prepare("ALTER TABLE itens ADD COLUMN mochilas INTEGER").run();
   // cupom de influenciador/parceiro: a reserva com esse cupom gera comissão para o parceiro
@@ -151,7 +152,7 @@ function catalogo(env) {
     config: {
       whatsapp: CONFIG.whatsapp, antecedenciaHoras: CONFIG.antecedenciaHoras, antecedenciaViagensHoras: CONFIG.antecedenciaViagensHoras,
       cancelamento: CONFIG.cancelamento, feriadoAcrescimoPct: CONFIG.feriadoAcrescimoPct, esperaAeroporto: CONFIG.esperaAeroporto,
-      cadeirinha: CONFIG.cadeirinha, pet: CONFIG.pet, sinalPct: CONFIG.sinalPct, pagamento: CONFIG.pagamento,
+      cadeirinha: CONFIG.cadeirinha, pet: CONFIG.pet, sinalPct: CONFIG.sinalPct, paypalTaxaPct: CONFIG.paypalTaxaPct, pagamento: CONFIG.pagamento,
       pagamentoViagens: CONFIG.pagamentoViagens, horaExtra: HORA_EXTRA, porHora: { minimoHoras: POR_HORA.minimoHoras, maximoHoras: POR_HORA.maximoHoras, pacoteHoras: POR_HORA.pacoteHoras, pacoteMult: POR_HORA.pacoteMult },
       turnstileSiteKey: env.TURNSTILE_SITEKEY || "", pagamentoOnline: !!env.INFINITEPAY_HANDLE, paypal: temPayPal(env),
       porKm: { ...POR_KM, ativo: true }, diaria: DIARIA,
@@ -236,6 +237,7 @@ function resumoTexto(p, itens, comLinks, origem) {
     linhas.push(`   Valor: ${brl(it.valor)} (${it.modo === "total" ? "100% na reserva" : CONFIG.sinalPct + "% de sinal"})`);
   });
   if (p.cupom) linhas.push("", `Cupom: ${p.cupom}`);
+  if (p.taxa_pagamento) linhas.push("", `Taxa do PayPal (${CONFIG.paypalTaxaPct}%): ${brl(p.taxa_pagamento)}`);
   linhas.push("", `Total: ${brl(p.total)}`, `A pagar na reserva: ${brl(p.valor_agora)}`, `Restante no dia: ${brl(p.total - p.valor_agora)}`);
   if (p.observacoes) linhas.push("", `Observações: ${p.observacoes}`);
   if (comLinks) {
@@ -302,6 +304,13 @@ async function criarPedido(req, env, ctx) {
   const parceiro = parceiroChave || indicador;
   const escolha = body.modoPagamento === "total" ? "total" : "sinal";
   const pag = valorAgora(itens, escolha);
+  // pagamento na hora: o cliente escolhe no checkout (Pix/cartão brasileiro → InfinitePay; cartão internacional → PayPal).
+  // Sem escolha (versão antiga da página), vale o idioma: português → InfinitePay, inglês/espanhol → PayPal.
+  const provEscolhido = body.provedor === "paypal" && temPayPal(env) ? "paypal" : body.provedor === "infinitepay" && env.INFINITEPAY_HANDLE ? "infinitepay" : null;
+  const provReserva = provEscolhido || (idioma === "pt" ? (env.INFINITEPAY_HANDLE ? "infinitepay" : null) : (temPayPal(env) ? "paypal" : null));
+  // PayPal: a taxa (CONFIG.paypalTaxaPct) é somada ao valor pago na reserva e aparece no resumo
+  const taxaPag = provReserva === "paypal" && !parceiroChave && pag.agora >= 1 ? Math.round(pag.agora * CONFIG.paypalTaxaPct) / 100 : 0;
+  if (taxaPag) { pag.total = Math.round((pag.total + taxaPag) * 100) / 100; pag.agora = Math.round((pag.agora + taxaPag) * 100) / 100; }
 
   await prepararBanco(env);
   const ipHash = ip ? await sha256(ip + (env.IP_SALT || "iet")) : null;
@@ -318,10 +327,10 @@ async function criarPedido(req, env, ctx) {
     codigo = "IET-" + aleatorio(6);
     try {
       const r = await env.DB.prepare(`INSERT INTO pedidos (codigo, token, criado_em, atualizado_em, status, idioma, nome, email, telefone, pais, observacoes,
-        consentimento_em, total, valor_agora, modo_pagamento, ip_hash, origem, parceiro_id, cupom, desconto) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+        consentimento_em, total, valor_agora, modo_pagamento, ip_hash, origem, parceiro_id, cupom, desconto, taxa_pagamento) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
         .bind(codigo, token, now, now, "solicitacao", idioma, cliente.nome, cliente.email, cliente.telefone, cliente.pais || null,
           cliente.observacoes || null, now, pag.total, pag.agora, escolha, ipHash, new URL(req.url).hostname, parceiro ? parceiro.id : null,
-          cupom ? cupom.codigo : null, cupom ? Math.round(itens.reduce((a, x) => a + x.cot.linhas.filter((l) => l.k === "cupom").reduce((b, l) => b - l.valor, 0), 0) * 100) / 100 : null).run();
+          cupom ? cupom.codigo : null, cupom ? Math.round(itens.reduce((a, x) => a + x.cot.linhas.filter((l) => l.k === "cupom").reduce((b, l) => b - l.valor, 0), 0) * 100) / 100 : null, taxaPag || null).run();
       pedidoId = r.meta.last_row_id;
     } catch (e) { if (!String(e.message).includes("UNIQUE")) throw e; }
   }
@@ -339,17 +348,13 @@ async function criarPedido(req, env, ctx) {
   if (cupom) stmts.push(env.DB.prepare("UPDATE cupons SET usos = usos + 1 WHERE codigo = ?").bind(cupom.codigo));
   await env.DB.batch(stmts);
 
-  const pedido = { codigo, ...cliente, total: pag.total, valor_agora: pag.agora, cupom: cupom ? cupom.codigo + " (-" + cupom.pct + "%)" : null };
+  const pedido = { codigo, ...cliente, total: pag.total, valor_agora: pag.agora, taxa_pagamento: taxaPag, cupom: cupom ? cupom.codigo + " (-" + cupom.pct + "%)" : null };
   const itensDb = itens.map(({ it, cot, svc }, i) => ({ servico_id: it.servico, servico_nome: svc.nome.pt, categoria: it.categoria, data: it.data, hora: it.hora,
     sentido: it.sentido, voo: it.voo, origem: it.origem, destino: it.destino, pax: it.pax, malas: it.malas, malas_bordo: it.malasBordo, mochilas: it.mochilas, cadeirinhas: it.cadeirinhas, pet: it.pet,
     horas_extras: it.horasExtras, horas: it.horas, dias: it.dias, data_especial: cot.dataEspecial, valor: cot.valor, modo: pag.detalhes[i].modo, obs: it.obs,
     km: cot.km || null, km_fora: it.rota ? !!it.rota.fora : false }));
   const origem = new URL(req.url).origin;
   const txtParc = indicador ? `Indicação (cupom ${cupom.codigo}): ${indicador.empresa || indicador.responsavel} (${indicador.codigo}) · comissão ${Number(indicador.comissao_pct) || 0}%\n\n` : parceiro ? `Reserva feita pelo parceiro: ${parceiro.empresa || parceiro.responsavel} (${parceiro.codigo}) · comissão ${Number(parceiro.comissao_pct) || 0}%\n\n` : "";
-  // pagamento na hora: o cliente escolhe no checkout (Pix/cartão brasileiro → InfinitePay; cartão internacional → PayPal).
-  // Sem escolha (versão antiga da página), vale o idioma: português → InfinitePay, inglês/espanhol → PayPal.
-  const provEscolhido = body.provedor === "paypal" && temPayPal(env) ? "paypal" : body.provedor === "infinitepay" && env.INFINITEPAY_HANDLE ? "infinitepay" : null;
-  const provReserva = provEscolhido || (idioma === "pt" ? (env.INFINITEPAY_HANDLE ? "infinitepay" : null) : (temPayPal(env) ? "paypal" : null));
   const txtPag = provReserva && !parceiroChave && pag.agora >= 1 ? "Pagamento escolhido no site: " + (provReserva === "paypal" ? "PayPal / cartão internacional" : "InfinitePay (Pix / cartão brasileiro)") + "\n\n" : "";
   ctx.waitUntil(enviarAviso(env, `Nova reserva ${codigo} — ${cliente.nome} — ${brl(pag.total)}` + (parceiro ? ` — parceiro ${parceiro.codigo}` : ""), txtParc + txtPag + resumoTexto(pedido, itensDb, true, origem)));
 
@@ -420,15 +425,22 @@ async function pagarPedidoCliente(req, env, origem) {
   if (!prov) return erro("sem_pagamento");
   const idioma = ["pt", "en", "es"].includes(b.idioma) ? b.idioma : "pt";
   await prepararBanco(env);
-  const p = await env.DB.prepare("SELECT id, codigo, token, status, nome, email, telefone, total, valor_agora FROM pedidos WHERE codigo = ?").bind(codigo).first();
+  const p = await env.DB.prepare("SELECT id, codigo, token, status, nome, email, telefone, total, valor_agora, taxa_pagamento FROM pedidos WHERE codigo = ?").bind(codigo).first();
   if (!p || p.token !== token) return erro("nao_encontrado", 404);
   const pgs = (await env.DB.prepare("SELECT status, autor FROM pagamentos WHERE pedido_id = ?").bind(p.id).all()).results;
   if (pgs.some((x) => x.status === "pago")) return erro("ja_pago");
   // só reservas que já tiveram pagamento online pelo site; pedidos tratados no painel seguem pelo WhatsApp
   if (!["solicitacao", "pagamento_pendente"].includes(p.status) || !pgs.some((x) => x.autor === "site")) return erro("status");
   if (pgs.length >= 8) return erro("muitas_tentativas", 429);
-  const valor = Number(p.valor_agora) || 0;
-  if (valor < 1) return erro("status");
+  // a taxa do PayPal só vale para quem paga pelo PayPal: recalcula ao trocar de forma de pagamento
+  const taxaAnt = Number(p.taxa_pagamento) || 0, base = Math.round(((Number(p.valor_agora) || 0) - taxaAnt) * 100) / 100;
+  if (base < 1) return erro("status");
+  const taxaNova = prov === "paypal" ? Math.round(base * CONFIG.paypalTaxaPct) / 100 : 0;
+  if (taxaNova !== taxaAnt) {
+    p.total = Math.round((Number(p.total) - taxaAnt + taxaNova) * 100) / 100;
+    await env.DB.prepare("UPDATE pedidos SET total = ?, valor_agora = ?, taxa_pagamento = ?, atualizado_em = ? WHERE id = ?").bind(p.total, base + taxaNova, taxaNova || null, agoraIso(), p.id).run();
+  }
+  const valor = Math.round((base + taxaNova) * 100) / 100;
   const desc = valor < Number(p.total) - 0.001 ? (idioma === "pt" ? "Sinal" : "Deposit") : (idioma === "pt" ? "Valor total" : "Total");
   let r; try { r = await gerarLinkPagamento(env, p, desc, valor, origem, "site", prov, idioma); } catch (e) { console.error("troca pagamento", e && e.message); r = {}; }
   if (!r || !r.url) return erro("pagamento_falhou", 502);
