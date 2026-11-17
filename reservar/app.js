@@ -538,16 +538,17 @@
     Object.keys(CAT.categorias).forEach(function (k) {
       if (!(k in s.precos)) return;
       var c = CAT.categorias[k], q = quotes[k];
-      var info = "<b>" + esc(L(c.nome)) + "</b><span>" + esc(L(c.desc)) + "</span><span>" + esc(t("ate", { n: c.pax })) + " · " +
+      var info = (c.destaque ? '<i class="r-dest">' + esc(L(c.destaque)) + "</i>" : "") + "<b>" + esc(L(c.nome)) + "</b><span>" + esc(L(c.desc)) + "</span><span>" + esc(t("ate", { n: c.pax })) + " · " +
         esc(c.malasCheio != null ? t("malasTxt7", { n: c.malas, p: c.paxFolga, c: c.malasCheio }) : t("malasTxt", { n: c.malas }) + (c.malasMao ? t("malasMao", { n: c.malasMao }) : "")) + "</span>" +
         (dv.malas > refCat(k, dv.pax) ? '<span class="r-malas-x">' + esc(t("malasCard", { n: dv.malas })) + "</span>" : "") +
+        (c.benef ? '<ul class="r-bf">' + c.benef.filter(function (x) { return !x.fr || s.fronteira; }).map(function (x) { return "<li>" + esc(L(x)) + "</li>"; }).join("") + "</ul>" : "") +
         '<span class="r-ref">' + esc(t("ref", { m: c.ref })) + "</span>";
       if (s.precos[k] == null || (q && q.consulta)) {
         out += '<div class="r-cat r-cat-q">' + info + '<a target="_blank" rel="noopener" href="' + waLink(t("pedir") + ": " + L(s.nome) + " — " + L(c.nome)) + '">' + esc(t("consulta")) + " →</a></div>";
         return;
       }
       var ok = q && q.ok, price = !q ? t("calculando") : ok ? brl(totalQ(q)) : errTxt(q);
-      out += '<label class="r-cat' + (ok ? "" : " r-off") + (cur.categoria === k && ok ? " on" : "") + '"><input type="radio" name="categoria" value="' + k + '"' +
+      out += '<label class="r-cat' + (c.destaque ? " r-cat-dest" : "") + (ok ? "" : " r-off") + (cur.categoria === k && ok ? " on" : "") + '"><input type="radio" name="categoria" value="' + k + '"' +
         (cur.categoria === k && ok ? " checked" : "") + (ok ? "" : " disabled") + ">" + info + '<em class="r-price' + (ok ? "" : " r-pmsg") + '">' + esc(price) +
         (ok && q.dataEspecial ? ' <small class="r-esp">' + esc(t("especial", { p: CAT.config.feriadoAcrescimoPct })) + "</small>" : "") + (ok && dv.n > 1 ? '<small class="r-pcarro">' + esc(t("porCarro", { v: brl(semCad(q)), n: dv.n })) + "</small>" : "") + (ok ? fxTxt(totalQ(q)) : "") + "</em></label>";
     });
