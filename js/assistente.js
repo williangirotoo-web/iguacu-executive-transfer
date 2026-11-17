@@ -8,15 +8,15 @@
   var WA = "5545991185798";
   var L = (document.documentElement.lang || "pt").slice(0, 2); if (L !== "en" && L !== "es") L = "pt";
   var T = {
-    pt: { abrir: "Tire suas dúvidas", tit: "Assistente de reservas", sub: "Responde na hora · preço do site", ola: "Olá! Sou o assistente da Iguaçu Executive Transfer. Me conte para onde você quer ir, a data e quantas pessoas — eu mostro o preço na hora.",
+    pt: { gTit: "Antes de começar, como podemos te chamar?", gNome: "Seu nome", gTel: "WhatsApp com DDD", gOk: "Começar conversa", gCons: "Concordo que esta conversa fique registrada para o atendimento da equipe.", gPriv: "Política de Privacidade", gErr: "Informe nome, WhatsApp e marque a concordância.", abrir: "Tire suas dúvidas", tit: "Assistente de reservas", sub: "Responde na hora · preço do site", ola: "Olá! Sou o assistente da Iguaçu Executive Transfer. Me conte para onde você quer ir, a data e quantas pessoas — eu mostro o preço na hora.",
       chips: ["Aeroporto → hotel", "Cataratas", "Compras no Paraguai", "Argentina"], ph: "Escreva sua mensagem…", env: "Enviar", wa: "Falar no WhatsApp", waTxt: "Olá! Vim pelo site e gostaria de um orçamento.", res: "Reservar", porCarro: "por carro · preço fechado", ate: "até {p} pessoas e {m} malas",
       erro: "Não consegui responder agora. Pode tentar de novo ou chamar no WhatsApp.", limite: "Muitas mensagens seguidas. Fale com a gente no WhatsApp.", nenhum: "Para esses dados não consigo reservar pelo site. Fale com a equipe no WhatsApp.", antec: "Esta data precisa de pelo menos {h} h de antecedência para reservar pelo site. Para antes disso, chame no WhatsApp.",
       aviso: "Assistente com IA. Os valores são calculados pelo sistema do site.", limpar: "Nova conversa", fechar: "Fechar", gerando: "Abrindo a reserva…" },
-    en: { abrir: "Ask us", tit: "Booking assistant", sub: "Instant answers · site prices", ola: "Hi! I'm the Iguaçu Executive Transfer assistant. Tell me where you want to go, the date and how many people — I'll show the price right away.",
+    en: { gTit: "Before we start, how should we call you?", gNome: "Your name", gTel: "WhatsApp with country code", gOk: "Start chat", gCons: "I agree that this chat is saved so our team can assist me.", gPriv: "Privacy Policy", gErr: "Please enter your name, WhatsApp and tick the box.", abrir: "Ask us", tit: "Booking assistant", sub: "Instant answers · site prices", ola: "Hi! I'm the Iguaçu Executive Transfer assistant. Tell me where you want to go, the date and how many people — I'll show the price right away.",
       chips: ["Airport → hotel", "Iguazu Falls", "Shopping in Paraguay", "Argentina"], ph: "Type your message…", env: "Send", wa: "Chat on WhatsApp", waTxt: "Hello! I found you on the website and would like a quote.", res: "Book", porCarro: "per vehicle · fixed price", ate: "up to {p} people and {m} bags",
       erro: "I couldn't answer right now. Please try again or message us on WhatsApp.", limite: "Too many messages. Please message us on WhatsApp.", nenhum: "I can't book this online with these details. Please message our team on WhatsApp.", antec: "This needs at least {h} h notice to book online. For sooner, message us on WhatsApp.",
       aviso: "AI assistant. Prices are calculated by the website's system.", limpar: "New chat", fechar: "Close", gerando: "Opening your booking…" },
-    es: { abrir: "Consúltenos", tit: "Asistente de reservas", sub: "Respuesta inmediata · precio del sitio", ola: "¡Hola! Soy el asistente de Iguaçu Executive Transfer. Dígame adónde quiere ir, la fecha y cuántas personas — le muestro el precio al instante.",
+    es: { gTit: "Antes de empezar, ¿cómo lo llamamos?", gNome: "Su nombre", gTel: "WhatsApp con código de país", gOk: "Empezar conversación", gCons: "Acepto que esta conversación quede registrada para la atención del equipo.", gPriv: "Política de Privacidad", gErr: "Ingrese su nombre, WhatsApp y marque la casilla.", abrir: "Consúltenos", tit: "Asistente de reservas", sub: "Respuesta inmediata · precio del sitio", ola: "¡Hola! Soy el asistente de Iguaçu Executive Transfer. Dígame adónde quiere ir, la fecha y cuántas personas — le muestro el precio al instante.",
       chips: ["Aeropuerto → hotel", "Cataratas", "Compras en Paraguay", "Argentina"], ph: "Escriba su mensaje…", env: "Enviar", wa: "Hablar por WhatsApp", waTxt: "¡Hola! Los encontré en el sitio y quisiera un presupuesto.", res: "Reservar", porCarro: "por vehículo · precio cerrado", ate: "hasta {p} personas y {m} maletas",
       erro: "No pude responder ahora. Intente de nuevo o escríbanos por WhatsApp.", limite: "Demasiados mensajes. Escríbanos por WhatsApp.", nenhum: "Con estos datos no puedo reservar por el sitio. Escriba a nuestro equipo por WhatsApp.", antec: "Esta fecha necesita al menos {h} h de anticipación para reservar por el sitio. Para antes, escríbanos por WhatsApp.",
       aviso: "Asistente con IA. Los valores los calcula el sistema del sitio.", limpar: "Nueva conversación", fechar: "Cerrar", gerando: "Abriendo la reserva…" }
@@ -26,6 +26,11 @@
   function brl(v) { return "R$ " + Number(v).toLocaleString("pt-BR", { maximumFractionDigits: 2 }); }
   var KEY = "iet_chat_" + L, msgs = [];
   try { msgs = JSON.parse(sessionStorage.getItem(KEY) || "[]"); } catch (e) { msgs = []; }
+  var CKEY = "iet_chat_contato", contato = null, cid = "";
+  try { contato = JSON.parse(localStorage.getItem(CKEY) || "null"); } catch (e) { contato = null; }
+  try { cid = sessionStorage.getItem(KEY + "_id") || ""; } catch (e) {}
+  function novoId() { var a = ""; var c = "abcdefghijklmnopqrstuvwxyz0123456789"; for (var i = 0; i < 16; i++) a += c[Math.floor(Math.random() * 36)]; cid = a; try { sessionStorage.setItem(KEY + "_id", cid); } catch (e) {} }
+  if (!cid) novoId();
   function estadoAtual() { for (var i = msgs.length - 1; i >= 0; i--) if (msgs[i].estado) return msgs[i].estado; return null; }
   function salvar() { try { sessionStorage.setItem(KEY, JSON.stringify(msgs.slice(-30))); } catch (e) {} }
   function waLink(txt) { return "https://wa.me/" + WA + "?text=" + encodeURIComponent(txt || T.waTxt); }
@@ -71,6 +76,9 @@
     ".ia-in textarea:focus{border-color:rgba(201,168,76,.6)}" +
     ".ia-in button{all:unset;cursor:pointer;width:40px;height:40px;border-radius:12px;background:#c9a84c;color:#111;display:grid;place-items:center}.ia-in button:disabled{opacity:.5;cursor:default}" +
     ".ia-av{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:10.5px;color:#777}.ia-av a{color:#25d366;text-decoration:none;white-space:nowrap}" +
+    ".ia-gate{display:flex;flex-direction:column;gap:8px;background:#141518;border:1px solid rgba(201,168,76,.28);border-radius:12px;padding:12px}" +
+    ".ia-gate b{color:#fff;font-size:13.5px}.ia-gate input[type=text],.ia-gate input[type=tel]{background:#0e0f11;border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#eee;font:inherit;font-size:16px;padding:8px 10px;outline:none}.ia-gate input:focus{border-color:rgba(201,168,76,.6)}" +
+    ".ia-gate label{display:flex;gap:8px;align-items:flex-start;font-size:11.5px;color:#aaa;line-height:1.4}.ia-gate label a{color:#d4b35a}.ia-gate button{all:unset;cursor:pointer;text-align:center;background:#c9a84c;color:#111;font-weight:700;font-size:13px;padding:9px 12px;border-radius:9px}.ia-gate .er{color:#ff8a80;font-size:11.5px;min-height:0}" +
     "@media(max-width:760px){.ia-fab{right:14px;bottom:86px}.ia-fab.sem-barra{bottom:18px}.ia-fab .ia-b-ia{height:50px;padding:0 16px 0 13px;font-size:13px}.ia-fab .ia-b-wa{width:50px;height:50px}.ia-fab.tem-barra .ia-b-wa{display:none}" +
     ".ia-box{right:0;bottom:0;width:100vw;max-width:none;height:100%;height:100dvh;border-radius:0;border:0}}" +
     ".ia-fab.compacto .ia-b-ia span{display:none}.ia-fab.compacto .ia-b-ia{width:56px;padding:0}" +
@@ -117,9 +125,27 @@
       });
       lista.appendChild(d); rolar();
     }
+    function gate() {
+      ta.disabled = true;
+      var g = document.createElement("form"); g.className = "ia-gate";
+      g.innerHTML = "<b>" + esc(T.gTit) + '</b><input type="text" name="n" maxlength="80" autocomplete="name" placeholder="' + esc(T.gNome) + '"><input type="tel" name="t" maxlength="20" autocomplete="tel" placeholder="' + esc(T.gTel) + '">' +
+        '<label><input type="checkbox" name="c"> <span>' + esc(T.gCons) + ' <a href="/privacidade.html" target="_blank" rel="noopener">' + esc(T.gPriv) + "</a></span></label><span class=\"er\"></span><button type=\"submit\">" + esc(T.gOk) + "</button>";
+      g.onsubmit = function (e) {
+        e.preventDefault();
+        var n = g.n.value.replace(/\s+/g, " ").trim(), t = g.t.value.replace(/[^\d+]/g, "");
+        if (n.length < 2 || t.replace(/\D/g, "").length < 8 || !g.c.checked) { g.querySelector(".er").textContent = T.gErr; return; }
+        contato = { nome: n, telefone: t };
+        try { localStorage.setItem(CKEY, JSON.stringify(contato)); } catch (x) {}
+        if (window.gtag) try { gtag("event", "assistente_contato"); } catch (x) {}
+        render(); ta.focus();
+      };
+      lista.appendChild(g); setTimeout(function () { try { g.n.focus(); } catch (x) {} }, 50);
+    }
     function render() {
       lista.innerHTML = "";
       bolha("bot", esc(T.ola));
+      if (!contato) { gate(); return; }
+      ta.disabled = false;
       if (!msgs.length) {
         var ch = document.createElement("div"); ch.className = "ia-chips";
         ch.innerHTML = T.chips.map(function (c) { return '<button type="button">' + esc(c) + "</button>"; }).join("");
@@ -134,16 +160,18 @@
     var ocupado = false;
     function enviar(txt) {
       txt = String(txt || "").trim(); if (!txt || ocupado) return;
+      if (!contato) { render(); return; }
       ocupado = true; btnEnv.disabled = true;
       var ch = lista.querySelector(".ia-chips"); if (ch) ch.remove();
       msgs.push({ role: "user", content: txt.slice(0, 500) }); salvar();
       bolha("eu", esc(txt));
       var dig = bolha("bot", '<span class="ia-dots"><span></span><span></span><span></span></span>');
       var envio = msgs.map(function (m) { return { role: m.role, content: m.content || (m.cot ? "(valores mostrados)" : "") }; });
-      fetch("/api/assistente", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mensagens: envio, lang: L, estado: estadoAtual() }) })
+      fetch("/api/assistente", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mensagens: envio, lang: L, estado: estadoAtual(), pagina: location.pathname, conversa: { id: cid, nome: contato.nome, telefone: contato.telefone, consentimento: true } }) })
         .then(function (r) { return r.json().then(function (j) { j._s = r.status; return j; }); })
         .then(function (r) {
           dig.remove();
+          if (!r.ok && r.erro === "contato") { msgs.pop(); salvar(); contato = null; try { localStorage.removeItem(CKEY); } catch (x) {} render(); return; }
           if (!r.ok) { bolha("bot", esc(r._s === 429 ? T.limite : T.erro)); btnWa(); return; }
           var m = { role: "assistant", content: r.resposta || "", humano: !!r.humano };
           if (r.cotacao) m.cot = r.cotacao;
@@ -164,7 +192,7 @@
     function fechar() { box.classList.remove("on"); fab.style.visibility = ""; }
     fab.querySelector(".ia-b-ia").onclick = abrir;
     box.querySelector(".ia-x").onclick = fechar;
-    box.querySelector(".ia-novo").onclick = function () { msgs = []; salvar(); render(); };
+    box.querySelector(".ia-novo").onclick = function () { msgs = []; salvar(); novoId(); render(); };
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && box.classList.contains("on")) fechar(); });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", montar); else montar();

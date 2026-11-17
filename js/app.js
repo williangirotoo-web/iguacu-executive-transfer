@@ -6,6 +6,12 @@
     var ref = new URLSearchParams(location.search).get("ref");
     if (ref && /^[A-Za-z0-9-]{3,30}$/.test(ref)) localStorage.setItem("iet_ref", JSON.stringify({ c: ref.toUpperCase(), ate: Date.now() + 30 * 864e5 }));
   } catch (e) {}
+  /* contador de visitas do próprio site (sem cookies; mostra no painel em Visitas) */
+  try {
+    if (!/^\/(admin|motorista|parceiro)\b/.test(location.pathname) && navigator.sendBeacon && !navigator.webdriver) {
+      navigator.sendBeacon("/api/visita", new Blob([JSON.stringify({ p: location.pathname, r: document.referrer, u: location.search })], { type: "text/plain" }));
+    }
+  } catch (e) {}
   if ("serviceWorker" in navigator) addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
   var pedido = null;
   var instalado = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;

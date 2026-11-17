@@ -94,6 +94,12 @@ async function prepararBanco(env) {
     // assistente de IA: só conta mensagens por IP (para limitar abuso); não guarda a conversa
     env.DB.prepare(`CREATE TABLE IF NOT EXISTS ia_uso (ip_hash TEXT NOT NULL, em TEXT NOT NULL)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_ia_uso ON ia_uso(ip_hash, em)`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS conversas (id TEXT PRIMARY KEY, criado_em TEXT NOT NULL, atualizado_em TEXT NOT NULL,
+      nome TEXT, telefone TEXT, idioma TEXT, pagina TEXT, n_msgs INTEGER DEFAULT 0, cotou INTEGER DEFAULT 0, humano INTEGER DEFAULT 0, msgs_json TEXT, ip_hash TEXT)`),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_conversas_at ON conversas(atualizado_em)`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS visitas_dia (dia TEXT NOT NULL, pagina TEXT NOT NULL, views INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (dia, pagina))`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS visitantes_dia (dia TEXT NOT NULL, vhash TEXT NOT NULL, PRIMARY KEY (dia, vhash))`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS origens_dia (dia TEXT NOT NULL, origem TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (dia, origem))`),
   ]);
   // coluna nova em tabela antiga: só cria se ainda não existir
   const cols = (await env.DB.prepare("PRAGMA table_info(pedidos)").all()).results.map((c) => c.name);
@@ -582,6 +588,61 @@ async function areaMotorista(req, env, url) {
   return erro("rota", 404);
 }
 
+/* ---------------- conversas com o assistente (histórico para a equipe) ----------------
+   O cliente informa nome e WhatsApp e concorda com o registro antes de conversar. Apagadas após 180 dias. */
+async function salvarConversa(env, c, mensagens, r) {
+  await prepararBanco(env);
+  const lista = (Array.isArray(mensagens) ? mensagens : []).slice(-40).map((m) => ({ role: m && m.role === "assistant" ? "assistant" : "user", content: String((m && m.content) || "").slice(0, 600) }));
+  if (r) {
+    const resp = { role: "assistant", content: String(r.resposta || (r.ok ? "" : "(erro: " + (r.erro || "?") + ")")).slice(0, 1200) };
+    if (r.cotacao && r.cotacao.categorias) {
+      const ok = Object.entries(r.cotacao.categorias).filter(([, x]) => x && x.ok).map(([k, x]) => (x.nome || k) + " " + Math.round(x.valor));
+      if (ok.length) resp.cot = ok.slice(0, 6).join(" · ");
+    }
+    lista.push(resp);
+  }
+  const agora = agoraIso();
+  const cotou = r && r.cotacao ? 1 : 0, humano = r && r.humano ? 1 : 0;
+  await env.DB.prepare(`INSERT INTO conversas (id, criado_em, atualizado_em, nome, telefone, idioma, pagina, n_msgs, cotou, humano, msgs_json, ip_hash)
+    VALUES (?1, ?2, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
+    ON CONFLICT(id) DO UPDATE SET atualizado_em = ?2, nome = ?3, telefone = ?4, n_msgs = ?7, cotou = MAX(cotou, ?8), humano = MAX(humano, ?9), msgs_json = ?10`)
+    .bind(c.id, agora, c.nome, c.telefone, c.idioma, c.pagina, lista.length, cotou, humano, JSON.stringify(lista), c.ipHash).run();
+  if (Math.random() < 0.02) await env.DB.prepare("DELETE FROM conversas WHERE atualizado_em < ?").bind(new Date(Date.now() - 180 * 864e5).toISOString()).run();
+}
+
+/* ---------------- contador de visitas (sem cookies e sem guardar IP) ----------------
+   Conta visualizações por página e dia. Visitante único = hash do IP + navegador + dia (não dá para reverter). */
+const BOTS = /bot|crawl|spider|slurp|facebookexternalhit|preview|headless|lighthouse|pingdom|uptime|curl|wget|python|axios|node-fetch/i;
+async function registrarVisita(req, env, ctx) {
+  const ua = req.headers.get("user-agent") || "";
+  if (!ua || BOTS.test(ua)) return new Response(null, { status: 204 });
+  let b; try { b = await lerJson(req, 1000); } catch { return new Response(null, { status: 204 }); }
+  let pg = String(b.p || "/").split("?")[0].split("#")[0].slice(0, 160);
+  if (!/^\/[\w\-./%]*$/.test(pg) || /^\/(admin|api|motorista|parceiro)\b/.test(pg)) return new Response(null, { status: 204 });
+  pg = pg.replace(/\/index\.html$/, "/");
+  let origem = "direto";
+  try {
+    const h = new URL(String(b.r || "")).hostname.replace(/^www\./, "").toLowerCase();
+    if (h && !h.endsWith("iguacuexecutivetransfer.com.br")) origem = /google\./.test(h) ? "google" : /bing\.|duckduckgo|yahoo/.test(h) ? "outras buscas" : /facebook|instagram|fb\.|l\.instagram/.test(h) ? "facebook/instagram" : /whatsapp|wa\.me/.test(h) ? "whatsapp" : h.slice(0, 60);
+    else if (h) origem = "";
+  } catch {}
+  if (/[?&](gclid|gad_source)=/.test(String(b.u || ""))) origem = "google ads";
+  const dia = hojeFoz();
+  const ip = req.headers.get("cf-connecting-ip") || "";
+  const vh = (await sha256(ip + "|" + ua + "|" + dia + (env.IP_SALT || "iet"))).slice(0, 20);
+  ctx.waitUntil((async () => {
+    await prepararBanco(env);
+    const q = [
+      env.DB.prepare("INSERT INTO visitas_dia (dia, pagina, views) VALUES (?, ?, 1) ON CONFLICT(dia, pagina) DO UPDATE SET views = views + 1").bind(dia, pg),
+      env.DB.prepare("INSERT OR IGNORE INTO visitantes_dia (dia, vhash) VALUES (?, ?)").bind(dia, vh),
+    ];
+    if (origem) q.push(env.DB.prepare("INSERT INTO origens_dia (dia, origem, n) VALUES (?, ?, 1) ON CONFLICT(dia, origem) DO UPDATE SET n = n + 1").bind(dia, origem));
+    await env.DB.batch(q);
+    if (Math.random() < 0.01) await env.DB.prepare("DELETE FROM visitantes_dia WHERE dia < ?").bind(new Date(Date.now() - 400 * 864e5).toISOString().slice(0, 10)).run();
+  })().catch((e) => console.error("visita", e && e.message)));
+  return new Response(null, { status: 204 });
+}
+
 /* ---------------- admin (protegido pelo Cloudflare Access) ---------------- */
 const b64urlBytes = (s) => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((s.length + 3) % 4)), (c) => c.charCodeAt(0));
 let certsCache = { at: 0, keys: [] };
@@ -855,6 +916,30 @@ async function admin(req, env, url) {
   const partes = url.pathname.replace(/^\/api\/admin\/?/, "").split("/").filter(Boolean);
 
   if (partes[0] === "eu") return json({ ok: true, email: user.email });
+  if (partes[0] === "conversas") {
+    if (partes[1]) {
+      const c = await env.DB.prepare("SELECT * FROM conversas WHERE id = ?").bind(partes[1]).first();
+      if (!c) return erro("nao_encontrado", 404);
+      return json({ ok: true, conversa: { ...c, msgs: JSON.parse(c.msgs_json || "[]"), msgs_json: undefined, ip_hash: undefined } });
+    }
+    const q = String(url.searchParams.get("q") || "").trim().slice(0, 60);
+    const sql = "SELECT id, criado_em, atualizado_em, nome, telefone, idioma, pagina, n_msgs, cotou, humano FROM conversas" + (q ? " WHERE nome LIKE ?1 OR telefone LIKE ?1" : "") + " ORDER BY atualizado_em DESC LIMIT 200";
+    const st = q ? env.DB.prepare(sql).bind("%" + q + "%") : env.DB.prepare(sql);
+    return json({ ok: true, conversas: (await st.all()).results });
+  }
+  if (partes[0] === "visitas") {
+    const dias = Math.min(365, Math.max(1, parseInt(url.searchParams.get("dias") || "7", 10) || 7));
+    const desde = new Date(Date.parse(hojeFoz() + "T12:00:00Z") - (dias - 1) * 864e5).toISOString().slice(0, 10);
+    const [pags, porDia, vis, orig] = await env.DB.batch([
+      env.DB.prepare("SELECT pagina, SUM(views) v FROM visitas_dia WHERE dia >= ? GROUP BY pagina ORDER BY v DESC LIMIT 60").bind(desde),
+      env.DB.prepare("SELECT dia, SUM(views) v FROM visitas_dia WHERE dia >= ? GROUP BY dia ORDER BY dia").bind(desde),
+      env.DB.prepare("SELECT dia, COUNT(*) u FROM visitantes_dia WHERE dia >= ? GROUP BY dia ORDER BY dia").bind(desde),
+      env.DB.prepare("SELECT origem, SUM(n) n FROM origens_dia WHERE dia >= ? GROUP BY origem ORDER BY n DESC LIMIT 15").bind(desde),
+    ]);
+    const conv = await env.DB.prepare("SELECT COUNT(*) n FROM conversas WHERE criado_em >= ?").bind(desde).first();
+    const ped = await env.DB.prepare("SELECT COUNT(*) n FROM pedidos WHERE criado_em >= ? AND status != 'cancelada'").bind(desde).first();
+    return json({ ok: true, desde, dias, paginas: pags.results, porDia: porDia.results, visitantes: vis.results, origens: orig.results, conversas: conv ? conv.n : 0, pedidos: ped ? ped.n : 0 });
+  }
   if (partes[0] === "precos") return adminPrecos(req, env, user);
   if (partes[0] === "cupons") {
     if (req.method === "GET") return json({ ok: true, hoje: hojeFoz(),
@@ -1096,7 +1181,16 @@ async function api(req, env, ctx, url) {
     if (u && u.n >= 40) return erro("muitas_mensagens", 429);
     await env.DB.prepare("INSERT INTO ia_uso (ip_hash, em) VALUES (?, ?)").bind(ipHash, agoraIso()).run();
     if (Math.random() < 0.02) ctx.waitUntil(env.DB.prepare("DELETE FROM ia_uso WHERE em < ?").bind(new Date(Date.now() - 2 * 864e5).toISOString()).run());
-    try { const r = await assistente(env, { ...b, _preview: url.hostname.endsWith(".workers.dev") || url.hostname === "127.0.0.1" || url.hostname === "localhost" }); return json(r, r.ok ? 200 : 400); }
+    const cv = b.conversa || {};
+    const cvId = String(cv.id || "").replace(/[^a-z0-9]/gi, "").slice(0, 24);
+    const cvNome = String(cv.nome || "").replace(/\s+/g, " ").trim().slice(0, 80);
+    const cvTel = String(cv.telefone || "").replace(/[^\d+]/g, "").slice(0, 20);
+    if (cvId.length < 10 || cvNome.length < 2 || cvTel.replace(/\D/g, "").length < 8 || !cv.consentimento) return erro("contato", 400);
+    try {
+      const r = await assistente(env, { ...b, _preview: url.hostname.endsWith(".workers.dev") || url.hostname === "127.0.0.1" || url.hostname === "localhost" });
+      ctx.waitUntil(salvarConversa(env, { id: cvId, nome: cvNome, telefone: cvTel, idioma: String(b.lang || "pt").slice(0, 2), pagina: String(b.pagina || "").slice(0, 160), ipHash }, b.mensagens, r).catch((e) => console.error("conversa", e && e.message)));
+      return json(r, r.ok ? 200 : 400);
+    }
     catch (e) { console.error("assistente", e && e.stack); return json({ ok: false, erro: "ia_indisponivel" }, 503); }
   }
   if (p === "/api/cupom" && m === "POST") {
@@ -1122,6 +1216,7 @@ async function api(req, env, ctx, url) {
     return json(r, r.ok ? 200 : 400);
   }
   if (p === "/api/pedidos/pagar" && m === "POST") return pagarPedidoCliente(req, env, url.origin);
+  if (p === "/api/visita" && m === "POST") return registrarVisita(req, env, ctx);
   if (p === "/api/pacotes" && m === "POST") return criarPacote(req, env);
   const mp = p.match(/^\/api\/pacotes\/([A-Z0-9]{7})$/);
   if (mp && m === "GET") return verPacote(env, mp[1]);
@@ -1167,7 +1262,7 @@ function previaReserva(res, url) {
 }
 
 /* App instalável: manifesto, ícone e script de instalação em todas as páginas públicas (não no painel nem nas áreas de parceiro e motorista) */
-const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=4" defer></script><script src="/js/assistente.js?v=7" defer></script>';
+const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=5" defer></script><script src="/js/assistente.js?v=8" defer></script>';
 /* Vídeos: o Safari (iPhone) só toca se o servidor responder a pedidos por partes (Range → 206). */
 async function videoParcial(req, env) {
   const base = await env.ASSETS.fetch(new Request(req.url, { method: "GET" }));
