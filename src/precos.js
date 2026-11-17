@@ -82,7 +82,7 @@ export const SERVICOS = [
   { id: "igu-pi", grupo: "aeroporto", tipo: "transfer", voo: true, sentido: true, fronteira: true, foto: "marco-das-tres-fronteiras",
     nome: N("Aeroporto de Foz (IGU) ⇄ hotel em Puerto Iguazú (AR)", "Foz Airport (IGU) ⇄ hotel in Puerto Iguazú (AR)", "Aeropuerto de Foz (IGU) ⇄ hotel en Puerto Iguazú (AR)"),
     desc: N("Direto ao seu hotel na Argentina, com travessia da fronteira.", "Straight to your hotel in Argentina, border crossing included.", "Directo a su hotel en Argentina, con cruce de frontera."),
-    precos: P(500, 1150, 1300, 600, 5000) },
+    precos: P(400, 1150, 1300, 500, 5000) },
   { id: "igu-igr", grupo: "aeroporto", tipo: "transfer", voo: true, sentido: true, fronteira: true, foto: "cataratas-do-iguacu-arco-iris",
     fixo: N("Aeroporto de Puerto Iguazú (IGR)", "Iguazú Airport (IGR)", "Aeropuerto de Iguazú (IGR)"),
     nome: N("Aeroporto de Foz (IGU) ⇄ Aeroporto de Puerto Iguazú (IGR)", "Foz Airport (IGU) ⇄ Iguazú Airport (IGR)", "Aeropuerto de Foz (IGU) ⇄ Aeropuerto de Iguazú (IGR)"),
