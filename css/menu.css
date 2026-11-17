@@ -13,7 +13,7 @@
 .nav .nav-links a:hover,.nav .nav-links a.active{color:var(--gold)}
 .nav .nav-cta{padding:9px 24px!important;border:1px solid var(--gold);color:var(--gold)!important;transition:background var(--tr)!important}
 .nav .nav-cta:hover{background:var(--gold)!important;color:var(--black)!important}
-.nav .hamburger{display:none;flex-direction:column;gap:5px;padding:4px;background:none;border:0;cursor:pointer}
+.nav .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;padding:14px 10px;margin-right:-10px;min-width:44px;min-height:44px;background:none;border:0;cursor:pointer}
 .nav .hamburger span{display:block;width:24px;height:1px;background:var(--white)}
 .nav .mobile-menu{display:none;flex-direction:column;background:#080808;padding:20px 48px 30px;border-top:1px solid rgba(201,168,76,.12);max-height:calc(100vh - var(--nav-h));overflow-y:auto}
 .nav .mobile-menu a{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-l);padding:14px 0;border-bottom:1px solid rgba(255,255,255,.05);display:block}
@@ -35,3 +35,6 @@
 .nav .mobile-menu details[open] summary::after{content:'−'}
 .nav .mobile-menu details a{padding:11px 0 11px 16px;font-size:.72rem;border-bottom:0;color:rgba(255,255,255,.6)}
 @media (max-width:900px){.nav .nav-links{display:none}.nav .hamburger{display:flex}.nav .nav-inner{padding:0 24px}.nav .mobile-menu{padding:20px 24px 30px}}
+
+/* celular: campos com 16px para o iPhone não dar zoom ao tocar */
+@media (max-width:900px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}

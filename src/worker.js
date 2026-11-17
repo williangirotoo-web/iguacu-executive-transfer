@@ -1101,6 +1101,13 @@ async function api(req, env, ctx, url) {
   }
   if (p === "/api/cupom" && m === "POST") {
     let b; try { b = await lerJson(req, 500); } catch { return erro("json_invalido"); }
+    // limite de tentativas por IP (evita adivinhar cupons por força bruta)
+    await prepararBanco(env);
+    const ipc = req.headers.get("cf-connecting-ip") || "";
+    const hc = "cupom:" + (ipc ? await sha256(ipc + (env.IP_SALT || "iet")) : "sem-ip");
+    const uc = await env.DB.prepare("SELECT COUNT(*) n FROM ia_uso WHERE ip_hash = ? AND em > ?").bind(hc, new Date(Date.now() - 3600e3).toISOString()).first();
+    if (uc && uc.n >= 20) return erro("muitas_tentativas", 429);
+    await env.DB.prepare("INSERT INTO ia_uso (ip_hash, em) VALUES (?, ?)").bind(hc, agoraIso()).run();
     const r = await buscarCupom(env, b.codigo);
     return json(r, r.ok ? 200 : 400);
   }
@@ -1160,7 +1167,7 @@ function previaReserva(res, url) {
 }
 
 /* App instalável: manifesto, ícone e script de instalação em todas as páginas públicas (não no painel nem nas áreas de parceiro e motorista) */
-const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=3" defer></script><script src="/js/assistente.js?v=7" defer></script>';
+const APP_HEAD = '<link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#0b0b0b"><link rel="apple-touch-icon" href="/img/app-180.png"><meta name="apple-mobile-web-app-title" content="IET Transfer"><script src="/js/app.js?v=4" defer></script><script src="/js/assistente.js?v=7" defer></script>';
 /* Vídeos: o Safari (iPhone) só toca se o servidor responder a pedidos por partes (Range → 206). */
 async function videoParcial(req, env) {
   const base = await env.ASSETS.fetch(new Request(req.url, { method: "GET" }));

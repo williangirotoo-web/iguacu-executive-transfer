@@ -29,7 +29,9 @@
     var p = new URLSearchParams({ periodo: filtro.periodo }); if (filtro.status) p.set("status", filtro.status); if (filtro.q) p.set("q", filtro.q);
     $("#rows").innerHTML = '<p class="msg">Carregando…</p>';
     api("/api/admin/pedidos?" + p).then(function (r) {
-      var cont = r.contagem || {}, tot = Object.keys(cont).reduce(function (a, k) { return a + cont[k]; }, 0);
+      var cont = r.contagem || {}, tot = Object.keys(cont).reduce(function (a, k) { return k === "cancelada" ? a : a + cont[k]; }, 0);
+      // em "Todos", as canceladas somem da lista (continuam no filtro "Cancelada" e aparecem na busca)
+      if (!filtro.status && !filtro.q) r.pedidos = r.pedidos.filter(function (x) { return x.status !== "cancelada"; });
       $("#chips").innerHTML = ['<button class="chip' + (filtro.status ? "" : " on") + '" data-st="">Todos<i>' + tot + "</i></button>"].concat(Object.keys(STATUS).map(function (k) {
         return '<button class="chip' + (filtro.status === k ? " on" : "") + '" data-st="' + k + '">' + esc(STATUS[k]) + "<i>" + (cont[k] || 0) + "</i></button>";
       })).join("");

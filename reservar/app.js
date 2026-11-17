@@ -734,11 +734,25 @@
       (p.total - p.agora > 0.001 ? '<div class="r-sm"><span>' + esc(t("restante")) + "</span><span>" + brl(p.total - p.agora) + "</span></div>" : "") +
       (fxStr(p.total) ? '<p class="r-fxpag">' + esc(t("fxPag")) + "</p>" : "");
   }
+  /* campo obrigatório vazio: destaca em vermelho e rola até ele (no celular o erro aparecia longe do campo) */
+  function apontarFalta(form, nomes) {
+    if (!form) return;
+    for (var i = 0; i < nomes.length; i++) {
+      var el = form.querySelector('[name="' + nomes[i] + '"]');
+      if (!el || !el.offsetParent || String(el.value || "").trim()) continue;
+      el.classList.add("r-falta");
+      el.addEventListener("input", function () { this.classList.remove("r-falta"); }, { once: true });
+      el.addEventListener("change", function () { this.classList.remove("r-falta"); }, { once: true });
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (el.type !== "date" && el.type !== "time") { try { el.focus({ preventScroll: true }); } catch (x) {} }
+      return;
+    }
+  }
   function submitCheckout(e) {
     e.preventDefault();
     var f = $("#r-checkout-f"), g = function (n) { var el = f.querySelector('[name="' + n + '"]'); return el ? (el.type === "checkbox" ? el.checked : el.value.trim()) : ""; };
     var err = $("#r-cerr");
-    if (!g("nome") || !g("telefone") || !g("email")) { err.textContent = t("e_campos"); return; }
+    if (!g("nome") || !g("telefone") || !g("email")) { err.textContent = t("e_campos"); apontarFalta(f, ["nome", "telefone", "email"]); return; }
     if (!g("consentimento")) { err.textContent = t("e_consentimento"); return; }
     err.textContent = "";
     var btn = $("#r-send"); btn.disabled = true; btn.textContent = t("enviando");
@@ -887,7 +901,7 @@
     if (document.activeElement && document.activeElement.dataset && document.activeElement.dataset.ac) { var ul0 = $("#r-acl-" + document.activeElement.dataset.ac); if (ul0 && !ul0.hidden && acRes[document.activeElement.dataset.ac] && acRes[document.activeElement.dataset.ac].length) { acPick(document.activeElement.dataset.ac, 0); return; } }
     if (svc(cur.servico).tipo === "km" && (!cur.de || !cur.para)) { er.textContent = t("e_rota_falta"); return; }
     if (svc(cur.servico).tipo === "km" && cur.idaVolta && (!cur.dataVolta || !cur.horaVolta)) { er.textContent = t("e_volta_falta"); return; }
-    if (!cur.origem || !cur.data || !cur.hora || (svc(cur.servico).sentido && !cur.local)) { er.textContent = t("e_campos"); return; }
+    if (!cur.origem || !cur.data || !cur.hora || (svc(cur.servico).sentido && !cur.local)) { er.textContent = t("e_campos"); apontarFalta($("#r-modal-b"), ["data", "hora", "local", "origem"]); return; }
     var q = cur.categoria && quotes[cur.categoria];
     if (!q || !q.ok) { er.textContent = t("e_cat"); return; }
     var n = nCarros();
