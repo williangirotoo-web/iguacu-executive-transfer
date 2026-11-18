@@ -21,6 +21,8 @@ export const CONFIG = {
   feriadoAcrescimoPct: 5,
   esperaAeroporto: { gratisMin: 60, valorHora: 80 }, // cobrado à parte, se passar
   cadeirinha: { valor: 50, naoDisponivel: ["comum"] },
+  // cartão brasileiro (InfinitePay): a empresa assume a taxa até 3x, então o site anuncia "3x sem juros" (18/11/2026)
+  parcelasSemJuros: 3,
   pet: { consulta: ["comum"] }, // nas demais categorias, sem custo (caixa para pet médio/pequeno)
 
   // pagamento na reserva: "total" = 100%, "sinal" = 50%, "escolha" = cliente escolhe

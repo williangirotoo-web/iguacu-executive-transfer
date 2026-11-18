@@ -314,7 +314,7 @@
         '<div class="r-badges">' + badges(s) + "</div></div>" +
         '<div class="r-card-b"><span class="r-grp">' + esc(t("g_" + s.grupo)) + '<span class="r-flags">' + (s.paises || ["br"]).map(function (p) { return '<span title="' + esc(t("p_" + p)) + '">' + FLAG[p] + "</span>"; }).join("") + "</span></span><h3>" + (pagUrl(s) ? '<a href="' + pagUrl(s) + '">' + esc(L(s.nome)) + "</a>" : esc(L(s.nome))) + "</h3><p>" + esc(L(s.desc)) + "</p>" +
         (pagUrl(s) ? '<a class="r-det" href="' + pagUrl(s) + '">' + esc(t("detalhes")) + ' <span aria-hidden="true">→</span></a>' : "") +
-        '<div class="r-card-f"><span><small>' + esc(t("apartir")) + "</small> <b>" + (mp == null ? esc(t("consulta")) : brl(mp)) + "</b> <small>" + esc(t("porveiculo")) + "</small>" + fxTxt(mp) + "</span>" +
+        '<div class="r-card-f"><span><small>' + esc(t("apartir")) + "</small> <b>" + (mp == null ? esc(t("consulta")) : brl(mp)) + "</b> <small>" + esc(t("porveiculo")) + "</small>" + fxTxt(mp) + parcTxt(mp) + "</span>" +
         '<button type="button" class="r-btn" data-sel="' + s.id + '">' + esc(t("escolher")) + ' <span aria-hidden="true">→</span></button></div></div></article>';
     }).join("");
     if (!list.length) html = '<div class="r-none"><p>' + esc(t("nada")) + '</p><button type="button" class="r-btn r-ghost" id="r-clear">' + esc(t("limpar")) + "</button></div>";
@@ -567,7 +567,7 @@
       var ok = q && q.ok, price = !q ? t("calculando") : ok ? brl(totalQ(q)) : errTxt(q);
       out += '<label class="r-cat' + (c.destaque ? " r-cat-dest" : "") + (ok ? "" : " r-off") + (cur.categoria === k && ok ? " on" : "") + '"><input type="radio" name="categoria" value="' + k + '"' +
         (cur.categoria === k && ok ? " checked" : "") + (ok ? "" : " disabled") + ">" + info + '<em class="r-price' + (ok ? "" : " r-pmsg") + '">' + esc(price) +
-        (ok && q.dataEspecial ? ' <small class="r-esp">' + esc(t("especial", { p: CAT.config.feriadoAcrescimoPct })) + "</small>" : "") + (ok && dv.n > 1 ? '<small class="r-pcarro">' + esc(t("porCarro", { v: brl(semCad(q)), n: dv.n })) + "</small>" : "") + (ok ? fxTxt(totalQ(q)) : "") + "</em></label>";
+        (ok && q.dataEspecial ? ' <small class="r-esp">' + esc(t("especial", { p: CAT.config.feriadoAcrescimoPct })) + "</small>" : "") + (ok && dv.n > 1 ? '<small class="r-pcarro">' + esc(t("porCarro", { v: brl(semCad(q)), n: dv.n })) + "</small>" : "") + (ok ? fxTxt(totalQ(q)) + parcTxt(totalQ(q)) : "") + "</em></label>";
     });
     return out;
   }
@@ -732,6 +732,7 @@
     if (taxa) { p.total = Math.round((p.total + taxa) * 100) / 100; p.agora = Math.round((p.agora + taxa) * 100) / 100; }
     // a taxa do PayPal entra no valor (sem linha separada): o cliente vê o total da forma de pagamento escolhida
     box.innerHTML = (p.desconto > 0 ? '<div class="r-desc"><span>' + esc(t("desconto")) + " (" + esc(S.cupom.codigo) + ")</span><b>− " + brl(p.desconto) + "</b></div>" : "") + "<div><span>" + esc(t("total")) + "</span><b>" + brl(p.total) + fxTxt(p.total) + "</b></div><div><span>" + esc(t("aPagar")) + "</span><b>" + brl(p.agora) + fxTxt(p.agora) + "</b></div>" +
+      (provAtual() === "infinitepay" && parcStr(p.agora) ? '<p class="r-parcpag">' + esc(parcStr(p.agora)) + " no cartão</p>" : "") +
       (p.total - p.agora > 0.001 ? '<div class="r-sm"><span>' + esc(t("restante")) + "</span><span>" + brl(p.total - p.agora) + "</span></div>" : "") +
       (fxStr(p.total) ? '<p class="r-fxpag">' + esc(t("fxPag")) + "</p>" : "");
   }
@@ -959,6 +960,12 @@
   function all() { renderStatic(); renderList(); renderCart(); if (!$("#r-checkout").hidden) renderCheckout(); }
 
   var FX = null;
+  /* "ou 3x de R$ X sem juros": só em português (cartão brasileiro via InfinitePay) */
+  function parcStr(v) {
+    var n = CAT && CAT.config.parcelasSemJuros; if (!n || n < 2 || v == null || v < 100 || S.lang !== "pt" || !CAT.config.pagamentoOnline || parceiroAtual()) return "";
+    return "ou " + n + "x de " + brl(Math.floor(v / n * 100) / 100) + " sem juros";
+  }
+  function parcTxt(v) { var s2 = parcStr(v); return s2 ? '<small class="r-parc">' + esc(s2) + "</small>" : ""; }
   function fxTxt(v) {
     var s2 = fxStr(v); return s2 ? '<small class="r-fx">' + s2 + "</small>" : "";
   }
