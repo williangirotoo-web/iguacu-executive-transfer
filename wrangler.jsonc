@@ -18,6 +18,10 @@
   "d1_databases": [
     { "binding": "DB", "database_name": "iet-reservas", "database_id": "c113f678-3e0f-4caa-af30-e41cfe39784e" }
   ],
+  // Fotos e vídeos dos Stories da página inicial (enviados pelo painel)
+  "kv_namespaces": [
+    { "binding": "MIDIA", "id": "607bcf6b90954f11937598866bd3474e" }
+  ],
   "send_email": [
     { "name": "AVISOS", "destination_address": "atendimento@g7.taxi.br" }
   ],
@@ -48,6 +52,9 @@
     },
     "d1_databases": [
       { "binding": "DB", "database_id": "c113f678-3e0f-4caa-af30-e41cfe39784e" }
+    ],
+    "kv_namespaces": [
+      { "binding": "MIDIA", "id": "607bcf6b90954f11937598866bd3474e" }
     ],
     "send_email": [
       { "name": "AVISOS", "destination_address": "atendimento@g7.taxi.br" }
