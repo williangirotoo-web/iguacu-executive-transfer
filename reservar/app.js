@@ -341,9 +341,10 @@
 
   /* ---------- modal ---------- */
   var cur = null, quotes = {}, qTimer = null, qSeq = 0;
-  function openSvc(id) {
+  function openSvc(id, pre) {
     var s = svc(id); if (!s) return;
     cur = { servico: id, categoria: null, pax: 2, malas: 0, malasBordo: 0, mochilas: 0, carros: 1, cadeirinhas: 0, pet: false, horasExtras: 0, horas: CAT.config.porHora.minimoHoras, dias: 1, sentido: "chegada", data: "", hora: "", voo: "", origem: "", destino: "" };
+    if (pre) { if (pre.data) cur.data = pre.data; if (pre.pax) cur.pax = pre.pax; }
     quotes = {};
     track("view_item", { item_id: id, item_name: s.nome.pt });
     renderModal(); var m = $("#r-modal"); if (m.showModal) m.showModal(); else m.setAttribute("open", "");
@@ -416,7 +417,7 @@
     // no computador: formulário à esquerda e escolha do carro à direita (no celular fica tudo em uma coluna)
     f += '<div class="r-mgrid"><div class="r-mcol">' + step(1, "stQuando");
     if (s.sentido) f += field(t("sentido"), '<select name="sentido"><option value="chegada">' + esc(s.fixo ? t("chegadaF", { d: L(s.fixo) }) : t("chegada")) + '</option><option value="saida">' + esc(s.fixo ? t("saidaF", { d: L(s.fixo) }) : t("saida")) + "</option></select>");
-    f += '<div class="r-row">' + field(t("data") + " *", '<input type="date" name="data" min="' + hoje() + '" required>') +
+    f += '<div class="r-row">' + field(t("data") + " *", '<input type="date" name="data" min="' + hoje() + '"' + (cur.data ? ' value="' + esc(cur.data) + '"' : "") + ' required>') +
       field((s.voo ? t("horaVoo") : t("hora")) + " *", '<input type="time" name="hora" required>') + "</div>";
     if (s.voo) f += field(t("voo"), '<input name="voo" placeholder="G3 1234" maxlength="20">');
     f += "</section>" + step(2, "stOnde");
@@ -971,7 +972,11 @@
     CAT = c; $("#r-grid").classList.remove("loading");
     S.cart = S.cart.filter(function (it) { return it && it.cot && svc(it.servico) && CAT.categorias[it.categoria]; });
     all(); track("view_item_list", { item_list_name: "reservas" });
-    if (qs.get("s") && svc(qs.get("s"))) openSvc(qs.get("s"));
+    if (qs.get("s") && svc(qs.get("s"))) {
+      /* vindo da barra de busca da página inicial: data (d) e pessoas (pax) já preenchidas */
+      var dq = qs.get("d") || "", hoje = new Date().toISOString().slice(0, 10), pq = parseInt(qs.get("pax"), 10);
+      openSvc(qs.get("s"), { data: /^\d{4}-\d{2}-\d{2}$/.test(dq) && dq >= hoje ? dq : "", pax: pq >= 1 && pq <= 15 ? pq : 0 });
+    }
     if (/^[A-Z0-9]{7}$/.test(qs.get("pacote") || "")) carregarPacote(qs.get("pacote"));
     verPendente();
   }).catch(function () {
