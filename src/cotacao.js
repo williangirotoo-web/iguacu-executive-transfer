@@ -1,6 +1,6 @@
 /* Motor de preços: calcula o valor de um serviço SEMPRE no servidor.
    Nunca confia em valor vindo do navegador. */
-import { CONFIG, CATEGORIAS, SERVICOS, HORA_EXTRA, POR_HORA, POR_KM, datasEspeciais } from "./precos.js";
+import { CONFIG, CATEGORIAS, SERVICOS, HORA_EXTRA, POR_HORA, POR_KM, datasEspeciais, precosCombo } from "./precos.js";
 
 const SVC = Object.fromEntries(SERVICOS.map((s) => [s.id, s]));
 /* Preços-padrão (do precos.js). O painel pode trocar valores; aqui guardamos o original para poder voltar. */
@@ -13,6 +13,7 @@ export function aplicarPrecos(mapa) {
     for (const cat of Object.keys(m)) if (cat in base && Number.isFinite(m[cat]) && m[cat] > 0) novo[cat] = m[cat];
     s.precos = novo;
   }
+  precosCombo();
 }
 const centavos = (v) => Math.round(v * 100) / 100;
 const int = (v, d = 0) => { const n = parseInt(v, 10); return Number.isFinite(n) ? n : d; };
@@ -71,7 +72,7 @@ export function modosPagamento(svc, cat) {
 /* Cota UM item em UMA categoria. Retorna { ok, valor, linhas, ... } ou { ok:false, erro, consulta? } */
 export function cotar(item, agora = Date.now()) {
   const svc = SVC[item.servico];
-  if (!svc) return { ok: false, erro: "servico_invalido" };
+  if (!svc || svc.tipo === "combo") return { ok: false, erro: "servico_invalido" }; // combo é só vitrine: cada trecho é cotado separado
   const cat = item.categoria, C = CATEGORIAS[cat];
   if (!C) return { ok: false, erro: "categoria_invalida" };
   if (!(cat in svc.precos)) return { ok: false, erro: "categoria_nao_atende" };

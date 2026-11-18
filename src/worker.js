@@ -864,7 +864,7 @@ async function adminPrecos(req, env, user) {
   if (req.method === "GET") {
     const editados = (await env.DB.prepare("SELECT servico_id, categoria, valor, atualizado_em, autor FROM precos_editados").all()).results;
     const hist = (await env.DB.prepare("SELECT em, autor, servico_id, categoria, de, para FROM precos_hist ORDER BY id DESC LIMIT 60").all()).results;
-    const servicos = SERVICOS.filter((s) => s.tipo !== "km").map((s) => ({ id: s.id, nome: s.nome && s.nome.pt, grupo: s.grupo, tipo: s.tipo, oculto: !!s.oculto, padrao: PRECOS_PADRAO[s.id], atual: s.precos }));
+    const servicos = SERVICOS.filter((s) => s.tipo !== "km" && s.tipo !== "combo").map((s) => ({ id: s.id, nome: s.nome && s.nome.pt, grupo: s.grupo, tipo: s.tipo, oculto: !!s.oculto, padrao: PRECOS_PADRAO[s.id], atual: s.precos }));
     return json({ ok: true, categorias: Object.fromEntries(Object.entries(CATEGORIAS).map(([k, v]) => [k, (v.nome && v.nome.pt) || k])), servicos, editados, hist });
   }
   if (req.method !== "POST") return erro("rota", 404);

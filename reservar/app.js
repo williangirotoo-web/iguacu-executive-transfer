@@ -21,7 +21,7 @@
       h1: "Reserve seu transfer em Foz do Iguaçu", sub: "Escolha o trajeto e a categoria do veículo. Preço fechado, calculado na hora, sem taxímetro.",
       trust: ["Preço fechado", "Cancelamento grátis até {h} h antes", "Transfer 24h com agendamento", "Argentina e Paraguai"],
       paisTit: "Para onde você vai?", p_todos: "Todos", p_br: "Brasil", p_ar: "Argentina", p_py: "Paraguai", g_todos: "Todos", g_aeroporto: "Aeroportos", g_passeios: "Cataratas e passeios", g_motorista: "Motorista à disposição", g_viagens: "Outras cidades",
-      apartir: "a partir de", porveiculo: "por veículo", escolher: "Escolher", consulta: "Sob consulta", pedir: "Pedir cotação no WhatsApp",
+      comboPasso: "Passo {i} de {n}", apartir: "a partir de", porveiculo: "por veículo", escolher: "Escolher", consulta: "Sob consulta", pedir: "Pedir cotação no WhatsApp",
       consTit: "Grupos e experiências", consDesc: "Atendimento personalizado pelo WhatsApp:",
       data: "Data", hora: "Horário", horaVoo: "Horário do voo", sentido: "Sentido", chegada: "Chegada (aeroporto → hotel)", saida: "Saída (hotel → aeroporto)", chegadaF: "Aeroporto de Foz → {d}", saidaF: "{d} → Aeroporto de Foz",
       voo: "Número do voo", localCheg: "Levar para (hotel ou endereço)", localSai: "Buscar em (hotel ou endereço)", obsItem: "Observações (opcional)", stQuando: "Quando", stOnde: "Trajeto", stQuem: "Passageiros e bagagem", stCarro: "Escolha o veículo", footSel: "Escolha o veículo", footTot: "Total deste serviço", cupom: "Cupom de desconto", cupomBtn: "Aplicar", cupomOk: "Cupom {c} aplicado: {p}% de desconto", cupomRem: "remover", desconto: "Desconto", e_cupom_invalido: "Cupom inválido", e_cupom_expirado: "Este cupom expirou", e_cupom_esgotado: "Este cupom esgotou", obsPh: "Ex.: placa com nome, parada no caminho, criança de colo", origem: "Buscar em (hotel ou endereço)", destino: "Levar para", destinoOpc: "Levar para (opcional)",
@@ -73,7 +73,7 @@
       h1: "Book your transfer in Foz do Iguaçu", sub: "Choose your route and vehicle. Fixed price calculated instantly, no meter.",
       trust: ["Fixed price", "Free cancellation up to {h} h before", "24h transfers with advance booking", "Argentina & Paraguay"],
       paisTit: "Where are you going?", p_todos: "All", p_br: "Brazil", p_ar: "Argentina", p_py: "Paraguay", g_todos: "All", g_aeroporto: "Airports", g_passeios: "Falls & tours", g_motorista: "Driver at your disposal", g_viagens: "Other cities",
-      apartir: "from", porveiculo: "per vehicle", escolher: "Select", consulta: "On request", pedir: "Request a quote on WhatsApp",
+      comboPasso: "Step {i} of {n}", apartir: "from", porveiculo: "per vehicle", escolher: "Select", consulta: "On request", pedir: "Request a quote on WhatsApp",
       consTit: "Groups & experiences", consDesc: "Personal service via WhatsApp:",
       data: "Date", hora: "Time", horaVoo: "Flight time", sentido: "Direction", chegada: "Arrival (airport → hotel)", saida: "Departure (hotel → airport)", chegadaF: "Foz Airport → {d}", saidaF: "{d} → Foz Airport",
       voo: "Flight number", localCheg: "Drop-off (hotel or address)", localSai: "Pick-up (hotel or address)", obsItem: "Notes (optional)", stQuando: "When", stOnde: "Route", stQuem: "Passengers and luggage", stCarro: "Choose your vehicle", footSel: "Choose a vehicle", footTot: "Total for this service", cupom: "Discount code", cupomBtn: "Apply", cupomOk: "Code {c} applied: {p}% off", cupomRem: "remove", desconto: "Discount", e_cupom_invalido: "Invalid code", e_cupom_expirado: "This code has expired", e_cupom_esgotado: "This code is no longer available", obsPh: "E.g.: name sign, stop on the way, infant", origem: "Pick-up (hotel or address)", destino: "Drop-off", destinoOpc: "Drop-off (optional)",
@@ -125,7 +125,7 @@
       h1: "Reserve su traslado en Foz do Iguaçu", sub: "Elija el trayecto y la categoría del vehículo. Precio cerrado al instante, sin taxímetro.",
       trust: ["Precio cerrado", "Cancelación gratis hasta {h} h antes", "Traslados 24 h con reserva", "Argentina y Paraguay"],
       paisTit: "¿A dónde va?", p_todos: "Todos", p_br: "Brasil", p_ar: "Argentina", p_py: "Paraguay", g_todos: "Todos", g_aeroporto: "Aeropuertos", g_passeios: "Cataratas y paseos", g_motorista: "Chofer a disposición", g_viagens: "Otras ciudades",
-      apartir: "desde", porveiculo: "por vehículo", escolher: "Elegir", consulta: "A consultar", pedir: "Pedir cotización por WhatsApp",
+      comboPasso: "Paso {i} de {n}", apartir: "desde", porveiculo: "por vehículo", escolher: "Elegir", consulta: "A consultar", pedir: "Pedir cotización por WhatsApp",
       consTit: "Grupos y experiencias", consDesc: "Atención personalizada por WhatsApp:",
       data: "Fecha", hora: "Horario", horaVoo: "Horario del vuelo", sentido: "Sentido", chegada: "Llegada (aeropuerto → hotel)", saida: "Salida (hotel → aeropuerto)", chegadaF: "Aeropuerto de Foz → {d}", saidaF: "{d} → Aeropuerto de Foz",
       voo: "Número de vuelo", localCheg: "Llevar a (hotel o dirección)", localSai: "Buscar en (hotel o dirección)", obsItem: "Observaciones (opcional)", stQuando: "Cuándo", stOnde: "Trayecto", stQuem: "Pasajeros y equipaje", stCarro: "Elija el vehículo", footSel: "Elija el vehículo", footTot: "Total de este servicio", cupom: "Cupón de descuento", cupomBtn: "Aplicar", cupomOk: "Cupón {c} aplicado: {p}% de descuento", cupomRem: "quitar", desconto: "Descuento", e_cupom_invalido: "Cupón inválido", e_cupom_expirado: "Este cupón expiró", e_cupom_esgotado: "Este cupón se agotó", obsPh: "Ej.: cartel con nombre, parada en el camino, bebé", origem: "Buscar en (hotel o dirección)", destino: "Llevar a", destinoOpc: "Llevar a (opcional)",
@@ -341,13 +341,22 @@
 
   /* ---------- modal ---------- */
   var cur = null, quotes = {}, qTimer = null, qSeq = 0;
+  /* combo (ex.: chegada por Foz + saída pelo aeroporto argentino): abre um trecho depois do outro, cada um com seu preço */
+  var COMBO = null;
   function openSvc(id, pre) {
     var s = svc(id); if (!s) return;
+    if (s.tipo === "combo") { COMBO = { id: id, ids: s.combo, i: 0 }; track("select_content", { content_type: "combo", item_id: id }); return openSvc(s.combo[0], { sentido: "chegada", data: pre && pre.data, pax: pre && pre.pax }); }
+    if (!pre || !pre.doCombo) { if (COMBO && COMBO.ids[COMBO.i] !== id) COMBO = null; }
     cur = { servico: id, categoria: null, pax: 2, malas: 0, malasBordo: 0, mochilas: 0, carros: 1, cadeirinhas: 0, pet: false, horasExtras: 0, horas: CAT.config.porHora.minimoHoras, dias: 1, sentido: "chegada", data: "", hora: "", voo: "", origem: "", destino: "" };
-    if (pre) { if (pre.data) cur.data = pre.data; if (pre.pax) cur.pax = pre.pax; }
+    if (pre) { if (pre.data) cur.data = pre.data; if (pre.pax) cur.pax = pre.pax; if (pre.sentido) cur.sentido = pre.sentido; if (pre.local) cur.local = pre.local; if (pre.categoria) cur.categoria = pre.categoria; if (pre.malas != null) cur.malas = pre.malas; }
     quotes = {};
     track("view_item", { item_id: id, item_name: s.nome.pt });
-    renderModal(); var m = $("#r-modal"); if (m.showModal) m.showModal(); else m.setAttribute("open", "");
+    renderModal();
+    if (COMBO && COMBO.ids[COMBO.i] === id) {
+      var h = $("#r-modal-b h3"), cs = svc(COMBO.id);
+      if (h) h.insertAdjacentHTML("beforebegin", '<p class="r-combo">' + esc(t("comboPasso", { i: COMBO.i + 1, n: COMBO.ids.length })) + " · " + esc(L(cs.nome)) + "</p>");
+    }
+    var m = $("#r-modal"); if (m.showModal) m.showModal(); else m.setAttribute("open", "");
   }
   function field(l, input, cls) { return '<label class="r-f' + (cls ? " " + cls : "") + '"><span>' + esc(l) + "</span>" + input + "</label>"; }
   /* bagagem nunca bloqueia: acima da referência dos carros (4 malas grandes) só mostra um aviso forte */
@@ -416,7 +425,7 @@
     var step = function (n, tit) { return '<section class="r-step"><h4><i>' + n + "</i>" + esc(t(tit)) + "</h4>"; };
     // no computador: formulário à esquerda e escolha do carro à direita (no celular fica tudo em uma coluna)
     f += '<div class="r-mgrid"><div class="r-mcol">' + step(1, "stQuando");
-    if (s.sentido) f += field(t("sentido"), '<select name="sentido"><option value="chegada">' + esc(s.fixo ? t("chegadaF", { d: L(s.fixo) }) : t("chegada")) + '</option><option value="saida">' + esc(s.fixo ? t("saidaF", { d: L(s.fixo) }) : t("saida")) + "</option></select>");
+    if (s.sentido) f += field(t("sentido"), '<select name="sentido"><option value="chegada">' + esc(s.fixo ? t("chegadaF", { d: L(s.fixo) }) : t("chegada")) + '</option><option value="saida"' + (cur.sentido === "saida" ? " selected" : "") + '>' + esc(s.fixo ? t("saidaF", { d: L(s.fixo) }) : t("saida")) + "</option></select>");
     f += '<div class="r-row">' + field(t("data") + " *", '<input type="date" name="data" min="' + hoje() + '"' + (cur.data ? ' value="' + esc(cur.data) + '"' : "") + ' required>') +
       field((s.voo ? t("horaVoo") : t("hora")) + " *", '<input type="time" name="hora" required>') + "</div>";
     if (s.voo) f += field(t("voo"), '<input name="voo" placeholder="G3 1234" maxlength="20">');
@@ -430,7 +439,7 @@
         '<div class="r-kminfo" id="r-kminfo" aria-live="polite"></div>' +
         '<p class="r-note">' + esc(t("kmRegras", { a: pk.acrescimoAcimaKm, p: pk.acrescimoPct })) + "</p>";
     } else if (s.sentido)
-    f += '<label class="r-f"><span id="r-local-l">' + esc(t(cur.sentido === "saida" ? "localSai" : "localCheg") + " *") + '</span><input name="local" required maxlength="160" autocomplete="street-address"' + (s.fixo ? ' value="' + esc(L(s.fixo)) + '"' : "") + "></label>";
+    f += '<label class="r-f"><span id="r-local-l">' + esc(t(cur.sentido === "saida" ? "localSai" : "localCheg") + " *") + '</span><input name="local" required maxlength="160" autocomplete="street-address"' + (s.fixo ? ' value="' + esc(L(s.fixo)) + '"' : cur.local ? ' value="' + esc(cur.local) + '"' : "") + "></label>";
     else
     f += '<div class="r-row">' + field(t("origem") + " *", '<input name="origem" required maxlength="160" autocomplete="street-address">') +
       field(s.tipo === "transfer" || s.tipo === "viagem" ? t("destino") : t("destinoOpc"), '<input name="destino" maxlength="160">') + "</div>";
@@ -918,7 +927,14 @@
       }
       S.cart.push(item);
     }
+    var prox = null;
+    if (COMBO && COMBO.ids[COMBO.i] === cur.servico) {
+      COMBO.i++;
+      if (COMBO.i < COMBO.ids.length) prox = { id: COMBO.ids[COMBO.i], pre: { doCombo: true, sentido: "saida", local: cur.local, pax: cur.pax, malas: cur.malas, categoria: cur.categoria } };
+      else COMBO = null;
+    }
     saveCart(); closeModal();
+    if (prox) { setTimeout(function () { openSvc(prox.id, prox.pre); }, 350); return; }
     ["#r-cart", "#r-bar"].forEach(function (sel) { var el = $(sel); if (el) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); } });
     track("add_to_cart", { value: q.valor, currency: "BRL", items: [{ item_id: item.servico, item_variant: item.categoria }] });
     $("#r-cart").scrollIntoView({ behavior: "smooth", block: "nearest" });

@@ -12,7 +12,7 @@ import { normalizarItem, cotarTodas, servico } from "./cotacao.js";
 
 const MODELO = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 const LINGUAS = { pt: "português do Brasil", en: "English", es: "español" };
-const VISIVEIS = SERVICOS.filter((s) => !s.oculto && s.tipo !== "km");
+const VISIVEIS = SERVICOS.filter((s) => !s.oculto && s.tipo !== "km" && s.tipo !== "combo");
 
 /* ---------------- utilidades de texto e data ---------------- */
 const sa = (t) => String(t || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
