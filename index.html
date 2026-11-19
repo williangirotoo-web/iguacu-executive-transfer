@@ -39,7 +39,7 @@
 <meta name="geo.placename" content="Foz do Iguaçu, Paraná, Brasil">
 <link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" type="image/png" sizes="96x96" href="/img/favicon-96.png">
 <link rel="preload" as="image" href="/img/transfer-aeroporto-suv-executivo-corolla-cross-1600.webp" type="image/webp">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/menu.css">
 <link rel="stylesheet" href="/css/aeroporto.css?v=15">
@@ -148,8 +148,8 @@
 </nav>
 <main>
 <section class="a-hero hm-hero">
-  <video class="hm-video" data-hm-video muted loop playsinline autoplay preload="metadata" aria-hidden="true" tabindex="-1" poster="/img/hero-video-poster.webp" data-src-d="/video/foz-transfer-cataratas-1280.mp4" data-src-m="/video/foz-transfer-cataratas-mobile.mp4" data-poster-m="/img/hero-video-poster-m.webp"></video>
-  <script>(function(){var v=document.querySelector("[data-hm-video]");if(!v)return;var m=matchMedia("(max-width:760px)").matches,rm=matchMedia("(prefers-reduced-motion:reduce)").matches,sd=navigator.connection&&navigator.connection.saveData;if(m)v.poster=v.dataset.posterM;if(rm||sd){v.removeAttribute("autoplay");return}v.src=m?v.dataset.srcM:v.dataset.srcD;v.addEventListener("playing",function(){v.classList.add("on")});var p=v.play();if(p&&p.catch)p.catch(function(){})})();</script>
+  <video class="hm-video" data-hm-video muted loop playsinline autoplay preload="metadata" aria-hidden="true" tabindex="-1" data-src-d="/video/foz-transfer-cataratas-1280.mp4" data-src-m="/video/foz-transfer-cataratas-mobile.mp4"></video>
+  <script>(function(){var v=document.querySelector("[data-hm-video]");if(!v)return;var m=matchMedia("(max-width:760px)").matches,rm=matchMedia("(prefers-reduced-motion:reduce)").matches,sd=navigator.connection&&navigator.connection.saveData;if(rm||sd){v.removeAttribute("autoplay");return}v.src=m?v.dataset.srcM:v.dataset.srcD;v.addEventListener("playing",function(){v.classList.add("on")});var p=v.play();if(p&&p.catch)p.catch(function(){})})();</script>
   <div class="hm-aura" aria-hidden="true"><i></i><i></i><i></i></div><div class="hm-gridfx" aria-hidden="true"></div>
   <div class="a-hero-in">
     <p class="a-eye">Foz do Iguaçu · desde 2004 · 24 horas</p>
@@ -275,6 +275,6 @@
 <nav class="a-mbar" aria-label="Reservar"><a class="a-btn" href="/reservar/">Ver preços</a><a class="a-btn a-wa" href="https://wa.me/5545991185798?text=Ol%C3%A1%21%20Quero%20um%20transfer%20em%20Foz%20do%20Igua%C3%A7u." target="_blank" rel="noopener">WhatsApp</a></nav>
 <script src="/js/aeroporto.js?v=5" defer></script>
 <script>(function(){var n=document.getElementById("nav"),m=document.getElementById("mobileMenu");addEventListener("scroll",function(){n.classList.toggle("scrolled",scrollY>40)},{passive:true});var h=document.getElementById("hamburger");if(h)h.addEventListener("click",function(){m.classList.toggle("open")})})();</script>
-<script src="/js/stories.js?v=1" defer></script>
+<script src="/js/stories.js?v=2" defer></script>
 </body>
 </html>
