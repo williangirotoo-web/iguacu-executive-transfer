@@ -11,7 +11,7 @@ h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;line-hei
 .a-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,var(--gold),#b8952b);color:#0a0a0a;border:0;border-radius:10px;padding:12px 18px;font:inherit;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:filter .2s,box-shadow .25s,translate .2s}
 .a-btn:hover{filter:brightness(1.07);box-shadow:0 10px 26px -12px rgba(212,175,55,.8);translate:0 -1px}
 .a-ghost{background:transparent;color:var(--txt);border:1px solid rgba(37,211,102,.55)}.a-ghost:hover{background:rgba(37,211,102,.1);box-shadow:none}
-.a-wa{background:var(--wa);color:#fff}
+.a-wa{background:var(--wa);color:#0b1f12}
 .a-big{padding:16px 26px;font-size:.78rem}
 /* hero */
 .a-hero{position:relative;isolation:isolate;overflow:hidden;min-height:88vh;display:grid;grid-template-columns:1fr 360px;gap:40px;align-items:center;padding:120px max(24px,calc((100% - 1192px)/2)) 70px}
@@ -298,7 +298,7 @@ h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;line-hei
 .f-ct a{color:var(--txt)!important;font-weight:600;font-size:1rem}
 .f-bt{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
 .f-bt .a-btn{padding:10px 14px;font-size:.66rem;color:#0a0a0a!important}
-.f-bt .a-wa{color:#fff!important}
+.f-bt .a-wa{color:#0b1f12!important}
 .f-cols{display:grid;grid-template-columns:repeat(5,1fr);gap:28px}
 .f-col{display:flex;flex-direction:column;gap:9px}
 .f-col h4{font-family:'Montserrat',system-ui,sans-serif;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 6px;font-weight:600}
