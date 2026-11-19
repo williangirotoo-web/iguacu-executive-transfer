@@ -1452,12 +1452,45 @@ function heroVideo(k) {
   return `<video class="hv" data-hero-video muted loop playsinline autoplay preload="none" aria-hidden="true" tabindex="-1" poster="/img/${k}-poster.webp" data-src-d="/video/${k}-1280.mp4" data-src-m="/video/${k}-mobile.mp4" data-poster-m="/img/${k}-poster-m.webp"></video>`;
 }
 
+/* Preços atuais (os do painel) já no HTML: o Google e os buscadores de IA leem o mesmo valor que o cliente vê,
+   e os dados estruturados (Offer) batem com a página. Sem isso, só o JavaScript do navegador trocava os valores. */
+const NOME_CAT = Object.fromEntries(Object.entries(CATEGORIAS).map(([k, c]) => [c.nome.pt, k]));
+const brl0 = (v) => "R$ " + Number(v).toLocaleString("pt-BR", { maximumFractionDigits: 0 });
+function precoAtual(id, cat) { const s = SERVICOS.find((x) => x.id === id); return s && s.precos ? s.precos[cat] : null; }
+function precoMin(id) { const s = SERVICOS.find((x) => x.id === id); if (!s || !s.precos) return null; const v = Object.values(s.precos).filter((x) => x != null); return v.length ? Math.min(...v) : null; }
+function ajustarOfertas(x) {
+  if (Array.isArray(x)) { x.forEach(ajustarOfertas); return; }
+  if (!x || typeof x !== "object") return;
+  if (x["@type"] === "Offer" && typeof x.url === "string" && typeof x.name === "string") {
+    const id = (x.url.match(/[?&]s=([a-z0-9-]+)/) || [])[1], cat = NOME_CAT[x.name.split(", ").pop()], v = id && cat ? precoAtual(id, cat) : null;
+    if (v) x.price = String(v);
+  }
+  for (const v of Object.values(x)) if (v && typeof v === "object") ajustarOfertas(v);
+  if (x["@type"] === "AggregateOffer" && Array.isArray(x.offers)) {
+    const ps = x.offers.map((o) => Number(o.price)).filter((n) => n > 0);
+    if (ps.length) { x.lowPrice = String(Math.min(...ps)); x.highPrice = String(Math.max(...ps)); }
+  }
+}
+function comPrecos(rw) {
+  let buf = "";
+  return rw
+    .on("[data-p]", { element(el) { const [id, cat] = (el.getAttribute("data-p") || "").split(":"), v = precoAtual(id, cat); if (v) el.setInnerContent(brl0(v)); } })
+    .on("[data-pmin]", { element(el) { const v = precoMin(el.getAttribute("data-pmin")); if (v) el.setInnerContent(brl0(v)); } })
+    .on('script[type="application/ld+json"]', { text(t) {
+      buf += t.text;
+      if (!t.lastInTextNode) { t.remove(); return; }
+      let out = buf; buf = "";
+      if (out.includes('"Offer"')) { try { const d = JSON.parse(out); ajustarOfertas(d); out = JSON.stringify(d); } catch (e) { /* JSON-LD inválido: deixa como veio */ } }
+      t.replace(out, { html: true });
+    } });
+}
+
 function comApp(res, url) {
   const p = url.pathname;
   if (!res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
   if (p.startsWith("/admin") || p.startsWith("/parceiro/") || p.startsWith("/motorista/") || p === "/offline.html") return res;
   const k = HERO_VIDEO[p];
-  let rw = new HTMLRewriter().on("head", { element(el) { el.append(APP_HEAD + (k ? HV_CSS : ""), { html: true }); } });
+  let rw = comPrecos(new HTMLRewriter()).on("head", { element(el) { el.append(APP_HEAD + (k ? HV_CSS : ""), { html: true }); } });
   if (k) {
     let feito = false;
     rw = rw.on("section.a-hero, section.r-hero", { element(el) { if (!feito) { feito = true; el.prepend(heroVideo(k), { html: true }); } } });
@@ -1475,7 +1508,8 @@ export default {
     } else {
       res = url.pathname.startsWith("/m/") ? await servirMidia(req, env, url) : url.pathname.startsWith("/video/") ? await videoParcial(req, env) : await env.ASSETS.fetch(req);
       if ((url.pathname === "/reservar/" || url.pathname === "/reservar/index.html") && req.method === "GET" && res.ok) { await carregarPrecos(env); res = previaReserva(res, url); }
-      if (req.method === "GET") res = comApp(res, url);
+      if (req.method === "GET" && (res.headers.get("content-type") || "").includes("text/html")) { await carregarPrecos(env); res = comApp(res, url); }
+      else if (req.method === "GET") res = comApp(res, url);
     }
     // endereços de teste (*.workers.dev) nunca entram no Google
     if (url.hostname.endsWith(".workers.dev")) {
