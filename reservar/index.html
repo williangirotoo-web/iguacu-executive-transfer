@@ -113,7 +113,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:'Montserrat',sys
 .r-moedas button{background:rgba(16,17,19,.7);border:1px solid var(--line2);color:var(--txt);padding:5px 12px;border-radius:20px;font:inherit;font-size:.7rem;font-weight:600;cursor:pointer;transition:all .25s}
 .r-moedas button:hover{border-color:var(--gold)}
 .r-moedas button.on{background:rgba(212,175,55,.16);border-color:var(--gold);color:var(--gold)}
-.r-moedas[hidden]{display:none}
+.r-moedas{min-height:30px}.r-moedas[hidden]{display:flex!important;visibility:hidden}
 #r-cart-tot .r-fx,.r-paybox .r-fx{text-align:right}
 .r-ci-f em .r-fx{display:block}
 small.r-parc,.r-card-f small.r-parc,.r-price small.r-parc{all:unset;display:block;flex-basis:100%;font:600 .74rem/1.3 Montserrat,system-ui,sans-serif;color:#f0d77b;margin-top:4px;letter-spacing:.01em}.r-price small.r-parc{text-align:right}
@@ -207,7 +207,7 @@ small.r-parc,.r-card-f small.r-parc,.r-price small.r-parc{all:unset;display:bloc
 .r-btn:active{transform:scale(.98)}
 .r-btn span{transition:transform .25s}.r-btn:hover span{transform:translateX(3px)}
 .r-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
-.r-btn-wa{background:var(--wa);color:#fff}.r-btn-wa:hover{box-shadow:0 8px 22px -10px rgba(37,211,102,.7)}
+.r-btn-wa{background:var(--wa);color:#0b1f12}.r-btn-wa:hover{box-shadow:0 8px 22px -10px rgba(37,211,102,.7)}
 .r-ghost{background:transparent;color:var(--txt);border:1px solid var(--line2)}
 .r-big{width:100%;padding:16px;font-size:.84rem;margin-top:8px}
 .r-link{background:none;border:0;color:var(--mut);font:inherit;font-size:.7rem;text-decoration:underline;cursor:pointer;padding:0}
@@ -310,7 +310,7 @@ dialog#r-modal::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
 #r-modal-b h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;margin:0 0 4px}
 /* barra móvel e rodapé */
 .r-bar{display:none}
-.r-legal{font-size:.62rem;letter-spacing:.06em;color:rgba(242,239,233,.42);text-align:center;padding:22px 16px;border-top:1px solid var(--line2)}
+.r-legal{font-size:.62rem;letter-spacing:.06em;color:rgba(242,239,233,.62);text-align:center;padding:22px 16px;border-top:1px solid var(--line2)}
 /* animação de entrada */
 .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s var(--ease) var(--d,0ms),transform .6s var(--ease) var(--d,0ms)}
 .reveal.in{opacity:1;transform:none}
@@ -357,6 +357,7 @@ input[type="date"],input[type="time"]{cursor:pointer}
 .r-cupom{margin:4px 0 6px}.r-cupin{display:flex;gap:8px}.r-cupin input{flex:1}.r-cupin .r-btn{padding:0 18px}
 .r-cupok{font-size:.82rem;color:#a5d6a7;margin:4px 0 10px}.r-link{background:none;border:0;color:var(--mut);text-decoration:underline;cursor:pointer;font:inherit;font-size:.78rem}
 .r-paybox .r-desc{color:#a5d6a7}.r-taxa{color:var(--mut)}
+h2.r-paises-t{font-family:inherit;font-weight:400;text-align:start;line-height:1.6}
 </style>
 </head>
 <body>
@@ -390,21 +391,21 @@ input[type="date"],input[type="time"]{cursor:pointer}
 <section class="r-hero">
   <p class="r-eyebrow" id="r-eyebrow">Reserva online · Preço fechado na hora</p>
   <h1 id="r-h1">Reserve seu transfer em Foz do Iguaçu</h1>
-  <p id="r-sub"></p>
-  <ol class="r-steps" id="r-steps"></ol>
+  <p id="r-sub">Escolha o trajeto e a categoria do veículo. Preço fechado, calculado na hora, sem taxímetro.</p>
+  <ol class="r-steps" id="r-steps"><li><b>1</b><span>Escolha o serviço</span></li><li><b>2</b><span>Data, passageiros e categoria</span></li><li><b>3</b><span>Envie e confirmamos no WhatsApp</span></li></ol>
   <div class="r-tools" aria-label="Idioma">
     <button type="button" data-lang="pt">PT</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="es">ES</button>
   </div>
   <div class="r-moedas" id="r-moedas" hidden></div>
 </section>
-<div class="r-benef" id="r-benef"></div>
+<div class="r-benef" id="r-benef"><div class="r-bf reveal in"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path></svg></i><div><b>Preço fechado</b><span>Você vê o valor antes de reservar. Sem taxímetro e sem surpresa.</span></div></div><div class="r-bf reveal in"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a6.5 6.5 0 0113 0"></path></svg></i><div><b>Motorista profissional</b><span>Atendimento discreto, carro limpo e pontualidade combinada.</span></div></div><div class="r-bf reveal in"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 11-3-6.7L21 8"></path><path d="M21 3v5h-5"></path></svg></i><div><b>Cancelamento grátis</b><span>Até 48 h antes da viagem, sem custo.</span></div></div><div class="r-bf reveal in"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 010 20 15 15 0 010-20"></path></svg></i><div><b>3 países</b><span>Brasil, Argentina e Paraguai com travessia de fronteira.</span></div></div></div>
 <div class="r-wrap" id="r-lista">
   <section aria-label="Serviços">
     <div class="r-pacote" id="r-pacote" hidden></div>
-    <div class="r-paises-w"><p class="r-paises-t" id="r-paises-t">Para onde você vai?</p><div class="r-paises" id="r-paises" role="group" aria-labelledby="r-paises-t"></div></div>
+    <div class="r-paises-w"><h2 class="r-paises-t" id="r-paises-t">Para onde você vai?</h2><div class="r-paises" id="r-paises" role="group" aria-labelledby="r-paises-t"></div></div>
     <div id="r-calc-cta"></div>
     <div class="r-bar-f">
-      <div class="r-chips" id="r-chips" role="tablist"></div>
+      <div class="r-chips" id="r-chips" role="group" aria-label="Tipos de serviço"></div>
       <div class="r-filt">
         <label class="r-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="r-q" type="search" autocomplete="off"></label>
         <label class="r-sel"><span id="r-pax-l">Pessoas</span><select id="r-pax"></select></label>
