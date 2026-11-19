@@ -80,7 +80,7 @@ export const SERVICOS = [
   { id: "igu-foz", grupo: "aeroporto", tipo: "transfer", voo: true, sentido: true, foto: "transfer-aeroporto-suv-executivo-corolla-cross",
     nome: N("Aeroporto de Foz (IGU) ⇄ hotel em Foz", "Foz Airport (IGU) ⇄ hotel in Foz", "Aeropuerto de Foz (IGU) ⇄ hotel en Foz"),
     desc: N("Motorista com placa de identificação no desembarque. 1 hora de espera grátis após o pouso.", "Driver with a name sign at arrivals. 1 hour free waiting after landing.", "Chofer con cartel en arribos. 1 hora de espera gratis tras el aterrizaje."),
-    precos: P(300, 1100, 1200, 400, 5000) },
+    precos: P(350, 1100, 1200, 400, 5000) },
   { id: "igu-pi", grupo: "aeroporto", tipo: "transfer", voo: true, sentido: true, fronteira: true, foto: "marco-das-tres-fronteiras",
     nome: N("Aeroporto de Foz (IGU) ⇄ hotel em Puerto Iguazú (AR)", "Foz Airport (IGU) ⇄ hotel in Puerto Iguazú (AR)", "Aeropuerto de Foz (IGU) ⇄ hotel en Puerto Iguazú (AR)"),
     desc: N("Direto ao seu hotel na Argentina, com travessia da fronteira.", "Straight to your hotel in Argentina, border crossing included.", "Directo a su hotel en Argentina, con cruce de frontera."),
