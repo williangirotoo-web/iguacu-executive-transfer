@@ -33,9 +33,9 @@
     if (!S.length) return;
     var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
     var v = vistos();
-    box.innerHTML = '<div class="ist-row" role="list">' + S.map(function (s, i) {
+    box.innerHTML = '<div class="ist-row">' + S.map(function (s, i) {
       var capa = s.capa || (s.tipo === "imagem" ? s.midia : "");
-      return '<button type="button" class="ist-b' + (v.indexOf(s.id) >= 0 ? " visto" : "") + '" data-i="' + i + '" role="listitem" aria-label="Ver story: ' + esc(s.titulo) + '"><span class="ist-r"><span style="' + (capa ? "background-image:url('/m/" + esc(capa) + "')" : "") + '"></span></span><small>' + esc(s.titulo) + "</small></button>";
+      return '<button type="button" class="ist-b' + (v.indexOf(s.id) >= 0 ? " visto" : "") + '" data-i="' + i + '" aria-label="Ver story: ' + esc(s.titulo) + '"><span class="ist-r"><span style="' + (capa ? "background-image:url('/m/" + esc(capa) + "')" : "") + '"></span></span><small>' + esc(s.titulo) + "</small></button>";
     }).join("") + "</div>";
     box.hidden = false;
     box.addEventListener("click", function (e) { var b = e.target.closest("[data-i]"); if (b) abrir(+b.dataset.i); });

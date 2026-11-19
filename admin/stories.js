@@ -28,6 +28,18 @@
       img.onerror = function () { falha(new Error("imagem")); }; img.src = u;
     });
   }
+  /* capa leve (300 x 300, recorte central) para a bolinha: evita baixar a foto inteira só para um círculo de 72 px */
+  function miniatura(file) {
+    return new Promise(function (ok) {
+      var img = new Image(), u = URL.createObjectURL(file);
+      img.onload = function () {
+        var lado = Math.min(img.width, img.height), c = document.createElement("canvas"); c.width = c.height = 300;
+        c.getContext("2d").drawImage(img, (img.width - lado) / 2, (img.height - lado) / 2, lado, lado, 0, 0, 300, 300); URL.revokeObjectURL(u);
+        c.toBlob(function (b) { ok(b); }, "image/webp", 0.8);
+      };
+      img.onerror = function () { ok(null); }; img.src = u;
+    });
+  }
   /* vídeo: tira uma foto do segundo 1 para ser a capa da bolinha */
   function capaDoVideo(file) {
     return new Promise(function (ok) {
@@ -60,7 +72,9 @@
     var passo = video
       ? capaDoVideo(f).then(function (c) { return c ? enviarArquivo(c, "image/webp").then(function (r) { capa = r.chave; }) : null; })
           .then(function () { return enviarArquivo(f, f.type || "video/mp4", function (p) { i.style.width = Math.round(p * 100) + "%"; }); })
-      : prepararImagem(f).then(function (b) { st.textContent = "Enviando imagem…"; return enviarArquivo(b, "image/webp", function (p) { i.style.width = Math.round(p * 100) + "%"; }); });
+      : miniatura(f).then(function (m) { return m ? enviarArquivo(m, "image/webp").then(function (r) { capa = r.chave; }).catch(function () {}) : null; })
+          .then(function () { return prepararImagem(f); })
+          .then(function (b) { st.textContent = "Enviando imagem…"; return enviarArquivo(b, "image/webp", function (p) { i.style.width = Math.round(p * 100) + "%"; }); });
     passo.then(function (r) {
       return api("/api/admin/stories/novo", { titulo: $("#tit").value, midia: r.chave, capa: capa, link: $("#lnk").value.trim(), cta: $("#cta").value.trim() });
     }).then(function (r) {
