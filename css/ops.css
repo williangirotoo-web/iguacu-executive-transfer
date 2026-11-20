@@ -25,6 +25,8 @@
 .ops,.ops *{box-sizing:border-box}
 body.ops{margin:0;background:var(--o-bg);color:var(--o-fg);font:14px/1.45 var(--o-font);font-variant-numeric:tabular-nums}
 .ops button{font:inherit;color:inherit;cursor:pointer}
+.ops [hidden]{display:none!important}
+a.o-btn{display:inline-block;text-decoration:none;color:var(--o-fg)}
 .ops :focus-visible{outline:2px solid var(--o-gold);outline-offset:2px}
 
 /* estrutura */
@@ -60,8 +62,8 @@ body.ops{margin:0;background:var(--o-bg);color:var(--o-fg);font:14px/1.45 var(--
 .o-chips{display:flex;gap:6px;flex-wrap:wrap}
 .o-chip{border:1px solid var(--o-line2);background:var(--o-panel);border-radius:20px;padding:5px 12px;font-size:.82rem;color:var(--o-mut)}
 .o-chip[aria-pressed="true"]{background:var(--o-fg);color:var(--o-bg);border-color:var(--o-fg)}
-.o-field{display:grid;gap:4px;font-size:.8rem;color:var(--o-mut)}
-.o-field input,.o-field select,.o-field textarea{padding:9px 10px;border:1px solid var(--o-line2);border-radius:8px;background:var(--o-panel);color:var(--o-fg);font:inherit;font-size:.9rem}
+.o-field{display:grid;gap:4px;font-size:.8rem;color:var(--o-mut);min-width:0}
+.o-field input,.o-field select,.o-field textarea{width:100%;min-width:0;padding:9px 10px;border:1px solid var(--o-line2);border-radius:8px;background:var(--o-panel);color:var(--o-fg);font:inherit;font-size:.9rem}
 .o-kbd{border:1px solid var(--o-line2);border-bottom-width:2px;border-radius:5px;padding:0 5px;font-size:.72rem;color:var(--o-mut)}
 .o-search{display:flex;align-items:center;gap:8px;border:1px solid var(--o-line);background:var(--o-panel);border-radius:9px;padding:7px 10px;color:var(--o-faint);min-width:260px}
 

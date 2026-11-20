@@ -1314,7 +1314,7 @@ async function api(req, env, ctx, url) {
   const mm = p.match(/^\/api\/pedidos\/(IET-[A-Z0-9]{6})$/);
   if (mm && m === "GET") return verPedidoCliente(env, mm[1], url.searchParams.get("t"));
   // plataforma de gestão: fica dentro de /api/admin/ para continuar atrás do mesmo Cloudflare Access do painel
-  if (p.startsWith("/api/admin/ops/")) { const u = await verificarAccess(req, env); return u ? ops(req, env, url, u) : erro("nao_autorizado", 401); }
+  if (p.startsWith("/api/admin/ops/")) { const u = await verificarAccess(req, env); return u ? ops(req, env, url, u, { prepararBanco }) : erro("nao_autorizado", 401); }
   if (p.startsWith("/api/admin")) return admin(req, env, url);
   return erro("rota", 404);
 }

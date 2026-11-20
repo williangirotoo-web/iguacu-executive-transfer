@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Nova reserva manual | Painel Iguaçu Executive Transfer</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/ops.css?v=2">
+<style>
+.nr-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.nr-grid .w2{grid-column:span 2}.nr-grid .w4{grid-column:1/-1}
+.nr-sec{padding:16px}
+.nr-trecho{border:1px solid var(--o-line);border-radius:10px;padding:14px;margin-top:12px;background:var(--o-bg)}
+.nr-trecho h3{margin:0 0 10px;font-size:.95rem;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.nr-ref{font-size:.75rem;color:var(--o-faint)}
+.nr-total{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px}
+.nr-total b{font-size:1.2rem}
+.nr-erro{color:var(--o-red);font-weight:500}
+.nr-ok{padding:18px}
+@media (max-width:760px){.nr-grid{grid-template-columns:1fr 1fr}.nr-grid .w2{grid-column:1/-1}}
+@media (max-width:420px){.nr-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="ops">
+<header class="o-top">
+  <a class="o-brand" href="/admin/"><b>IGUAÇU</b><span>Painel</span></a>
+  <a class="o-btn" href="/admin/">← Reservas</a>
+</header>
+<main class="o-main"><div class="o-wrap" style="max-width:920px">
+  <div class="o-head"><div><h1>Nova reserva manual</h1><p class="o-sub">Para vendas fechadas fora do site: WhatsApp, telefone, indicação. O pedido entra no painel junto com os do site.</p></div></div>
+
+  <form id="f" novalidate>
+    <h2 class="o-h2">Cliente</h2>
+    <div class="o-card nr-sec"><div class="nr-grid">
+      <label class="o-field w2">Nome *<input id="c-nome" required maxlength="120" autocomplete="off"></label>
+      <label class="o-field">WhatsApp / telefone *<input id="c-tel" required maxlength="40" inputmode="tel" placeholder="+55 45 9…"></label>
+      <label class="o-field">E-mail<input id="c-email" type="email" maxlength="160"></label>
+      <label class="o-field">Idioma<select id="c-idioma"><option value="pt">Português</option><option value="en">English</option><option value="es">Español</option></select></label>
+      <label class="o-field">País<input id="c-pais" maxlength="60" placeholder="Brasil"></label>
+      <label class="o-field">Venda feita por<select id="origem"><option value="whatsapp">WhatsApp</option><option value="telefone">Telefone</option><option value="indicacao">Indicação</option><option value="parceiro">Parceiro</option><option value="agencia">Agência</option><option value="outro">Outro</option></select></label>
+      <label class="o-field">Código do pedido<input id="codigo" maxlength="10" placeholder="automático" style="text-transform:uppercase"></label>
+    </div><p class="o-note" style="margin:10px 0 0">Código: deixe vazio para gerar sozinho, ou use o que já foi enviado ao cliente (formato IET-XXXXXX).</p></div>
+
+    <h2 class="o-h2">Trechos e serviços</h2>
+    <div id="trechos"></div>
+    <button class="o-btn" type="button" id="add" style="margin-top:12px">+ Adicionar trecho</button>
+
+    <h2 class="o-h2">Pagamento já recebido</h2>
+    <div class="o-card nr-sec"><div class="nr-grid">
+      <label class="o-field">Valor recebido (R$)<input id="p-valor" inputmode="decimal" placeholder="0,00"></label>
+      <label class="o-field">Forma<select id="p-metodo"><option value="link_infinitepay">Link InfinitePay</option><option value="pix">Pix</option><option value="cartao">Cartão</option><option value="paypal">PayPal</option><option value="dinheiro">Dinheiro</option><option value="transferencia">Transferência</option></select></label>
+      <label class="o-field">Data do pagamento<input id="p-data" type="date"></label>
+      <label class="o-field">Situação do pedido<select id="status"><option value="confirmada">Confirmada</option><option value="pagamento_pendente">Aguardando pagamento</option><option value="solicitacao">Solicitação</option></select></label>
+      <label class="o-field w4">Link do comprovante (opcional)<input id="p-recibo" maxlength="300" placeholder="https://recibo.infinitepay.io/…"></label>
+      <label class="o-field w4">Observações internas<textarea id="obs" rows="2" maxlength="1000"></textarea></label>
+    </div><p class="o-note" style="margin:10px 0 0">Não registre CPF ou número de documento aqui.</p></div>
+
+    <div class="o-card nr-total" style="margin-top:18px">
+      <div><span class="o-sub">Total</span><br><b id="tot">R$ 0</b> <span class="o-sub" id="saldo"></span></div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span id="msg" class="nr-erro" role="alert"></span><button class="o-btn pri" type="submit" id="salvar">Registrar reserva</button></div>
+    </div>
+  </form>
+  <div id="pronto" hidden></div>
+</div></main>
+<script src="/js/ops-ui.js?v=2"></script>
+<script>
+(function(){
+  var O=window.OPS, $=function(s,c){return (c||document).querySelector(s)}, CAT=null, n=0;
+  var ERROS={nome:"Informe o nome do cliente.",telefone:"Informe um telefone com DDD.",email:"E-mail inválido.",codigo:"Código no formato IET-XXXXXX (6 letras ou números).",codigo_em_uso:"Esse código já existe no sistema. Use outro ou deixe vazio.",itens:"Adicione pelo menos um trecho.",servico:"Escolha o serviço do trecho",categoria:"Escolha a categoria do trecho",data_hora:"Confira a data e o horário do trecho",valor:"Confira o valor do trecho",pagamento_maior_que_total:"O valor recebido é maior que o total.",pagamento_recibo:"O link do comprovante precisa começar com https://",pagamento_data:"Data do pagamento inválida."};
+  function num(v){v=String(v||"").replace(/[R$\s]/g,"").replace(/\.(?=\d{3}(\D|$))/g,"").replace(",",".");var x=Number(v);return isFinite(x)?x:0}
+  function svc(id){return CAT&&CAT.servicos.filter(function(s){return s.id===id})[0]}
+  function opcoesServico(){
+    var g={aeroporto:"Aeroporto e transfers",passeios:"Passeios",motorista:"Motorista",viagens:"Viagens"};
+    return '<option value="">Escolha…</option>'+Object.keys(g).map(function(k){
+      return '<optgroup label="'+g[k]+'">'+CAT.servicos.filter(function(s){return s.grupo===k&&s.tipo!=="combo"&&!s.oculto}).map(function(s){return '<option value="'+s.id+'">'+O.esc(s.nome.pt)+'</option>'}).join("")+'</optgroup>';
+    }).join("");
+  }
+  function opcoesCat(){return Object.keys(CAT.categorias).map(function(k){return '<option value="'+k+'">'+O.esc(CAT.categorias[k].nome.pt)+'</option>'}).join("")}
+  function addTrecho(){
+    n++; var d=document.createElement("div"); d.className="nr-trecho"; d.dataset.i=n;
+    d.innerHTML='<h3><span>Trecho</span><button type="button" class="o-btn" data-rm style="padding:3px 10px">Remover</button></h3><div class="nr-grid">'+
+      '<label class="o-field w2">Serviço *<select data-k="servico">'+opcoesServico()+'</select></label>'+
+      '<label class="o-field">Categoria *<select data-k="categoria">'+opcoesCat()+'</select></label>'+
+      '<label class="o-field" data-sent hidden>Sentido<select data-k="sentido"></select></label>'+
+      '<label class="o-field">Data *<input type="date" data-k="data"></label>'+
+      '<label class="o-field">Horário de busca *<input type="time" data-k="hora"></label>'+
+      '<label class="o-field">Voo<input data-k="voo" maxlength="20" placeholder="opcional"></label>'+
+      '<label class="o-field">Pessoas<input type="number" min="1" max="60" value="1" data-k="pax"></label>'+
+      '<label class="o-field w2">Buscar em<input data-k="origem" maxlength="160"></label>'+
+      '<label class="o-field w2">Levar para<input data-k="destino" maxlength="160"></label>'+
+      '<label class="o-field">Malas grandes<input type="number" min="0" max="30" value="0" data-k="malas"></label>'+
+      '<label class="o-field">Malas de mão<input type="number" min="0" max="30" value="0" data-k="malasBordo"></label>'+
+      '<label class="o-field">Mochilas<input type="number" min="0" max="30" value="0" data-k="mochilas"></label>'+
+      '<label class="o-field">Valor cobrado (R$) *<input inputmode="decimal" data-k="valor" placeholder="0,00"><span class="nr-ref" data-ref></span></label>'+
+      '<label class="o-field w4">Observação do trecho (o motorista vê)<input data-k="obs" maxlength="300"></label></div>';
+    $("#trechos").appendChild(d); atualizar(d); return d;
+  }
+  function atualizar(d){
+    var s=svc($('[data-k=servico]',d).value), cat=$('[data-k=categoria]',d).value, box=$("[data-sent]",d), sel=$('[data-k=sentido]',d);
+    if(s&&s.sentido){var f=s.fixo&&s.fixo.pt;sel.innerHTML='<option value="chegada">'+O.esc(f?"Aeroporto de Foz → "+f:"Chegada: aeroporto → hotel")+'</option><option value="saida">'+O.esc(f?f+" → Aeroporto de Foz":"Saída: hotel → aeroporto")+'</option>';box.hidden=false}else{box.hidden=true}
+    var ref=s&&s.precos?s.precos[cat]:null; $("[data-ref]",d).textContent=ref?"Tabela do site: "+O.brl(ref):"";
+    var v=$('[data-k=valor]',d); if(!v.value&&ref) v.placeholder=String(ref).replace(".",",");
+    soma();
+  }
+  function soma(){
+    var t=0; document.querySelectorAll(".nr-trecho").forEach(function(d){t+=num($('[data-k=valor]',d).value)});
+    $("#tot").textContent=O.brl(t); var p=num($("#p-valor").value);
+    $("#saldo").textContent=p>0?(p>=t-0.001?"· pago":"· saldo "+O.brl(t-p)):"";
+  }
+  document.addEventListener("change",function(e){var d=e.target.closest(".nr-trecho");if(d&&e.target.matches("[data-k=servico],[data-k=categoria]"))atualizar(d)});
+  document.addEventListener("input",function(e){if(e.target.matches("[data-k=valor],#p-valor"))soma()});
+  document.addEventListener("click",function(e){var b=e.target.closest("[data-rm]");if(b){b.closest(".nr-trecho").remove();soma()}});
+  $("#add").addEventListener("click",function(){addTrecho()});
+
+  $("#f").addEventListener("submit",function(e){
+    e.preventDefault(); var msg=$("#msg"); msg.textContent="";
+    var itens=[].map.call(document.querySelectorAll(".nr-trecho"),function(d){var o={};d.querySelectorAll("[data-k]").forEach(function(x){o[x.dataset.k]=x.value});if(!o.valor)o.valor=$('[data-k=valor]',d).placeholder;return o});
+    var corpo={cliente:{nome:$("#c-nome").value,telefone:$("#c-tel").value,email:$("#c-email").value,pais:$("#c-pais").value},idioma:$("#c-idioma").value,origem:$("#origem").value,
+      codigo:$("#codigo").value.trim().toUpperCase(),status:$("#status").value,observacoes:$("#obs").value,itens:itens,
+      pagamento:num($("#p-valor").value)>0?{valor:$("#p-valor").value,metodo:$("#p-metodo").value,data:$("#p-data").value,recibo:$("#p-recibo").value.trim()}:null};
+    var bt=$("#salvar"); bt.disabled=true; bt.textContent="Registrando…";
+    O.api("/api/admin/ops/pedidos",{method:"POST",body:corpo}).then(function(r){
+      bt.disabled=false; bt.textContent="Registrar reserva";
+      if(!r.ok){var t=ERROS[r.erro]; msg.textContent=t?(t+(r.item!==undefined?" "+(r.item+1)+".":"")):r.mensagem; return}
+      $("#f").hidden=true; var p=$("#pronto"); p.hidden=false;
+      p.innerHTML='<div class="o-card nr-ok"><h1>Reserva '+O.esc(r.codigo)+' registrada</h1><p class="o-sub">Total '+O.brl(r.total)+' · pago '+O.brl(r.pago)+' · situação: '+O.pill(r.status)+'</p><p>Ela já aparece no painel de reservas, junto com as do site.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="o-btn pri" href="/admin/">Ver no painel</a><a class="o-btn" href="/admin/nova-reserva.html">Registrar outra</a></div></div>';
+      O.toast("Reserva registrada");
+    });
+  });
+
+  fetch("/api/catalogo").then(function(r){return r.json()}).then(function(d){CAT=d;addTrecho()}).catch(function(){$("#msg").textContent="Não consegui carregar o catálogo. Recarregue a página."});
+})();
+</script>
+</body>
+</html>

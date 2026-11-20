@@ -75,7 +75,7 @@
     var h = "<h3>Pagamento online</h3>";
     h += pgs.map(function (x) {
       return '<div class="ev"><b>' + esc(x.descricao) + " " + brl(x.valor) + '</b> · <span class="cst cst-' + (x.status === "pago" ? "aceita" : "ofertada") + '">' + esc(PST[x.status] || x.status) + "</span>" +
-        (x.status === "pago" ? " em " + esc(quando(x.pago_em)) + " · " + esc(x.metodo === "pix" ? "Pix" : x.metodo === "paypal" ? "PayPal" : "cartão" + (x.parcelas > 1 ? " " + x.parcelas + "x" : "")) + (x.recibo_url ? ' · <a style="color:var(--gold)" href="' + esc(x.recibo_url) + '" target="_blank" rel="noopener">recibo</a>' : "")
+        (x.status === "pago" ? " em " + esc(quando(x.pago_em)) + " · " + esc(({ pix: "Pix", paypal: "PayPal", link_infinitepay: "link InfinitePay", dinheiro: "dinheiro", transferencia: "transferência" })[x.metodo] || "cartão" + (x.parcelas > 1 ? " " + x.parcelas + "x" : "")) + (x.recibo_url ? ' · <a style="color:var(--gold)" href="' + esc(x.recibo_url) + '" target="_blank" rel="noopener">recibo</a>' : "")
           : ' <a class="btn wa mini" target="_blank" rel="noopener" href="' + esc(waCliente(p, msgPag(p, x.descricao, x.valor, x.url))) + '">Enviar no WhatsApp</a> <button class="btn gh mini" type="button" data-copiar="' + esc(x.url) + '">Copiar link</button>') + "</div>";
     }).join("");
     h += '<p class="svc">Pago: <b>' + brl(pago) + "</b> · Falta: <b>" + brl(rest) + "</b></p>";
