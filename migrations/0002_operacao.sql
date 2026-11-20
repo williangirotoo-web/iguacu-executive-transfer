@@ -1,5 +1,5 @@
 -- Fase 1 (pacote 1) da plataforma de gestão: frota, motoristas e o registro operacional de cada serviço.
--- Só cria tabelas novas e UMA coluna opcional em eventos. Nada usado pela venda é alterado ou apagado.
+-- Só cria tabelas novas (CREATE IF NOT EXISTS): pode ser rodada mais de uma vez sem problema. Nada usado pela venda é alterado.
 
 CREATE TABLE IF NOT EXISTS motoristas (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -73,10 +73,3 @@ CREATE TABLE IF NOT EXISTS duracoes (
   folga_fronteira_min INTEGER NOT NULL DEFAULT 0,
   atualizado_em TEXT NOT NULL, autor TEXT
 );
-
--- o histórico que já existe passa a poder apontar para um serviço
--- (a tabela eventos já existe em produção; o CREATE abaixo só vale para um banco novo de teste)
-CREATE TABLE IF NOT EXISTS eventos (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, pedido_id INTEGER NOT NULL REFERENCES pedidos(id),
-  em TEXT NOT NULL, tipo TEXT NOT NULL, status_de TEXT, status_para TEXT, autor TEXT, texto TEXT);
-ALTER TABLE eventos ADD COLUMN servico_id INTEGER;
