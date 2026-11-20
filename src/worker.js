@@ -3,7 +3,7 @@ import { CONFIG, CATEGORIAS, SERVICOS, CONSULTA, HORA_EXTRA, POR_HORA, POR_KM, D
 import { normalizarItem, cotar, cotarTodas, valorAgora, servico, aplicarPrecos, PRECOS_PADRAO } from "./cotacao.js";
 import { buscarLugares, resolverRota } from "./rota.js";
 import { assistente } from "./assistente.js";
-import { ops } from "./ops.js";
+import { ops, sincronizarServicos } from "./ops.js";
 import { EmailMessage } from "cloudflare:email";
 
 export const STATUS = ["solicitacao", "pagamento_pendente", "aprovado", "aguardando_confirmacao", "confirmada", "concluida", "cancelada"];
@@ -1502,6 +1502,10 @@ function comApp(res, url) {
 }
 
 export default {
+  // agendamento (wrangler.jsonc "triggers"): mantém a lista de serviços da operação em dia. Nunca mexe na venda.
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(sincronizarServicos(env).catch((e) => console.error("sincronizar", e && e.stack)));
+  },
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
     let res;

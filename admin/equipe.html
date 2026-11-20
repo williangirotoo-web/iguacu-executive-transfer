@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Equipe e frota | Painel Iguaçu Executive Transfer</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/ops.css?v=2">
+<style>
+.eq-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.eq-form .w2{grid-column:1/-1}
+.eq-acoes{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.eq-idi{display:flex;gap:10px;flex-wrap:wrap;font-size:.85rem;color:var(--o-fg)}
+.eq-idi label{display:flex;gap:4px;align-items:center}
+.eq-vence{color:var(--o-red);font-weight:600}
+.eq-aviso{padding:16px}
+@media (max-width:520px){.eq-form{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="ops">
+<header class="o-top">
+  <a class="o-brand" href="/admin/"><b>IGUAÇU</b><span>Painel</span></a>
+  <nav class="o-chips" aria-label="Painel"><a class="o-btn" href="/admin/">Reservas</a><a class="o-btn" href="/admin/servicos.html">Serviços</a></nav>
+</header>
+<main class="o-main"><div class="o-wrap">
+  <div class="o-head"><div><h1>Equipe e frota</h1><p class="o-sub">Motoristas e carros que a operação pode escalar.</p></div><button class="o-btn pri" type="button" id="novo">+ Novo motorista</button></div>
+  <div class="o-chips" role="tablist" aria-label="Cadastro"><button class="o-chip" type="button" role="tab" data-aba="motoristas" aria-pressed="true">Motoristas</button><button class="o-chip" type="button" role="tab" data-aba="veiculos" aria-pressed="false">Veículos</button></div>
+  <div id="lista" style="margin-top:14px"><div class="o-card o-empty">Carregando…</div></div>
+  <p class="o-note">Guardamos só a validade da CNH e dos documentos do carro, nunca os números.</p>
+</div></main>
+<script src="/js/ops-ui.js?v=2"></script>
+<script>
+(function(){
+  var O=window.OPS, aba="motoristas", dados={motoristas:[],veiculos:[]}, parceiros=[], perms=[];
+  var CATS={comum:"Comum",exec:"Executivo",suv:"Executivo SUV",sete:"7 Lugares",luxo:"Executivo Luxo",van:"Van"};
+  var IDI={pt:"Português",es:"Espanhol",en:"Inglês",fr:"Francês",it:"Italiano",de:"Alemão"};
+  var ST_M={ativo:["Ativo","o-green"],folga:["De folga","o-amber"],inativo:["Inativo","o-wait"]};
+  var ST_V={ativo:["Ativo","o-green"],oficina:["Na oficina","o-amber"],inativo:["Inativo","o-wait"]};
+  var PAG={diaria:"Diária",servico:"Por serviço",ambos:"Diária e por serviço"};
+  var ERR={nome:"Informe o nome.",telefone:"Informe um telefone com DDD.",email:"E-mail inválido.",placa:"Placa inválida.",modelo:"Informe o modelo.",categoria:"Escolha a categoria.",placa_em_uso:"Já existe um carro com essa placa.",cnh_validade:"Data da CNH inválida.",valor_diaria:"Valor da diária inválido.",valor_servico:"Valor por serviço inválido."};
+  var pill=function(m,k){var x=m[k]||[k,"o-wait"];return '<span class="o-pill '+x[1]+'">'+x[0]+'</span>'};
+  var dataBr=function(d){return d?d.split("-").reverse().join("/"):"—"};
+  function vence(d){if(!d)return "—";var dias=(Date.parse(d+"T12:00:00Z")-Date.now())/864e5;return dias<30?'<span class="eq-vence">'+dataBr(d)+(dias<0?" (vencida)":"")+'</span>':dataBr(d)}
+  function pNome(id){var p=parceiros.filter(function(x){return x.id===id})[0];return p?(p.empresa||p.responsavel):""}
+
+  function migracao(){document.getElementById("lista").innerHTML='<div class="o-card eq-aviso"><b>Falta criar as tabelas novas no banco.</b><p class="o-sub">Rode a migração 0002 (o passo a passo está na mensagem do pacote). Até lá, o resto do painel e o site funcionam normalmente.</p></div>'}
+  function carregar(){
+    Promise.all([O.api("/api/admin/ops/motoristas"),O.api("/api/admin/ops/veiculos"),O.api("/api/admin/ops/parceiros-atende"),O.api("/api/admin/ops/eu")]).then(function(r){
+      if(r[0].erro==="migracao_pendente"||r[1].erro==="migracao_pendente")return migracao();
+      if(!r[0].ok){document.getElementById("lista").innerHTML='<div class="o-card o-empty">'+O.esc(r[0].mensagem)+'</div>';return}
+      dados.motoristas=r[0].lista;dados.veiculos=r[1].lista||[];parceiros=r[2].lista||[];perms=r[3].permissoes||[];render();
+    });
+  }
+  function render(){
+    var el=document.getElementById("lista"), L=dados[aba];
+    document.getElementById("novo").textContent=aba==="motoristas"?"+ Novo motorista":"+ Novo veículo";
+    if(!L.length){el.innerHTML='<div class="o-card o-empty">'+(aba==="motoristas"?"Nenhum motorista cadastrado ainda. Use “+ Novo motorista” quando contratar o primeiro.":"Nenhum carro cadastrado ainda.")+'</div>';return}
+    if(aba==="motoristas") el.innerHTML='<div class="o-card o-tablewrap"><table class="o-table"><thead><tr><th>Nome</th><th>Telefone</th><th>Idiomas</th><th>Tipo</th><th>Pagamento</th><th>CNH vence</th><th class="num">Serviços</th><th>Situação</th></tr></thead><tbody>'+
+      L.map(function(m){return '<tr data-id="'+m.id+'"><td><b>'+O.esc(m.nome)+'</b></td><td class="mut">'+O.esc(m.telefone)+'</td><td>'+O.esc(m.idiomas.split(",").map(function(i){return i.toUpperCase()}).join(" · "))+'</td><td>'+(m.tipo==="parceiro"?"Parceiro"+(m.parceiro_id?" · "+O.esc(pNome(m.parceiro_id)):""):"Próprio")+'</td><td class="mut">'+O.esc(PAG[m.pagamento_modelo]||"")+(m.valor_diaria?" · "+O.brl(m.valor_diaria)+"/dia":"")+(m.valor_servico?" · "+O.brl(m.valor_servico)+"/serv.":"")+'</td><td>'+vence(m.cnh_validade)+'</td><td class="num">'+(m.servicos_feitos||0)+'</td><td>'+pill(ST_M,m.status)+'</td></tr>'}).join("")+'</tbody></table></div>';
+    else el.innerHTML='<div class="o-card o-tablewrap"><table class="o-table"><thead><tr><th>Placa</th><th>Carro</th><th>Categoria</th><th class="num">Lugares</th><th class="num">Malas</th><th>Dono</th><th>Motorista padrão</th><th>Licenciamento</th><th>Seguro</th><th>Situação</th></tr></thead><tbody>'+
+      L.map(function(v){return '<tr data-id="'+v.id+'"><td><b>'+O.esc(v.placa)+'</b></td><td>'+O.esc([v.marca,v.modelo,v.ano,v.cor].filter(Boolean).join(" "))+'</td><td>'+O.esc(CATS[v.categoria]||v.categoria)+'</td><td class="num">'+v.lugares+'</td><td class="num">'+v.malas+'</td><td class="mut">'+(v.dono==="iet"?"IET":v.dono==="alugado"?"Alugado":"Parceiro"+(v.parceiro_id?" · "+O.esc(pNome(v.parceiro_id)):""))+'</td><td>'+O.esc(v.motorista_padrao_nome||"—")+'</td><td>'+vence(v.licenciamento_validade)+'</td><td>'+vence(v.seguro_validade)+'</td><td>'+pill(ST_V,v.status)+'</td></tr>'}).join("")+'</tbody></table></div>';
+  }
+  function opt(obj,sel){return Object.keys(obj).map(function(k){return '<option value="'+k+'"'+(k===sel?" selected":"")+'>'+O.esc(obj[k])+'</option>'}).join("")}
+  function optParc(sel){return '<option value="">—</option>'+parceiros.map(function(p){return '<option value="'+p.id+'"'+(p.id===sel?" selected":"")+'>'+O.esc(p.empresa||p.responsavel)+'</option>'}).join("")}
+  var v=function(x){return x==null?"":O.esc(x)};
+  function formMotorista(m){
+    m=m||{idiomas:"pt",tipo:"proprio",status:"ativo",pagamento_modelo:"servico"};var verValor=perms.indexOf("valores.ver")>=0;
+    return '<div class="eq-form"><label class="o-field w2">Nome *<input name="nome" value="'+v(m.nome)+'" maxlength="120"></label>'+
+      '<label class="o-field">WhatsApp *<input name="telefone" value="'+v(m.telefone)+'" inputmode="tel" maxlength="40"></label><label class="o-field">E-mail<input name="email" value="'+v(m.email)+'" maxlength="160"></label>'+
+      '<div class="o-field w2">Idiomas<div class="eq-idi">'+Object.keys(IDI).map(function(k){return '<label><input type="checkbox" name="idi" value="'+k+'"'+(m.idiomas.split(",").indexOf(k)>=0?" checked":"")+'>'+IDI[k]+'</label>'}).join("")+'</div></div>'+
+      '<label class="o-field">Tipo<select name="tipo">'+opt({proprio:"Próprio da IET",parceiro:"De parceiro"},m.tipo)+'</select></label><label class="o-field">Parceiro<select name="parceiro_id">'+optParc(m.parceiro_id)+'</select></label>'+
+      '<label class="o-field">Situação<select name="status">'+opt({ativo:"Ativo",folga:"De folga",inativo:"Inativo"},m.status)+'</select></label><label class="o-field">CNH vence em<input type="date" name="cnh_validade" value="'+v(m.cnh_validade)+'"></label>'+
+      '<label class="o-field">Como recebe<select name="pagamento_modelo">'+opt(PAG,m.pagamento_modelo)+'</select></label><span></span>'+
+      (verValor?'<label class="o-field">Valor da diária (R$)<input name="valor_diaria" inputmode="decimal" value="'+v(m.valor_diaria)+'"></label><label class="o-field">Valor por serviço (R$)<input name="valor_servico" inputmode="decimal" value="'+v(m.valor_servico)+'"></label>':'')+
+      '<label class="o-field w2">Observações<textarea name="obs" rows="2" maxlength="500">'+v(m.obs)+'</textarea></label></div>';
+  }
+  function formVeiculo(c){
+    c=c||{categoria:"exec",dono:"iet",status:"ativo"};
+    var mots='<option value="">—</option>'+dados.motoristas.filter(function(m){return m.status!=="inativo"}).map(function(m){return '<option value="'+m.id+'"'+(m.id===c.motorista_padrao_id?" selected":"")+'>'+O.esc(m.nome)+'</option>'}).join("");
+    return '<div class="eq-form"><label class="o-field">Placa *<input name="placa" value="'+v(c.placa)+'" maxlength="10" style="text-transform:uppercase"></label><label class="o-field">Categoria *<select name="categoria">'+opt(CATS,c.categoria)+'</select></label>'+
+      '<label class="o-field">Marca<input name="marca" value="'+v(c.marca)+'" maxlength="40"></label><label class="o-field">Modelo *<input name="modelo" value="'+v(c.modelo)+'" maxlength="60"></label>'+
+      '<label class="o-field">Ano<input name="ano" inputmode="numeric" value="'+v(c.ano)+'" maxlength="4"></label><label class="o-field">Cor<input name="cor" value="'+v(c.cor)+'" maxlength="30"></label>'+
+      '<label class="o-field">Lugares (passageiros)<input name="lugares" inputmode="numeric" value="'+v(c.lugares)+'" placeholder="pela categoria"></label><label class="o-field">Malas grandes<input name="malas" inputmode="numeric" value="'+v(c.malas)+'" placeholder="pela categoria"></label>'+
+      '<label class="o-field">Dono<select name="dono">'+opt({iet:"IET",parceiro:"Parceiro",alugado:"Alugado"},c.dono)+'</select></label><label class="o-field">Parceiro<select name="parceiro_id">'+optParc(c.parceiro_id)+'</select></label>'+
+      '<label class="o-field">Motorista padrão<select name="motorista_padrao_id">'+mots+'</select></label><label class="o-field">Situação<select name="status">'+opt({ativo:"Ativo",oficina:"Na oficina",inativo:"Inativo"},c.status)+'</select></label>'+
+      '<label class="o-field">Licenciamento vence<input type="date" name="licenciamento_validade" value="'+v(c.licenciamento_validade)+'"></label><label class="o-field">Seguro vence<input type="date" name="seguro_validade" value="'+v(c.seguro_validade)+'"></label>'+
+      '<label class="o-field w2">Observações<textarea name="obs" rows="2" maxlength="500">'+v(c.obs)+'</textarea></label></div>';
+  }
+  function abrir(item){
+    var mot=aba==="motoristas", t=item?(mot?item.nome:item.placa):(mot?"Novo motorista":"Novo veículo");
+    var d=O.painel('<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><h1>'+O.esc(t)+'</h1><button class="o-x" type="button" data-o-fechar aria-label="Fechar">×</button></div><form id="cad" novalidate>'+(mot?formMotorista(item):formVeiculo(item))+
+      '<p class="nr-erro" id="cad-msg" role="alert" style="color:var(--o-red);margin:12px 0 0"></p><div class="eq-acoes"><button class="o-btn" type="button" data-o-fechar>Cancelar</button><button class="o-btn pri" type="submit">Salvar</button></div></form>',t);
+    d.querySelector("#cad").addEventListener("submit",function(e){
+      e.preventDefault();var f=e.target,b={};
+      [].forEach.call(f.elements,function(x){if(x.name&&x.name!=="idi")b[x.name]=x.value});
+      if(mot)b.idiomas=[].map.call(f.querySelectorAll('[name=idi]:checked'),function(x){return x.value});
+      var bt=f.querySelector("[type=submit]");bt.disabled=true;
+      O.api("/api/admin/ops/"+aba+(item?"/"+item.id:""),{method:item?"PATCH":"POST",body:b}).then(function(r){
+        bt.disabled=false;if(!r.ok){f.querySelector("#cad-msg").textContent=ERR[r.erro]||r.mensagem;return}
+        O.fechar();O.toast(item?"Alterações salvas":"Cadastro feito");carregar();
+      });
+    });
+  }
+  document.addEventListener("click",function(e){
+    var c=e.target.closest("[data-aba]");if(c){aba=c.dataset.aba;document.querySelectorAll("[data-aba]").forEach(function(x){x.setAttribute("aria-pressed",x===c?"true":"false")});render();return}
+    var tr=e.target.closest("tr[data-id]");if(tr){abrir(dados[aba].filter(function(x){return x.id===+tr.dataset.id})[0]);return}
+    if(e.target.closest("#novo"))abrir(null);
+  });
+  carregar();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Serviços | Painel Iguaçu Executive Transfer</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/ops.css?v=2">
+<style>
+.sv-dia{font-size:.8rem;font-weight:600;color:var(--o-mut);margin:22px 0 8px;display:flex;gap:8px;align-items:center}
+.sv-dia span{color:var(--o-faint);font-weight:400}
+.sv-flag{font-size:.7rem;font-weight:700;color:var(--o-mut);border:1px solid var(--o-line2);border-radius:4px;padding:0 4px;margin-left:6px}
+.sv-aviso{padding:16px}
+</style>
+</head>
+<body class="ops">
+<header class="o-top">
+  <a class="o-brand" href="/admin/"><b>IGUAÇU</b><span>Painel</span></a>
+  <nav class="o-chips" aria-label="Painel"><a class="o-btn" href="/admin/">Reservas</a><a class="o-btn" href="/admin/equipe.html">Equipe e frota</a></nav>
+</header>
+<main class="o-main"><div class="o-wrap">
+  <div class="o-head"><div><h1>Serviços</h1><p class="o-sub">Cada trecho de pedido pago ou confirmado vira um serviço. Site e reservas manuais entram sozinhos.</p></div><a class="o-btn pri" href="/admin/nova-reserva.html">+ Nova reserva</a></div>
+  <div class="o-chips" role="group" aria-label="Período">
+    <button class="o-chip" type="button" data-p="14" aria-pressed="true">Próximos 14 dias</button>
+    <button class="o-chip" type="button" data-p="45" aria-pressed="false">Próximos 45 dias</button>
+    <button class="o-chip" type="button" data-p="90" aria-pressed="false">Próximos 90 dias</button>
+    <button class="o-chip" type="button" data-p="-30" aria-pressed="false">Últimos 30 dias</button>
+  </div>
+  <div id="lista"><div class="o-card o-empty" style="margin-top:14px">Carregando…</div></div>
+  <p class="o-note">Atribuir motorista, calendário e alertas chegam no próximo pacote.</p>
+</div></main>
+<script src="/js/ops-ui.js?v=2"></script>
+<script>
+(function(){
+  var O=window.OPS, L=[];
+  var CATS={comum:"Comum",exec:"Executivo",suv:"SUV",sete:"7 Lugares",luxo:"Luxo",van:"Van"};
+  var DS=["dom","seg","ter","qua","qui","sex","sáb"];
+  function iso(d){return new Date(d.getTime()-3*3600e3).toISOString().slice(0,10)}
+  function carregar(dias){
+    var hoje=new Date(), de, ate;
+    if(dias>0){de=iso(hoje);ate=iso(new Date(hoje.getTime()+dias*864e5))}else{de=iso(new Date(hoje.getTime()+dias*864e5));ate=iso(hoje)}
+    document.getElementById("lista").innerHTML='<div class="o-card o-empty" style="margin-top:14px">Carregando…</div>';
+    O.api("/api/admin/ops/servicos?de="+de+"&ate="+ate).then(function(r){
+      var el=document.getElementById("lista");
+      if(r.erro==="migracao_pendente"){el.innerHTML='<div class="o-card sv-aviso" style="margin-top:14px"><b>Falta criar as tabelas novas no banco.</b><p class="o-sub">Rode a migração 0002. Até lá, o resto do painel e o site funcionam normalmente.</p></div>';return}
+      if(!r.ok){el.innerHTML='<div class="o-card o-empty" style="margin-top:14px">'+O.esc(r.mensagem)+'</div>';return}
+      L=r.lista; if(!L.length){el.innerHTML='<div class="o-card o-empty" style="margin-top:14px">Nenhum serviço neste período.</div>';return}
+      var grupos={};L.forEach(function(s){(grupos[s.data]=grupos[s.data]||[]).push(s)});
+      el.innerHTML=Object.keys(grupos).sort().map(function(d){
+        var dt=new Date(d+"T12:00:00Z"), g=grupos[d], sem=g.filter(function(s){return s.status==="a_atribuir"}).length;
+        return '<div class="sv-dia">'+DS[dt.getUTCDay()]+' '+d.split("-").reverse().join("/")+'<span>· '+g.length+' serviço'+(g.length>1?'s':'')+(sem?' · '+sem+' sem motorista':'')+'</span></div>'+
+        '<div class="o-card o-tablewrap"><table class="o-table"><thead><tr><th>Hora</th><th>Serviço</th><th>Cliente</th><th>Grupo</th><th>Executor</th><th>Situação</th><th>Pedido</th></tr></thead><tbody>'+
+        g.map(function(s){var ex=s.motorista_nome?O.esc(s.motorista_nome)+(s.placa?' <span class="mut">· '+O.esc(s.placa)+'</span>':''):s.parceiro_id?O.esc(s.parceiro_nome||s.parceiro_resp||"Parceiro"):'<span class="mut">—</span>';
+          return '<tr data-id="'+s.id+'"><td><b>'+O.esc(s.hora)+'</b></td><td>'+O.esc(s.servico_nome)+'</td><td>'+O.esc(s.cliente)+'<span class="sv-flag">'+O.esc((s.idioma||"pt").toUpperCase())+'</span></td><td class="mut">'+s.pax+' pax · '+O.esc(CATS[s.categoria]||s.categoria)+'</td><td>'+ex+'</td><td>'+O.pill(s.status)+'</td><td class="mut">'+O.esc(s.codigo)+'</td></tr>'}).join("")+
+        '</tbody></table></div>';
+      }).join("");
+    });
+  }
+  function ficha(s){
+    var bag=[s.malas?s.malas+" mala(s) grande(s)":"",s.malas_bordo?s.malas_bordo+" de mão":"",s.mochilas?s.mochilas+" mochila(s)":"",s.cadeirinhas?s.cadeirinhas+" cadeirinha(s)":""].filter(Boolean).join(" · ")||"—";
+    var tel=String(s.telefone||"").replace(/\D/g,"");
+    O.painel('<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div><h1>'+O.esc(s.servico_nome)+'</h1><p class="o-sub">'+s.data.split("-").reverse().join("/")+' às '+O.esc(s.hora)+' · '+O.esc(s.codigo)+'</p></div><button class="o-x" type="button" data-o-fechar aria-label="Fechar">×</button></div>'+
+      '<div class="o-kv"><span>Situação</span><span>'+O.pill(s.status)+(s.importado?' <span class="mut">(trazido do histórico)</span>':'')+'</span><span>Cliente</span><b>'+O.esc(s.cliente)+'</b><span>WhatsApp</span><span>'+O.esc(s.telefone)+(tel.length>=10?' · <a href="https://wa.me/'+(tel.length<=11?"55"+tel:tel)+'" target="_blank" rel="noopener" style="color:var(--o-gold)">abrir</a>':'')+'</span>'+
+      '<span>Buscar em</span><span>'+O.esc(s.origem||"—")+'</span><span>Levar para</span><span>'+O.esc(s.destino||"—")+'</span><span>Voo</span><span>'+O.esc(s.voo||"—")+'</span>'+
+      '<span>Grupo</span><span>'+s.pax+' pessoa(s) · '+O.esc(CATS[s.categoria]||s.categoria)+'</span><span>Bagagem</span><span>'+O.esc(bag)+'</span><span>Observação</span><span>'+O.esc(s.obs||"—")+'</span>'+
+      (s.valor!=null?'<span>Valor do trecho</span><span>'+O.brl(s.valor)+'</span>':'')+'<span>Ocupa até</span><span>'+new Date(s.fim_previsto_utc).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})+' (estimativa)</span></div>'+
+      '<a class="o-btn" href="/admin/">Abrir pedido no painel</a>',"Serviço");
+  }
+  document.addEventListener("click",function(e){
+    var c=e.target.closest("[data-p]");if(c){document.querySelectorAll("[data-p]").forEach(function(x){x.setAttribute("aria-pressed",x===c?"true":"false")});carregar(+c.dataset.p);return}
+    var tr=e.target.closest("tr[data-id]");if(tr)ficha(L.filter(function(s){return s.id===+tr.dataset.id})[0]);
+  });
+  carregar(14);
+})();
+</script>
+</body>
+</html>

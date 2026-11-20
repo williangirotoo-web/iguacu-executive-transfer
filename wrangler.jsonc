@@ -38,6 +38,8 @@
     "INFINITEPAY_HANDLE": "rede_transporte"
   },
   "observability": { "enabled": true },
+  // a cada 15 minutos: cria o registro operacional dos pedidos pagos/confirmados (plataforma de gestão)
+  "triggers": { "crons": ["*/15 * * * *"] },
   // Versoes de teste (ramos diferentes de main). Usam o mesmo banco; os pedidos de teste
   // ficam marcados com o endereco de teste (campo "origem") e podem ser cancelados no painel.
   "previews": {
