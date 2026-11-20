@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Plataforma | Painel Iguaçu Executive Transfer</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/ops.css?v=1">
+</head>
+<body class="ops">
+<header class="o-top">
+  <a class="o-brand" href="/admin/"><b>IGUAÇU</b><span>Plataforma</span></a>
+  <span class="o-sub" id="quem">Conferindo seu acesso…</span>
+</header>
+<main class="o-main"><div class="o-wrap">
+  <div class="o-head"><div><h1>Plataforma de gestão · Fase 0</h1><p class="o-sub">Base técnica instalada. As telas de operação chegam na Fase 1.</p></div></div>
+
+  <h2 class="o-h2">Seu acesso</h2>
+  <div class="o-card" style="padding:4px 16px"><div class="o-kv" id="acesso"><span>Situação</span><b>Carregando…</b></div></div>
+
+  <h2 class="o-h2">Componentes da interface</h2>
+  <div class="o-card" style="padding:16px;display:grid;gap:16px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap" id="status"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="o-btn pri" type="button" data-demo="toast">Botão principal</button>
+      <button class="o-btn" type="button" data-demo="painel">Abrir painel lateral</button>
+      <button class="o-btn perigo" type="button" data-demo="toast">Ação de risco</button>
+    </div>
+    <div class="o-chips" role="group" aria-label="Exemplo de filtros"><button class="o-chip" type="button" aria-pressed="true">Hoje</button><button class="o-chip" type="button" aria-pressed="false">Amanhã</button><button class="o-chip" type="button" aria-pressed="false">Sem motorista</button></div>
+  </div>
+  <p class="o-note">Página interna, protegida pelo mesmo login do painel e fora do Google.</p>
+</div></main>
+<script src="/js/ops-ui.js?v=1"></script>
+<script>
+(function(){
+  var O=window.OPS;
+  document.getElementById("status").innerHTML=["a_atribuir","atribuido","confirmado","a_caminho","no_atrativo","concluido","no_show","cancelado"].map(O.pill).join("");
+  O.api("/api/admin/ops/eu").then(function(d){
+    var box=document.getElementById("acesso");
+    if(!d.ok){box.innerHTML='<span>Situação</span><b style="color:var(--o-red)">'+O.esc(d.mensagem)+'</b>';document.getElementById("quem").textContent="";return;}
+    var nomes={super_admin:"Super Admin",admin:"Administrador",operacional:"Operacional",financeiro:"Financeiro",supervisor:"Supervisor"};
+    document.getElementById("quem").textContent=d.email;
+    box.innerHTML='<span>E-mail</span><b>'+O.esc(d.email)+'</b><span>Papel</span><b>'+O.esc(nomes[d.papel]||d.papel)+'</b><span>Permissões</span><span>'+d.permissoes.map(O.esc).join(" · ")+'</span>';
+  });
+  document.addEventListener("click",function(e){
+    var b=e.target.closest("[data-demo]"); if(b){ if(b.dataset.demo==="toast") O.toast("Exemplo de aviso"); else O.painel('<div style="display:flex;justify-content:space-between;align-items:flex-start"><h1>Painel lateral</h1><button class="o-x" type="button" data-o-fechar aria-label="Fechar">×</button></div><p class="o-sub">Aqui vão abrir a ficha do pedido, do serviço e do motorista.</p>',"Exemplo"); return; }
+    var c=e.target.closest(".o-chip"); if(c){ c.parentNode.querySelectorAll(".o-chip").forEach(function(x){x.setAttribute("aria-pressed",x===c?"true":"false")}); }
+  });
+})();
+</script>
+</body>
+</html>

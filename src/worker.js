@@ -3,6 +3,7 @@ import { CONFIG, CATEGORIAS, SERVICOS, CONSULTA, HORA_EXTRA, POR_HORA, POR_KM, D
 import { normalizarItem, cotar, cotarTodas, valorAgora, servico, aplicarPrecos, PRECOS_PADRAO } from "./cotacao.js";
 import { buscarLugares, resolverRota } from "./rota.js";
 import { assistente } from "./assistente.js";
+import { ops } from "./ops.js";
 import { EmailMessage } from "cloudflare:email";
 
 export const STATUS = ["solicitacao", "pagamento_pendente", "aprovado", "aguardando_confirmacao", "confirmada", "concluida", "cancelada"];
@@ -1312,6 +1313,8 @@ async function api(req, env, ctx, url) {
   if (mp && m === "GET") return verPacote(env, mp[1]);
   const mm = p.match(/^\/api\/pedidos\/(IET-[A-Z0-9]{6})$/);
   if (mm && m === "GET") return verPedidoCliente(env, mm[1], url.searchParams.get("t"));
+  // plataforma de gestão: fica dentro de /api/admin/ para continuar atrás do mesmo Cloudflare Access do painel
+  if (p.startsWith("/api/admin/ops/")) { const u = await verificarAccess(req, env); return u ? ops(req, env, url, u) : erro("nao_autorizado", 401); }
   if (p.startsWith("/api/admin")) return admin(req, env, url);
   return erro("rota", 404);
 }
