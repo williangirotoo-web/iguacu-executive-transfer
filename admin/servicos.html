@@ -17,7 +17,7 @@
 <body class="ops">
 <header class="o-top">
   <a class="o-brand" href="/admin/"><b>IGUAÇU</b><span>Painel</span></a>
-  <nav class="o-chips" aria-label="Painel"><a class="o-btn" href="/admin/">Reservas</a><a class="o-btn" href="/admin/equipe.html">Equipe e frota</a></nav>
+  <nav class="o-chips" aria-label="Painel"><a class="o-btn" href="/admin/hoje.html">Hoje</a><a class="o-btn" href="/admin/calendario.html">Calendário</a><a class="o-btn" href="/admin/">Reservas</a><a class="o-btn" href="/admin/equipe.html">Equipe e frota</a></nav>
 </header>
 <main class="o-main"><div class="o-wrap">
   <div class="o-head"><div><h1>Serviços</h1><p class="o-sub">Cada trecho de pedido pago ou confirmado vira um serviço. Site e reservas manuais entram sozinhos.</p></div><a class="o-btn pri" href="/admin/nova-reserva.html">+ Nova reserva</a></div>
@@ -28,9 +28,10 @@
     <button class="o-chip" type="button" data-p="-30" aria-pressed="false">Últimos 30 dias</button>
   </div>
   <div id="lista"><div class="o-card o-empty" style="margin-top:14px">Carregando…</div></div>
-  <p class="o-note">Atribuir motorista, calendário e alertas chegam no próximo pacote.</p>
+  <p class="o-note">Clique num serviço para atribuir motorista e carro ou mudar a situação.</p>
 </div></main>
 <script src="/js/ops-ui.js?v=2"></script>
+<script src="/js/ops-atribuir.js?v=1"></script>
 <script>
 (function(){
   var O=window.OPS, L=[];
@@ -69,7 +70,7 @@
   }
   document.addEventListener("click",function(e){
     var c=e.target.closest("[data-p]");if(c){document.querySelectorAll("[data-p]").forEach(function(x){x.setAttribute("aria-pressed",x===c?"true":"false")});carregar(+c.dataset.p);return}
-    var tr=e.target.closest("tr[data-id]");if(tr)ficha(L.filter(function(s){return s.id===+tr.dataset.id})[0]);
+    var tr=e.target.closest("tr[data-id]");if(tr)O.atribuir(+tr.dataset.id,function(){var c=document.querySelector('[data-p][aria-pressed="true"]');carregar(c?+c.dataset.p:14)});
   });
   carregar(14);
 })();

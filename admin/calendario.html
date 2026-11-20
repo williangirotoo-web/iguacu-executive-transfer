@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Calendário | Painel Iguaçu Executive Transfer</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/ops.css?v=2">
+<style>
+.cl-dias{display:grid;grid-template-columns:repeat(14,minmax(64px,1fr));gap:6px;overflow-x:auto;padding-bottom:4px}
+.cl-dia{border:1px solid var(--o-line);background:var(--o-panel);border-radius:9px;padding:8px 6px;text-align:center;font-size:.75rem;color:var(--o-mut)}
+.cl-dia b{display:block;font-size:1.05rem;color:var(--o-fg)}
+.cl-dia[aria-pressed="true"]{border-color:var(--o-gold);background:var(--o-gold-soft)}
+.cl-dia .x{display:block;margin-top:2px;color:var(--o-red);font-weight:600}
+.cl-wrap{overflow-x:auto;margin-top:14px}
+.cl-in{min-width:900px}
+.cl-row{display:grid;grid-template-columns:180px 1fr;border-bottom:1px solid var(--o-line);min-height:60px}
+.cl-row:last-child{border-bottom:0}
+.cl-row.un{background:var(--o-sunk)}
+.cl-who{padding:10px 12px;border-right:1px solid var(--o-line)}
+.cl-who b{display:block}
+.cl-who span{font-size:.75rem;color:var(--o-mut)}
+.cl-track{position:relative}
+.cl-grid{position:absolute;inset:0;background-size:calc(100%/var(--h)) 100%;background-image:linear-gradient(to right,var(--o-line) 1px,transparent 1px);opacity:.7}
+.cl-scale{position:relative;height:30px}
+.cl-scale span{position:absolute;top:8px;font-size:.7rem;color:var(--o-faint);transform:translateX(-50%)}
+.cl-blk{position:absolute;top:8px;bottom:8px;border-radius:7px;padding:5px 8px;font-size:.75rem;line-height:1.25;overflow:hidden;border:1px solid var(--o-line2);text-align:left;background:var(--o-panel);cursor:pointer}
+.cl-blk b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cl-blk span{white-space:nowrap;color:var(--o-mut)}
+.cl-blk .desl{position:absolute;left:0;top:0;bottom:0;background:repeating-linear-gradient(45deg,transparent 0 4px,var(--o-line) 4px 6px)}
+.b-a_atribuir,.b-oferecido{border-style:dashed}
+.b-atribuido{border-color:var(--o-amber);background:var(--o-amber-bg)}
+.b-confirmado,.b-a_caminho,.b-no_local,.b-embarcado,.b-no_atrativo,.b-na_aduana{border-color:var(--o-blue);background:var(--o-blue-bg)}
+.b-concluido{border-color:var(--o-green);background:var(--o-green-bg)}
+.b-no_show,.b-cancelado{opacity:.5}
+.b-conflito{border-color:var(--o-red)!important;box-shadow:0 0 0 2px var(--o-red-bg)}
+.cl-now{position:absolute;top:0;bottom:0;width:2px;background:var(--o-gold);z-index:2}
+.cl-leg{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
+</style>
+</head>
+<body class="ops">
+<header class="o-top">
+  <a class="o-brand" href="/admin/"><b>IGUAÇU</b><span>Operação</span></a>
+  <nav class="o-chips" aria-label="Painel"><a class="o-btn" href="/admin/hoje.html">Hoje</a><a class="o-btn" href="/admin/servicos.html">Serviços</a><a class="o-btn" href="/admin/">Reservas</a><a class="o-btn" href="/admin/equipe.html">Equipe</a></nav>
+</header>
+<main class="o-main"><div class="o-wrap">
+  <div class="o-head"><div><h1 id="titulo">Calendário</h1><p class="o-sub">Um dia por motorista. Clique num serviço para atribuir ou trocar.</p></div>
+    <div style="display:flex;gap:6px"><button class="o-btn" type="button" data-nav="-7" aria-label="Semana anterior">‹</button><button class="o-btn" type="button" data-nav="0">Hoje</button><button class="o-btn" type="button" data-nav="7" aria-label="Próxima semana">›</button></div></div>
+  <div class="cl-dias" id="dias" role="group" aria-label="Dias"></div>
+  <div class="o-card cl-wrap" id="cal"><div class="o-empty">Carregando…</div></div>
+  <div class="cl-leg"><span class="o-pill o-red">A atribuir</span><span class="o-pill o-amber">Atribuído</span><span class="o-pill o-blue">Confirmado ou em andamento</span><span class="o-pill o-green">Concluído</span><span class="o-note" style="margin:0">Borda vermelha: conflito. Listras: tempo de deslocamento até a busca. Linha dourada: agora.</span></div>
+</div></main>
+<script src="/js/ops-ui.js?v=2"></script>
+<script src="/js/ops-atribuir.js?v=1"></script>
+<script>
+(function(){
+  var O=window.OPS, esc=O.esc, L=[], mot=[], ini=null, dia=null;
+  var DS=["dom","seg","ter","qua","qui","sex","sáb"], DL=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+  var hoje=function(){return new Date(Date.now()-3*3600e3).toISOString().slice(0,10)};
+  var soma=function(d,n){return new Date(Date.parse(d+"T12:00:00Z")+n*864e5).toISOString().slice(0,10)};
+  var q=new URLSearchParams(location.search); dia=/^\d{4}-\d{2}-\d{2}$/.test(q.get("dia")||"")?q.get("dia"):hoje(); ini=soma(dia,-2);
+  var fozMin=function(iso){var t=new Date(Date.parse(iso)-3*3600e3);return t.getUTCHours()*60+t.getUTCMinutes()+(t.toISOString().slice(0,10)>dia?1440:t.toISOString().slice(0,10)<dia?-1440:0)};
+  function carregar(){
+    Promise.all([O.api("/api/admin/ops/servicos?de="+ini+"&ate="+soma(ini,13)),O.api("/api/admin/ops/motoristas")]).then(function(r){
+      if(r[0].erro==="migracao_pendente"){document.getElementById("cal").innerHTML='<div class="o-empty">Falta criar as tabelas novas no banco (migração 0002).</div>';return}
+      if(!r[0].ok){document.getElementById("cal").innerHTML='<div class="o-empty">'+esc(r[0].mensagem)+'</div>';return}
+      L=r[0].lista.filter(function(s){return s.status!=="cancelado"}); mot=(r[1].lista||[]).filter(function(m){return m.status!=="inativo"}); desenhar();
+    });
+  }
+  function conflitos(lista){
+    var c={};lista.forEach(function(a){lista.forEach(function(b){if(a.id<b.id&&((a.motorista_id&&a.motorista_id===b.motorista_id)||(a.veiculo_id&&a.veiculo_id===b.veiculo_id))){
+      var ai=Date.parse(a.inicio_utc)-30*60e3,af=Date.parse(a.fim_previsto_utc),bi=Date.parse(b.inicio_utc)-30*60e3,bf=Date.parse(b.fim_previsto_utc);if(ai<bf&&bi<af){c[a.id]=1;c[b.id]=1}}})});return c;
+  }
+  function desenhar(){
+    var d=new Date(dia+"T12:00:00Z"); document.getElementById("titulo").textContent=DL[d.getUTCDay()]+", "+dia.split("-").reverse().join("/");
+    var hs="";for(var i=0;i<14;i++){var di=soma(ini,i),ds=L.filter(function(s){return s.data===di}),sem=ds.filter(function(s){return s.status==="a_atribuir"||s.status==="oferecido"}).length,dd=new Date(di+"T12:00:00Z");
+      hs+='<button class="cl-dia" type="button" data-dia="'+di+'" aria-pressed="'+(di===dia)+'">'+DS[dd.getUTCDay()]+'<b>'+dd.getUTCDate()+'</b>'+(ds.length?ds.length+" serv.":"—")+(sem?'<span class="x">'+sem+' sem mot.</span>':'')+'</button>'}
+    document.getElementById("dias").innerHTML=hs;
+    var doDia=L.filter(function(s){return fozMin(s.fim_previsto_utc)>0&&fozMin(s.inicio_utc)<1440});
+    var c=conflitos(doDia);
+    var h0=Math.min(5,Math.floor(Math.min.apply(null,[300].concat(doDia.map(function(s){return Math.max(0,fozMin(s.inicio_utc)-30)})))/60)),h1=24,span=(h1-h0)*60;
+    var pos=function(s){var a=Math.max(fozMin(s.inicio_utc)-30,h0*60),b=Math.min(fozMin(s.fim_previsto_utc),h1*60),des=Math.min(30,fozMin(s.inicio_utc)-a);return {l:(a-h0*60)/span*100,w:Math.max(1.5,(b-a)/span*100),d:Math.max(0,des)/(b-a)*100}};
+    var linhas=[{k:"un",nome:"A atribuir",info:"serviços sem executor",f:function(s){return !s.motorista_id&&!s.parceiro_id}}];
+    mot.forEach(function(m){linhas.push({k:"m"+m.id,nome:m.nome,info:(m.tipo==="parceiro"?"parceiro":"próprio")+(m.status==="folga"?" · de folga":""),f:function(s){return s.motorista_id===m.id}})});
+    var parcs={};doDia.forEach(function(s){if(s.parceiro_id&&!s.motorista_id)parcs[s.parceiro_id]=s.parceiro_nome||"Parceiro"});
+    Object.keys(parcs).forEach(function(p){linhas.push({k:"p"+p,nome:parcs[p],info:"parceiro",f:function(s){return !s.motorista_id&&String(s.parceiro_id)===p}})});
+    var esc2=esc, sc="";for(var h=h0;h<h1;h+=2)sc+='<span style="left:'+((h-h0)/(h1-h0)*100)+'%">'+String(h).padStart(2,"0")+'h</span>';
+    var agoraMin=dia===hoje()?(Date.now()-3*3600e3)%864e5/60e3:null;
+    var html='<div class="cl-in" style="--h:'+(h1-h0)+'"><div class="cl-row" style="min-height:30px"><div class="cl-who" style="padding:6px 12px"></div><div class="cl-scale">'+sc+'</div></div>'+linhas.map(function(l){
+      var ls=doDia.filter(l.f);
+      return '<div class="cl-row'+(l.k==="un"?" un":"")+'"><div class="cl-who"><b>'+esc2(l.nome)+'</b><span>'+esc2(l.info)+(ls.length?" · "+ls.length:"")+'</span></div><div class="cl-track"><div class="cl-grid"></div>'+(agoraMin!=null&&agoraMin>h0*60?'<div class="cl-now" style="left:'+((agoraMin-h0*60)/span*100)+'%"></div>':'')+
+        ls.map(function(s){var p=pos(s);return '<button type="button" class="cl-blk b-'+s.status+(c[s.id]?" b-conflito":"")+'" style="left:'+p.l+'%;width:calc('+p.w+'% - 3px)" data-id="'+s.id+'" title="'+esc2(s.hora+" "+s.servico_nome+" · "+s.cliente)+'"><span class="desl" style="width:'+p.d+'%"></span><b style="position:relative">'+esc2(s.hora+" "+s.servico_nome)+'</b><span style="position:relative">'+esc2(s.cliente)+' · '+s.pax+' pax'+(s.placa?" · "+esc2(s.placa):"")+'</span></button>'}).join("")+'</div></div>'}).join("")+'</div>';
+    document.getElementById("cal").innerHTML=html+(doDia.length?"":'<div class="o-empty">Nenhum serviço neste dia.</div>');
+  }
+  document.addEventListener("click",function(e){
+    var b=e.target.closest("[data-dia]");if(b){dia=b.dataset.dia;history.replaceState(null,"","?dia="+dia);desenhar();return}
+    var n=e.target.closest("[data-nav]");if(n){var v=+n.dataset.nav;dia=v===0?hoje():soma(dia,v);ini=soma(dia,-2);history.replaceState(null,"","?dia="+dia);carregar();return}
+    var k=e.target.closest(".cl-blk");if(k)O.atribuir(+k.dataset.id,carregar);
+  });
+  carregar();
+})();
+</script>
+</body>
+</html>

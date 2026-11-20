@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Hoje | Painel Iguaçu Executive Transfer</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/ops.css?v=2">
+<style>
+.hj-flag{font-size:.7rem;font-weight:700;color:var(--o-mut);border:1px solid var(--o-line2);border-radius:4px;padding:0 4px;margin-left:6px}
+.hj-now td{height:0;padding:0;border-bottom:2px solid var(--o-gold)}
+.hj-amanha{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;color:var(--o-mut);margin-top:12px}
+.hj-amanha b{color:var(--o-fg)}
+.hj-nums{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.hj-nums div{padding:14px 16px;border-right:1px solid var(--o-line)}
+.hj-nums div:last-child{border-right:0}
+.hj-nums span{display:block;font-size:.72rem;color:var(--o-mut)}
+.hj-nums b{display:block;font-size:1.15rem;margin-top:2px;font-weight:600}
+.hj-nums i{font-style:normal;font-size:.72rem;color:var(--o-faint)}
+.hj-calma{padding:16px;color:var(--o-mut)}
+@media (max-width:860px){.hj-nums{grid-template-columns:1fr 1fr}.hj-nums div{border-bottom:1px solid var(--o-line)}}
+</style>
+</head>
+<body class="ops">
+<header class="o-top">
+  <a class="o-brand" href="/admin/"><b>IGUAÇU</b><span>Operação</span></a>
+  <nav class="o-chips" aria-label="Painel"><a class="o-btn" href="/admin/calendario.html">Calendário</a><a class="o-btn" href="/admin/servicos.html">Serviços</a><a class="o-btn" href="/admin/">Reservas</a><a class="o-btn" href="/admin/equipe.html">Equipe</a></nav>
+</header>
+<main class="o-main"><div class="o-wrap">
+  <div class="o-head"><div><h1 id="titulo">Hoje</h1><p class="o-sub" id="resumo">Carregando…</p></div><a class="o-btn pri" href="/admin/nova-reserva.html">+ Nova reserva</a></div>
+  <h2 class="o-h2">Precisa de ação <span class="o-count" id="n-al">…</span></h2>
+  <div class="o-card" id="alertas"><div class="o-empty">Carregando…</div></div>
+  <h2 class="o-h2">Linha do tempo de hoje</h2>
+  <div id="linha"></div>
+  <div class="o-card hj-amanha" id="amanha" hidden></div>
+  <div id="numeros"></div>
+  <p class="o-note">Atualiza sozinha a cada 2 minutos.</p>
+</div></main>
+<script src="/js/ops-ui.js?v=2"></script>
+<script src="/js/ops-atribuir.js?v=1"></script>
+<script>
+(function(){
+  var O=window.OPS, esc=O.esc, dados=null;
+  var CATS={comum:"Comum",exec:"Executivo",suv:"SUV",sete:"7 Lugares",luxo:"Luxo",van:"Van"};
+  var DS=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"], MS=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  var BOT={atribuir:"Atribuir",confirmar:"Ver serviço",status:"Atualizar",whatsapp:"WhatsApp do cliente",pedido:"Ver pedido",equipe:"Abrir cadastro"};
+  function carregar(){
+    O.api("/api/admin/ops/hoje").then(function(r){
+      if(r.erro==="migracao_pendente"){document.getElementById("alertas").innerHTML='<div class="hj-calma"><b>Falta criar as tabelas novas no banco</b> (migração 0002).</div>';document.getElementById("resumo").textContent="";return}
+      if(!r.ok){document.getElementById("alertas").innerHTML='<div class="o-empty">'+esc(r.mensagem)+'</div>';return}
+      dados=r; desenhar();
+    });
+  }
+  function desenhar(){
+    var r=dados, d=new Date(r.hoje+"T12:00:00Z"), agora=Date.parse(r.agora);
+    document.getElementById("titulo").textContent=DS[d.getUTCDay()]+", "+d.getUTCDate()+" de "+MS[d.getUTCMonth()];
+    var ativos=r.hojeLista.filter(function(s){return s.status!=="cancelado"});
+    var cruzando=ativos.filter(function(s){return s.status==="na_aduana"}).length;
+    document.getElementById("resumo").textContent=new Date(agora-3*3600e3).toISOString().slice(11,16)+" · "+ativos.length+" serviço"+(ativos.length===1?"":"s")+" hoje"+(cruzando?" · "+cruzando+" na fronteira agora":"");
+    document.getElementById("n-al").textContent=r.alertas.length;
+    document.getElementById("alertas").innerHTML=r.alertas.length?r.alertas.map(function(a,i){
+      return '<div class="o-alert"><div class="sev '+a.sev+'"></div><div><b>'+esc(a.titulo)+'</b><p>'+esc(a.texto)+'</p></div><button class="o-btn'+(a.sev==="r"?" pri":"")+'" type="button" data-al="'+i+'">'+(BOT[a.acao]||"Abrir")+'</button></div>'}).join(""):
+      '<div class="hj-calma">Nada pendente. Todos os serviços das próximas 48 horas têm executor e não há conflito.</div>';
+    var linhas="", marcou=false;
+    ativos.forEach(function(s){
+      if(!marcou&&Date.parse(s.inicio_utc)>agora){linhas+='<tr class="hj-now"><td colspan="7"></td></tr>';marcou=true}
+      var ex=s.motorista_nome?esc(s.motorista_nome)+(s.placa?' <span class="mut">· '+esc(s.placa)+'</span>':''):s.parceiro_nome?esc(s.parceiro_nome):'<span class="mut">—</span>';
+      linhas+='<tr data-id="'+s.id+'"><td><b>'+esc(s.hora)+'</b></td><td>'+esc(s.servico_nome)+'</td><td>'+esc(s.cliente)+'<span class="hj-flag">'+esc((s.idioma||"pt").toUpperCase())+'</span></td><td class="mut">'+s.pax+' pax · '+esc(CATS[s.categoria]||s.categoria)+'</td><td>'+ex+'</td><td>'+O.pill(s.status)+'</td><td class="mut">'+esc(s.codigo)+'</td></tr>';
+    });
+    document.getElementById("linha").innerHTML=ativos.length?'<div class="o-card o-tablewrap"><table class="o-table"><thead><tr><th>Hora</th><th>Serviço</th><th>Cliente</th><th>Grupo</th><th>Executor</th><th>Situação</th><th>Pedido</th></tr></thead><tbody>'+linhas+'</tbody></table></div>':'<div class="o-card hj-calma">Nenhum serviço hoje.</div>';
+    var a=r.amanha, am=document.getElementById("amanha"); am.hidden=false;
+    am.innerHTML='<b>Amanhã:</b> '+(a.total?a.total+" serviço"+(a.total>1?"s":"")+(a.semExecutor?' · <span class="o-pill o-red">'+a.semExecutor+' sem motorista</span>':'')+' · primeiro às '+esc(a.primeiro)+(a.fronteira?' · '+a.fronteira+' cruzando a fronteira':''):'nenhum serviço')+' · <a href="/admin/calendario.html?dia='+a.dia+'" style="color:var(--o-gold)">ver no calendário</a>';
+    var n=r.numeros, nb=document.getElementById("numeros");
+    if(n){var mes=MS[+n.mes.slice(5,7)-1];
+      nb.innerHTML='<h2 class="o-h2">'+mes.charAt(0).toUpperCase()+mes.slice(1)+' até agora</h2><div class="o-card hj-nums"><div><span>Vendido</span><b>'+O.brl(n.vendido)+'</b><i>'+n.pedidos+' pedido(s) pagos ou confirmados</i></div><div><span>Recebido</span><b>'+O.brl(n.recebido)+'</b><i>no mês</i></div><div><span>A receber</span><b>'+O.brl(n.aReceber)+'</b><i>saldos de viagens futuras</i></div><div><span>Custo de terceiros</span><b>'+O.brl(n.custoTerceiros)+'</b><i>'+n.servicosTerceiros+' serviço(s) com custo lançado</i></div><div><span>Margem estimada</span><b>'+O.brl(n.margem)+'</b><i>vendido − custos − taxas</i></div></div>';}
+  }
+  document.addEventListener("click",function(e){
+    var b=e.target.closest("[data-al]");
+    if(b){var a=dados.alertas[+b.dataset.al];
+      if(a.acao==="equipe"){location.href="/admin/equipe.html";return}
+      if(a.acao==="pedido"){location.href="/admin/";return}
+      if(a.acao==="whatsapp"){var s=dados.hojeLista.concat([]).filter(function(x){return x.id===a.servico_id})[0];O.atribuir(a.servico_id,carregar);return}
+      O.atribuir(a.servico_id,carregar);return}
+    var tr=e.target.closest("tr[data-id]"); if(tr)O.atribuir(+tr.dataset.id,carregar);
+  });
+  carregar(); setInterval(function(){if(!document.querySelector(".o-drawer"))carregar()},120000);
+})();
+</script>
+</body>
+</html>

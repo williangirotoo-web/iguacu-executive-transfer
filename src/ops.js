@@ -3,7 +3,7 @@
 import { papelDe, permissoes, pode } from "./acesso.js";
 import { CONFIG, CATEGORIAS } from "./precos.js";
 import { servico } from "./cotacao.js";
-import { duracaoPadrao, fimPrevisto, statusInicial, PEDIDO_GERA_SERVICO, STATUS_FINAIS, validarMotorista, validarVeiculo } from "./ops-regras.js";
+import { duracaoPadrao, fimPrevisto, statusInicial, PEDIDO_GERA_SERVICO, STATUS_FINAIS, STATUS_SERVICO, validarMotorista, validarVeiculo, checarAtribuicao, sugerir, alertas } from "./ops-regras.js";
 
 const json = (obj, status = 200) => new Response(JSON.stringify(obj), {
   status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex" },
@@ -142,6 +142,14 @@ export async function sincronizarServicos(env, agora = Date.now()) {
   // pedido cancelado: serviços ainda abertos viram cancelados
   stmts.push(env.DB.prepare(`UPDATE servicos SET status = 'cancelado', atualizado_em = ? WHERE status NOT IN (${STATUS_FINAIS.map(() => "?").join(",")})
     AND pedido_id IN (SELECT id FROM pedidos WHERE status = 'cancelada')`).bind(now, ...STATUS_FINAIS));
+  // corridas oferecidas pelo painel antigo a motoristas parceiros: o serviço acompanha a resposta
+  const aceita = "FROM corridas c WHERE c.item_id = servicos.item_id AND c.status = 'aceita' ORDER BY c.id DESC LIMIT 1";
+  stmts.push(env.DB.prepare(`UPDATE servicos SET parceiro_id = (SELECT c.parceiro_id ${aceita}), custo_previsto = COALESCE(custo_previsto, (SELECT c.repasse ${aceita})),
+      status = 'atribuido', atualizado_em = ? WHERE status IN ('a_atribuir', 'oferecido') AND motorista_id IS NULL AND EXISTS (SELECT 1 ${aceita})`).bind(now));
+  stmts.push(env.DB.prepare(`UPDATE servicos SET status = 'oferecido', atualizado_em = ? WHERE status = 'a_atribuir'
+      AND EXISTS (SELECT 1 FROM corridas c WHERE c.item_id = servicos.item_id AND c.status = 'ofertada')`).bind(now));
+  stmts.push(env.DB.prepare(`UPDATE servicos SET status = 'a_atribuir', atualizado_em = ? WHERE status = 'oferecido' AND motorista_id IS NULL AND parceiro_id IS NULL
+      AND NOT EXISTS (SELECT 1 FROM corridas c WHERE c.item_id = servicos.item_id AND c.status IN ('ofertada', 'aceita'))`).bind(now));
   // data ou hora do trecho mudou no pedido: o serviço acompanha, mantendo a duração
   stmts.push(env.DB.prepare(`UPDATE servicos SET fim_previsto_utc = strftime('%Y-%m-%dT%H:%M:%fZ', (SELECT inicio_utc FROM itens WHERE itens.id = servicos.item_id),
       '+' || CAST(ROUND((julianday(fim_previsto_utc) - julianday(inicio_utc)) * 1440) AS INTEGER) || ' minutes'),
@@ -193,24 +201,141 @@ async function cadastro(req, env, user, papel, tabela, partes) {
   return erro("rota", 404);
 }
 
+const SQL_SERVICOS = `SELECT s.id, s.status, s.inicio_utc, s.fim_previsto_utc, s.motorista_id, s.veiculo_id, s.parceiro_id, s.custo_previsto, s.importado, s.obs_operacao,
+      i.servico_id, i.servico_nome, i.categoria, i.data, i.hora, i.sentido, i.voo, i.origem, i.destino, i.pax, i.malas, i.malas_bordo, i.mochilas, i.cadeirinhas, i.valor, i.obs,
+      p.codigo, p.nome AS cliente, p.telefone, p.idioma, p.status AS pedido_status,
+      m.nome AS motorista_nome, v.placa, v.modelo AS veiculo_modelo, COALESCE(pa.empresa, pa.responsavel) AS parceiro_nome
+    FROM servicos s JOIN itens i ON i.id = s.item_id JOIN pedidos p ON p.id = s.pedido_id
+    LEFT JOIN motoristas m ON m.id = s.motorista_id LEFT JOIN veiculos v ON v.id = s.veiculo_id LEFT JOIN parceiros pa ON pa.id = s.parceiro_id`;
+async function buscarServicos(env, iniIso, fimIso) {
+  return (await env.DB.prepare(SQL_SERVICOS + " WHERE s.inicio_utc >= ? AND s.inicio_utc <= ? ORDER BY s.inicio_utc LIMIT 1500").bind(iniIso, fimIso).all()).results;
+}
+async function umServico(env, id) {
+  return env.DB.prepare(SQL_SERVICOS + " WHERE s.id = ?").bind(id).first();
+}
+const semValores = (papel, lista) => pode(papel, "valores.ver") ? lista : lista.map(({ custo_previsto, valor, ...x }) => x);
+const diaFoz = (ms) => new Date(ms - 3 * 3600e3).toISOString().slice(0, 10);
+const inicioDia = (d) => Date.parse(d + "T00:00:00-03:00");
+
 async function listarServicos(env, url, papel) {
-  const hoje = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
-  const de = /^\d{4}-\d{2}-\d{2}$/.test(url.searchParams.get("de") || "") ? url.searchParams.get("de") : hoje;
+  const de = /^\d{4}-\d{2}-\d{2}$/.test(url.searchParams.get("de") || "") ? url.searchParams.get("de") : diaFoz(Date.now());
   const ate = /^\d{4}-\d{2}-\d{2}$/.test(url.searchParams.get("ate") || "") ? url.searchParams.get("ate") : null;
-  const ini = Date.parse(de + "T00:00:00-03:00");
+  const ini = inicioDia(de);
   let fim = ate ? Date.parse(ate + "T23:59:59-03:00") : ini + 14 * 864e5;
   if (!(fim > ini)) return erro("periodo");
   if (fim - ini > 92 * 864e5) fim = ini + 92 * 864e5;
   await sincronizarServicos(env);
-  const { results } = await env.DB.prepare(`SELECT s.id, s.status, s.inicio_utc, s.fim_previsto_utc, s.motorista_id, s.veiculo_id, s.parceiro_id, s.custo_previsto, s.importado,
-      i.servico_id, i.servico_nome, i.categoria, i.data, i.hora, i.sentido, i.voo, i.origem, i.destino, i.pax, i.malas, i.malas_bordo, i.mochilas, i.cadeirinhas, i.valor, i.obs,
-      p.codigo, p.nome AS cliente, p.telefone, p.idioma, p.status AS pedido_status,
-      m.nome AS motorista_nome, v.placa, v.modelo AS veiculo_modelo, pa.empresa AS parceiro_nome, pa.responsavel AS parceiro_resp
-    FROM servicos s JOIN itens i ON i.id = s.item_id JOIN pedidos p ON p.id = s.pedido_id
-    LEFT JOIN motoristas m ON m.id = s.motorista_id LEFT JOIN veiculos v ON v.id = s.veiculo_id LEFT JOIN parceiros pa ON pa.id = s.parceiro_id
-    WHERE s.inicio_utc >= ? AND s.inicio_utc <= ? ORDER BY s.inicio_utc LIMIT 1000`).bind(new Date(ini).toISOString(), new Date(fim).toISOString()).all();
-  const lista = pode(papel, "valores.ver") ? results : results.map(({ custo_previsto, valor, ...x }) => x);
-  return json({ ok: true, de, ate: new Date(fim - 3 * 3600e3).toISOString().slice(0, 10), lista });
+  const lista = await buscarServicos(env, new Date(ini).toISOString(), new Date(fim).toISOString());
+  return json({ ok: true, de, ate: diaFoz(fim), lista: semValores(papel, lista) });
+}
+
+/* ---------------- pacote 2: tela Hoje, sugestões, atribuição e status ---------------- */
+let eventosOk = false;
+async function garantirEventos(env) {
+  if (eventosOk) return;
+  const cols = (await env.DB.prepare("PRAGMA table_info(eventos)").all()).results.map((c) => c.name);
+  if (!cols.includes("servico_id")) await env.DB.prepare("ALTER TABLE eventos ADD COLUMN servico_id INTEGER").run();
+  eventosOk = true;
+}
+async function registrar(env, s, autor, tipo, texto, de = null, para = null) {
+  await garantirEventos(env);
+  await env.DB.prepare("INSERT INTO eventos (pedido_id, em, tipo, status_de, status_para, autor, texto, servico_id) SELECT pedido_id, ?, ?, ?, ?, ?, ?, id FROM servicos WHERE id = ?")
+    .bind(new Date().toISOString(), tipo, de, para, autor, texto, s.id).run();
+}
+
+async function telaHoje(env, papel) {
+  await sincronizarServicos(env);
+  const agora = Date.now(), hoje = diaFoz(agora), ini = inicioDia(hoje);
+  const servs = await buscarServicos(env, new Date(ini - 864e5).toISOString(), new Date(ini + 8 * 864e5).toISOString());
+  const { results: saldos } = await env.DB.prepare(`SELECT p.codigo, p.nome, p.total, p.modo_pagamento,
+      p.total - COALESCE((SELECT SUM(COALESCE(valor_pago, valor)) FROM pagamentos g WHERE g.pedido_id = p.id AND g.status = 'pago'), 0) AS saldo,
+      (SELECT MIN(inicio_utc) FROM itens i WHERE i.pedido_id = p.id AND i.inicio_utc >= ?) AS primeiro
+    FROM pedidos p WHERE p.status IN ('aprovado','aguardando_confirmacao','confirmada')
+      AND EXISTS (SELECT 1 FROM itens i WHERE i.pedido_id = p.id AND i.inicio_utc >= ? AND i.inicio_utc <= ?)`)
+    .bind(new Date(agora - 3600e3).toISOString(), new Date(agora - 3600e3).toISOString(), new Date(agora + 2 * 864e5).toISOString()).all();
+  const motoristas = (await env.DB.prepare("SELECT id, nome, status, cnh_validade FROM motoristas").all()).results;
+  const veiculos = (await env.DB.prepare("SELECT id, placa, modelo, status, licenciamento_validade, seguro_validade FROM veiculos").all()).results;
+  const al = alertas({ servicos: servs, pedidosSaldo: saldos.filter((x) => x.saldo > 0.009 && x.primeiro), motoristas, veiculos }, agora);
+  const amanha = diaFoz(ini + 864e5 + 3600e3);
+  const deAmanha = servs.filter((x) => diaFoz(Date.parse(x.inicio_utc)) === amanha && x.status !== "cancelado");
+  const res = { ok: true, agora: new Date(agora).toISOString(), hoje, alertas: al,
+    hojeLista: semValores(papel, servs.filter((x) => diaFoz(Date.parse(x.inicio_utc)) === hoje)),
+    amanha: { dia: amanha, total: deAmanha.length, semExecutor: deAmanha.filter((x) => x.status === "a_atribuir" || x.status === "oferecido").length,
+      primeiro: deAmanha.length ? deAmanha[0].hora : null, fronteira: deAmanha.filter((x) => { const v = servico(x.servico_id); return v && v.fronteira; }).length } };
+  if (pode(papel, "valores.ver")) {
+    const mes = hoje.slice(0, 7), iniMes = new Date(inicioDia(mes + "-01")).toISOString();
+    const vend = await env.DB.prepare(`SELECT COALESCE(SUM(total),0) AS v, COALESCE(SUM(taxa_pagamento),0) AS t, COUNT(*) AS n FROM pedidos
+      WHERE criado_em >= ? AND status IN ('aprovado','aguardando_confirmacao','confirmada','concluida')`).bind(iniMes).first();
+    const rec = await env.DB.prepare("SELECT COALESCE(SUM(COALESCE(valor_pago, valor)),0) AS v FROM pagamentos WHERE status = 'pago' AND pago_em >= ?").bind(iniMes).first();
+    const custo = await env.DB.prepare("SELECT COALESCE(SUM(custo_previsto),0) AS v, COUNT(*) AS n FROM servicos WHERE inicio_utc >= ? AND status <> 'cancelado' AND custo_previsto IS NOT NULL").bind(iniMes).first();
+    const aRec = await env.DB.prepare(`SELECT COALESCE(SUM(p.total - COALESCE((SELECT SUM(COALESCE(valor_pago, valor)) FROM pagamentos g WHERE g.pedido_id = p.id AND g.status = 'pago'), 0)), 0) AS v
+      FROM pedidos p WHERE p.status IN ('aprovado','aguardando_confirmacao','confirmada') AND EXISTS (SELECT 1 FROM itens i WHERE i.pedido_id = p.id AND i.inicio_utc >= ?)`).bind(new Date(agora).toISOString()).first();
+    res.numeros = { mes, vendido: vend.v, pedidos: vend.n, recebido: rec.v, aReceber: aRec.v, custoTerceiros: custo.v, servicosTerceiros: custo.n, margem: Math.round((vend.v - custo.v - vend.t) * 100) / 100 };
+  }
+  return json(res);
+}
+
+async function contextoAtribuir(env, s) {
+  const ini = new Date(Date.parse(s.inicio_utc) - 2 * 864e5).toISOString(), fim = new Date(Date.parse(s.fim_previsto_utc) + 2 * 864e5).toISOString();
+  const outros = (await buscarServicos(env, ini, fim)).filter((o) => !STATUS_FINAIS.includes(o.status));
+  const indisp = (await env.DB.prepare("SELECT * FROM indisponibilidades WHERE fim >= ? AND inicio <= ?").bind(ini, fim).all()).results;
+  return { servico: s, outros, indisp };
+}
+
+async function sugestoes(env, id) {
+  const s = await umServico(env, id);
+  if (!s) return erro("nao_encontrado", 404);
+  const ctx = await contextoAtribuir(env, s);
+  const motoristas = (await env.DB.prepare("SELECT * FROM motoristas WHERE status <> 'inativo'").all()).results;
+  const veiculos = (await env.DB.prepare("SELECT * FROM veiculos WHERE status <> 'inativo'").all()).results;
+  const parceiros = (await env.DB.prepare("SELECT id, COALESCE(empresa, responsavel) AS nome, categoria FROM parceiros WHERE tipo = 'atende' AND status = 'aprovado' ORDER BY nome").all()).results;
+  return json({ ok: true, servico: s, sugestoes: sugerir({ ...ctx, motoristas, veiculos }), veiculos: veiculos.map(({ id, placa, modelo, categoria, lugares, malas, motorista_padrao_id }) => ({ id, placa, modelo, categoria, lugares, malas, motorista_padrao_id })), parceiros });
+}
+
+async function atribuir(req, env, user, papel, id) {
+  let b; try { b = await req.json(); } catch { return erro("json_invalido"); }
+  const s = await umServico(env, id);
+  if (!s) return erro("nao_encontrado", 404);
+  if (STATUS_FINAIS.includes(s.status)) return erro("servico_encerrado", 409);
+  const motoristaId = Number(b.motorista_id) > 0 ? Number(b.motorista_id) : null;
+  const veiculoId = Number(b.veiculo_id) > 0 ? Number(b.veiculo_id) : null;
+  const parceiroId = Number(b.parceiro_id) > 0 ? Number(b.parceiro_id) : null;
+  const motivo = txt(b.motivo, 200);
+  const m = motoristaId ? await env.DB.prepare("SELECT * FROM motoristas WHERE id = ?").bind(motoristaId).first() : null;
+  const v = veiculoId ? await env.DB.prepare("SELECT * FROM veiculos WHERE id = ?").bind(veiculoId).first() : null;
+  if (motoristaId && !m) return erro("motorista_invalido");
+  if (veiculoId && !v) return erro("veiculo_invalido");
+  if (parceiroId && !(await env.DB.prepare("SELECT 1 FROM parceiros WHERE id = ? AND tipo = 'atende'").bind(parceiroId).first())) return erro("parceiro_invalido");
+  const problemas = checarAtribuicao({ ...(await contextoAtribuir(env, s)), motorista: m, veiculo: v });
+  if (problemas.some((p) => p.bloqueia) && !b.forcar) return erro("conflito", 409, { problemas });
+  if (b.forcar && motivo.length < 3) return erro("motivo", 400, { problemas });
+  let custo = s.custo_previsto;
+  if (pode(papel, "valores.ver") && b.custo !== undefined) { custo = dinheiro(b.custo); if (b.custo === "" || b.custo === null) custo = null; else if (!(custo >= 0)) return erro("custo"); }
+  const vazio = !motoristaId && !veiculoId && !parceiroId;
+  const status = vazio ? "a_atribuir" : ["a_atribuir", "oferecido"].includes(s.status) ? "atribuido" : s.status;
+  await env.DB.prepare("UPDATE servicos SET motorista_id = ?, veiculo_id = ?, parceiro_id = ?, custo_previsto = ?, status = ?, atualizado_em = ? WHERE id = ?")
+    .bind(motoristaId, veiculoId, parceiroId, custo, status, new Date().toISOString(), id).run();
+  const quem = [m && m.nome, v && v.placa, parceiroId && "parceiro #" + parceiroId].filter(Boolean).join(" · ");
+  await registrar(env, s, user.email, "atribuicao", vazio ? `Serviço ${s.servico_nome} (${s.data} ${s.hora}) ficou sem executor.` :
+    `Serviço ${s.servico_nome} (${s.data} ${s.hora}) atribuído: ${quem}.` + (b.forcar ? ` Atribuído mesmo com aviso: ${problemas.map((p) => p.texto).join(" ")} Motivo: ${motivo}` : ""), s.status, status);
+  return json({ ok: true, status, avisos: problemas });
+}
+
+const ETAPA_COLUNA = { confirmado: "confirmado_em", a_caminho: "a_caminho_em", no_local: "no_local_em", embarcado: "embarque_em", concluido: "concluido_em" };
+async function mudarStatus(req, env, user, id) {
+  let b; try { b = await req.json(); } catch { return erro("json_invalido"); }
+  const s = await umServico(env, id);
+  if (!s) return erro("nao_encontrado", 404);
+  const novo = String(b.status || "");
+  if (!STATUS_SERVICO.includes(novo) || novo === "a_atribuir" || novo === "atribuido") return erro("status");
+  const motivo = txt(b.motivo, 200);
+  if ((novo === "cancelado" || novo === "no_show") && motivo.length < 3) return erro("motivo");
+  if (["confirmado", "a_caminho", "no_local", "embarcado", "no_atrativo", "na_aduana", "concluido"].includes(novo) && !s.motorista_id && !s.parceiro_id) return erro("sem_executor");
+  const now = new Date().toISOString(), col = ETAPA_COLUNA[novo];
+  await env.DB.prepare(`UPDATE servicos SET status = ?, atualizado_em = ?${col ? ", " + col + " = COALESCE(" + col + ", ?)" : ""} WHERE id = ?`)
+    .bind(...[novo, now].concat(col ? [now] : []), id).run();
+  await registrar(env, s, user.email, "status_servico", `Serviço ${s.servico_nome} (${s.data} ${s.hora}): ${s.status} → ${novo}${motivo ? ". " + motivo : ""}`, s.status, novo);
+  return json({ ok: true, status: novo });
 }
 
 export async function ops(req, env, url, user, h = {}) {
@@ -237,6 +362,17 @@ export async function ops(req, env, url, user, h = {}) {
     if (partes[0] === "servicos" && partes.length === 1 && req.method === "GET") {
       if (!pode(papel, "ops.ver")) return erro("sem_permissao", 403);
       return await listarServicos(env, url, papel);
+    }
+    if (partes[0] === "hoje" && req.method === "GET") {
+      if (!pode(papel, "ops.ver")) return erro("sem_permissao", 403);
+      return await telaHoje(env, papel);
+    }
+    if (partes[0] === "servicos" && partes.length === 3) {
+      const id = parseInt(partes[1], 10);
+      if (!(id > 0)) return erro("rota", 404);
+      if (partes[2] === "sugestoes" && req.method === "GET") { if (!pode(papel, "ops.ver")) return erro("sem_permissao", 403); return await sugestoes(env, id); }
+      if (partes[2] === "atribuir" && req.method === "POST") { if (!pode(papel, "ops.editar")) return erro("sem_permissao", 403); return await atribuir(req, env, user, papel, id); }
+      if (partes[2] === "status" && req.method === "POST") { if (!pode(papel, "ops.editar")) return erro("sem_permissao", 403); return await mudarStatus(req, env, user, id); }
     }
     if (partes[0] === "parceiros-atende" && req.method === "GET") {
       const { results } = await env.DB.prepare("SELECT id, codigo, empresa, responsavel, categoria FROM parceiros WHERE tipo = 'atende' AND status = 'aprovado' ORDER BY responsavel").all();
