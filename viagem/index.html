@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0c">
+<title>Minha viagem | Iguaçu Executive Transfer</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Montserrat:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#0b0b0c;--card:#141416;--card2:#1b1b1e;--line:rgba(212,175,55,.18);--line2:rgba(240,237,232,.1);--txt:#f0ede8;--mut:rgba(240,237,232,.64);--gold:#d4af37;--gold2:#f0d77b;--ok:#5cc58a;--warn:#e3a33c;--bad:#f07a70;--blue:#7aa7f0}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.55 Montserrat,system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--gold2)}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-right,0px)) 14px max(18px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line)}
+.top b{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.45rem;letter-spacing:.06em;color:var(--gold)}
+.top b small{display:block;font-family:Montserrat,sans-serif;font-size:.58rem;letter-spacing:.3em;color:var(--mut);font-weight:500}
+.langs{display:flex;gap:4px}
+.langs button{background:none;border:1px solid var(--line2);color:var(--mut);border-radius:20px;padding:4px 10px;font-size:.72rem;font-weight:600}
+.langs button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
+main{max-width:760px;margin:0 auto;padding:26px max(18px,env(safe-area-inset-right,0px)) 70px max(18px,env(safe-area-inset-left,0px))}
+.eye{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 8px}
+h1{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(2rem,6vw,2.7rem);line-height:1.08;margin:0;font-weight:600;text-wrap:balance}
+.sub{color:var(--mut);margin:8px 0 0}
+.todo{border:1px solid var(--gold);background:rgba(212,175,55,.08);border-radius:14px;padding:16px;margin:22px 0;display:grid;gap:12px}
+.todo .r{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:10px;padding:11px 18px;font-weight:600;background:var(--gold);color:#0b0b0c;text-decoration:none;display:inline-block}
+.btn.alt{background:transparent;border:1px solid var(--line2);color:var(--txt)}
+.btn[disabled]{opacity:.6}
+.dia{display:grid;grid-template-columns:72px 1fr;gap:16px;margin-top:26px}
+.dia .d{text-align:right;padding-top:4px}
+.dia .d b{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-size:2.1rem;line-height:1;color:var(--gold2)}
+.dia .d span{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.trechos{display:grid;gap:12px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line2);border-radius:14px;padding:18px;min-width:0}
+.card .h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.card h3{margin:0;font-size:1.02rem;font-weight:600}
+.hora{font-size:1.5rem;font-weight:600;color:var(--gold2);margin-right:8px}
+.st{font-size:.72rem;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid;white-space:nowrap}
+.st.ok{color:var(--ok);border-color:rgba(92,197,138,.4)}.st.blue{color:var(--blue);border-color:rgba(122,167,240,.4)}.st.warn{color:var(--warn);border-color:rgba(227,163,60,.4)}.st.bad{color:var(--bad);border-color:rgba(240,122,112,.4)}.st.mut{color:var(--mut);border-color:var(--line2)}
+.rota{margin:12px 0 0;color:var(--mut);font-size:.92rem}
+.rota b{color:var(--txt);font-weight:500}
+.mot{display:flex;gap:12px;align-items:center;background:var(--card2);border-radius:12px;padding:12px;margin-top:14px}
+.av{width:40px;height:40px;border-radius:50%;background:var(--gold);color:#0b0b0c;display:grid;place-items:center;font-weight:700;flex:none}
+.mot small{color:var(--mut);display:block}
+.espera{margin-top:14px;font-size:.85rem;color:var(--mut);border:1px dashed var(--line2);border-radius:12px;padding:10px 12px}
+.inc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;font-size:.86rem;color:var(--mut)}
+.inc b{display:block;color:var(--txt);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px}
+.dica{margin-top:10px;font-size:.86rem;border-left:2px solid var(--gold);padding:2px 0 2px 10px;color:var(--mut)}
+.pag{margin-top:32px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;margin:12px 0 0;font-size:.92rem}
+.kv span{color:var(--mut)}
+.form{display:grid;gap:8px}
+.form textarea{width:100%;background:var(--card2);border:1px solid var(--line2);border-radius:10px;color:var(--txt);font:inherit;padding:10px}
+.vazio{padding:60px 10px;text-align:center;color:var(--mut)}
+.msg{font-size:.85rem;color:var(--mut)}
+footer{text-align:center;color:var(--mut);font-size:.75rem;padding:20px}
+.voucher{display:none}
+@media (max-width:600px){.dia{grid-template-columns:1fr;gap:8px}.dia .d{text-align:left;display:flex;gap:8px;align-items:baseline}.inc{grid-template-columns:1fr}}
+@media print{
+  body{background:#fff;color:#111}.top,main>*:not(.voucher),footer{display:none!important}
+  .voucher{display:block;color:#111;font-size:12pt}.voucher h2{font-family:"Cormorant Garamond",Georgia,serif;font-size:22pt;margin:0 0 4pt}
+  .voucher table{width:100%;border-collapse:collapse;margin-top:10pt}.voucher td,.voucher th{border-bottom:1px solid #ccc;padding:6pt 4pt;text-align:left;vertical-align:top}
+}
+</style>
+</head>
+<body>
+<header class="top"><b>IGUAÇU<small>EXECUTIVE TRANSFER</small></b><div class="langs" role="group" aria-label="Idioma"><button type="button" data-l="pt">PT</button><button type="button" data-l="en">EN</button><button type="button" data-l="es">ES</button></div></header>
+<main id="app"><div class="vazio">…</div></main>
+<footer id="rod"></footer>
+<script>
+(function(){
+  "use strict";
+  var T={
+    pt:{eye:"Minha viagem",ola:"Sua viagem a Foz do Iguaçu, {n}",pessoas:"{n} pessoa(s)",falta:"Falta pagar {v}",pagar:"Pagar agora (Pix ou cartão)",abrindo:"Abrindo o pagamento…",noDia:"O restante, {v}, é pago ao motorista no dia.",faleSaldo:"Saldo de {v}: fale com a central para pagar.",
+      voo:"Informe o número do voo da sua chegada",infoBtn:"Enviar informação",infoPh:"Ex.: voo G3 1234, chego às 14h20. Hotel Mabu.",infoOk:"Recebido! A central confirma pelo WhatsApp.",info:"Mudou algo? Voo, hotel, horário, número de pessoas",
+      motorista:"Seu motorista",esperaMot:"Os dados do motorista (nome, carro e placa) aparecem aqui na véspera.",inclui:"Incluído",naoInclui:"Bom saber",carro:"Carro {c}",
+      st:{confirmado:"Confirmado",motorista_confirmado:"Motorista confirmado",a_caminho:"Motorista a caminho",chegou:"Motorista chegou",andamento:"Em andamento",concluido:"Concluído",cancelado:"Cancelado",nao_realizado:"Não realizado",aguardando:"Aguardando pagamento"},
+      pagamentos:"Pagamentos",total:"Total",pagoLbl:"Pago",saldoLbl:"Saldo",recibo:"recibo",voucher:"Imprimir ou salvar voucher (PDF)",ajuda:"Falar com a central no WhatsApp",ajudaMsg:"Olá! Tenho uma dúvida sobre a minha reserva ",
+      busca:"Busca",leva:"Destino",vooL:"Voo",invalido:"Este link não é válido ou expirou. Peça um novo link à central pelo WhatsApp.",semInt:"Sem conexão. Tente de novo.",cod:"Código da reserva",
+      dias:["domingo","segunda","terça","quarta","quinta","sexta","sábado"],meses:["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"],cheg:"Aeroporto de Foz → {d}",said:"{d} → Aeroporto de Foz",vouT:"Voucher de reserva",rodape:"Iguaçu Executive Transfer · Foz do Iguaçu"},
+    en:{eye:"My trip",ola:"Your trip to Iguazu Falls, {n}",pessoas:"{n} traveler(s)",falta:"Balance due: {v}",pagar:"Pay now",abrindo:"Opening payment…",noDia:"The remaining {v} is paid to the driver on the day.",faleSaldo:"Balance of {v}: contact us to pay.",
+      voo:"Please send your arrival flight number",infoBtn:"Send",infoPh:"E.g.: flight LA 3170, landing at 2:20 pm. Hotel Mabu.",infoOk:"Received! We will confirm on WhatsApp.",info:"Anything changed? Flight, hotel, time, number of travelers",
+      motorista:"Your driver",esperaMot:"Your driver's name, car and plate will show here the day before.",inclui:"Included",naoInclui:"Good to know",carro:"Car: {c}",
+      st:{confirmado:"Confirmed",motorista_confirmado:"Driver confirmed",a_caminho:"Driver on the way",chegou:"Driver has arrived",andamento:"In progress",concluido:"Completed",cancelado:"Cancelled",nao_realizado:"Not performed",aguardando:"Awaiting payment"},
+      pagamentos:"Payments",total:"Total",pagoLbl:"Paid",saldoLbl:"Balance",recibo:"receipt",voucher:"Print or save voucher (PDF)",ajuda:"Chat with us on WhatsApp",ajudaMsg:"Hello! I have a question about my booking ",
+      busca:"Pick-up",leva:"Drop-off",vooL:"Flight",invalido:"This link is not valid or has expired. Ask us for a new link on WhatsApp.",semInt:"No connection. Please try again.",cod:"Booking code",
+      dias:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],meses:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],cheg:"Foz Airport → {d}",said:"{d} → Foz Airport",vouT:"Booking voucher",rodape:"Iguaçu Executive Transfer · Foz do Iguaçu, Brazil"},
+    es:{eye:"Mi viaje",ola:"Su viaje a Foz de Iguazú, {n}",pessoas:"{n} persona(s)",falta:"Saldo a pagar: {v}",pagar:"Pagar ahora",abrindo:"Abriendo el pago…",noDia:"El resto, {v}, se paga al chofer el día del servicio.",faleSaldo:"Saldo de {v}: hable con nosotros para pagar.",
+      voo:"Envíe el número de su vuelo de llegada",infoBtn:"Enviar",infoPh:"Ej.: vuelo AR 1720, llego a las 14:20. Hotel Mabu.",infoOk:"¡Recibido! Le confirmamos por WhatsApp.",info:"¿Cambió algo? Vuelo, hotel, horario, cantidad de personas",
+      motorista:"Su chofer",esperaMot:"Los datos del chofer (nombre, auto y patente) aparecen aquí el día anterior.",inclui:"Incluido",naoInclui:"Bueno saber",carro:"Auto: {c}",
+      st:{confirmado:"Confirmado",motorista_confirmado:"Chofer confirmado",a_caminho:"Chofer en camino",chegou:"El chofer llegó",andamento:"En curso",concluido:"Finalizado",cancelado:"Cancelado",nao_realizado:"No realizado",aguardando:"Esperando el pago"},
+      pagamentos:"Pagos",total:"Total",pagoLbl:"Pagado",saldoLbl:"Saldo",recibo:"recibo",voucher:"Imprimir o guardar voucher (PDF)",ajuda:"Hablar con nosotros por WhatsApp",ajudaMsg:"¡Hola! Tengo una consulta sobre mi reserva ",
+      busca:"Busca",leva:"Destino",vooL:"Vuelo",invalido:"Este enlace no es válido o venció. Pídanos uno nuevo por WhatsApp.",semInt:"Sin conexión. Intente de nuevo.",cod:"Código de reserva",
+      dias:["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],meses:["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"],cheg:"Aeropuerto de Foz → {d}",said:"{d} → Aeropuerto de Foz",vouT:"Voucher de reserva",rodape:"Iguaçu Executive Transfer · Foz do Iguaçu, Brasil"}
+  };
+  var WA="5545991185798", app=document.getElementById("app"), D=null, lang=null;
+  var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+  var fmt=function(s,o){return String(s).replace(/\{(\w)\}/g,function(_,k){return o[k]})};
+  var brl=function(v){return "R$ "+Number(v||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})};
+  function ler(){try{return JSON.parse(localStorage.getItem("iet_viagens")||"{}")}catch(e){return{}}}
+  function gravar(m){try{localStorage.setItem("iet_viagens",JSON.stringify(m))}catch(e){}}
+  var q=new URLSearchParams(location.search), cod=String(q.get("p")||"").toUpperCase().replace(/[^A-Z0-9-]/g,"").slice(0,10);
+  var mt=location.hash.match(/t=([a-f0-9]{16,64})/), mem=ler(), token=mt?mt[1]:mem[cod];
+  if(mt&&cod){mem[cod]=mt[1];gravar(mem);history.replaceState(null,"",location.pathname+"?p="+cod)}
+  function txt(){return T[lang]||T.pt}
+  if(!cod||!token){lang="pt";app.innerHTML='<div class="vazio">'+esc(T.pt.invalido)+'</div>';return}
+  function carregar(l){
+    return fetch("/api/viagem/"+cod+(l?"?lang="+l:""),{headers:{"x-token":token}}).then(function(r){return r.json().then(function(d){d.http=r.status;return d})}).then(function(d){
+      if(!d.ok){lang=lang||"pt";app.innerHTML='<div class="vazio">'+esc(txt().invalido)+'<p><a href="https://wa.me/'+WA+'" target="_blank" rel="noopener">WhatsApp</a></p></div>';return}
+      D=d; lang=d.lang; document.documentElement.lang=lang==="pt"?"pt-BR":lang; desenhar();
+    },function(){app.innerHTML='<div class="vazio">'+esc(txt().semInt)+'</div>'});
+  }
+  var stClasse={confirmado:"blue",motorista_confirmado:"blue",a_caminho:"blue",chegou:"ok",andamento:"blue",concluido:"ok",cancelado:"mut",nao_realizado:"bad",aguardando:"warn"};
+  function desenhar(){
+    var t=txt(), p=D.pedido, it=D.itens;
+    document.querySelectorAll("[data-l]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.l===lang?"true":"false")});
+    document.getElementById("rod").textContent=t.rodape;
+    var dias={};it.forEach(function(x){(dias[x.data]=dias[x.data]||[]).push(x)});
+    var ks=Object.keys(dias).sort(), d1=ks[0], d2=ks[ks.length-1], pax=Math.max.apply(null,it.map(function(x){return x.pax||1}));
+    var dt=function(d){var o=new Date(d+"T12:00:00Z");return o.getUTCDate()+" "+t.meses[o.getUTCMonth()]};
+    var h='<p class="eye">'+esc(t.eye)+' · '+esc(p.codigo)+'</p><h1>'+esc(fmt(t.ola,{n:String(p.nome).split(" ")[0]}))+'</h1><p class="sub">'+(d1?dt(d1)+(d2!==d1?" – "+dt(d2):""):"")+' · '+esc(fmt(t.pessoas,{n:pax}))+'</p>';
+    var todo=[];
+    if(p.saldo>=1&&p.status!=="cancelada"){
+      if(D.podePagar)todo.push('<div class="r"><span><b>'+esc(fmt(t.falta,{v:brl(p.saldo)}))+'</b>'+(p.modo==="sinal"?'<br><span class="msg">'+esc(fmt(t.noDia,{v:brl(p.saldo)}))+'</span>':'')+'</span><button class="btn" type="button" id="pagar">'+esc(t.pagar)+'</button></div>');
+      else todo.push('<div class="r"><span>'+esc(fmt(p.modo==="sinal"?t.noDia:t.faleSaldo,{v:brl(p.saldo)}))+'</span></div>');
+    }
+    var semVoo=it.some(function(x){return x.sentido==="chegada"&&!x.voo&&Date.parse(x.inicio_utc)>Date.now()&&/aeroporto|airport|aeropuerto/i.test(x.servico)});
+    if(semVoo)todo.push('<div class="r"><b>'+esc(t.voo)+'</b></div>');
+    todo.push('<div class="form"><label for="info" class="msg">'+esc(t.info)+'</label><textarea id="info" rows="2" maxlength="500" placeholder="'+esc(t.infoPh)+'"></textarea><div><button class="btn alt" type="button" id="enviar">'+esc(t.infoBtn)+'</button> <span class="msg" id="info-msg" role="status"></span></div></div>');
+    h+='<div class="todo">'+todo.join("")+'</div>';
+    ks.forEach(function(k){
+      var o=new Date(k+"T12:00:00Z");
+      h+='<section class="dia"><div class="d"><b>'+o.getUTCDate()+'</b><span>'+esc(t.dias[o.getUTCDay()])+'</span></div><div class="trechos">'+dias[k].map(function(x){
+        var rota=x.fixo&&x.sentido?(x.sentido==="chegada"?fmt(t.cheg,{d:x.fixo}):fmt(t.said,{d:x.fixo})):"";
+        return '<article class="card"><div class="h"><h3><span class="hora">'+esc(x.hora)+'</span>'+esc(x.servico)+'</h3><span class="st '+(stClasse[x.situacao]||"blue")+'">'+esc(t.st[x.situacao]||x.situacao)+'</span></div>'+
+          (rota?'<p class="rota">'+esc(rota)+'</p>':'')+
+          ((x.origem||x.destino)?'<p class="rota">'+(x.origem?'<span>'+esc(t.busca)+':</span> <b>'+esc(x.origem)+'</b>':'')+(x.destino?'<br><span>'+esc(t.leva)+':</span> <b>'+esc(x.destino)+'</b>':'')+'</p>':'')+
+          (x.voo?'<p class="rota"><span>'+esc(t.vooL)+':</span> <b>'+esc(x.voo)+'</b></p>':'')+
+          (x.motorista?'<div class="mot"><div class="av">'+esc(x.motorista.nome.charAt(0))+'</div><div><b>'+esc(t.motorista)+': '+esc(x.motorista.nome)+'</b><small>'+esc(x.motorista.carro)+(x.motorista.placa?' · '+esc(x.motorista.placa):'')+'</small></div></div>':x.motoristaEmBreve?'<div class="espera">'+esc(t.esperaMot)+'</div>':'')+
+          '<div class="inc"><div><b>'+esc(t.inclui)+'</b>'+esc(x.categoria)+(x.beneficios.length?' · '+esc(x.beneficios.slice(0,3).join(" · ")):'')+(x.descricao?'<br>'+esc(x.descricao):'')+'</div>'+(x.dicas.length?'<div><b>'+esc(t.naoInclui)+'</b>'+x.dicas.map(function(dc){return '<div class="dica">'+esc(dc)+'</div>'}).join("")+'</div>':'')+'</div></article>';
+      }).join("")+'</div></section>';
+    });
+    h+='<section class="card pag"><div class="h"><h3>'+esc(t.pagamentos)+'</h3><span class="msg">'+esc(t.cod)+': <b>'+esc(p.codigo)+'</b></span></div><div class="kv"><span>'+esc(t.total)+'</span><b>'+brl(p.total)+'</b>'+
+      D.pagamentos.map(function(g){return '<span>'+(g.pago_em?new Date(g.pago_em).toLocaleDateString(lang==="pt"?"pt-BR":lang,{day:"2-digit",month:"2-digit"}):esc(t.pagoLbl))+'</span><span>'+brl(g.valor)+(g.recibo&&/^https:\/\//.test(g.recibo)?' · <a href="'+esc(g.recibo)+'" target="_blank" rel="noopener">'+esc(t.recibo)+'</a>':'')+'</span>'}).join("")+
+      '<span>'+esc(t.saldoLbl)+'</span><b>'+brl(p.saldo)+'</b></div><p style="display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 0"><button class="btn alt" type="button" id="imprimir">'+esc(t.voucher)+'</button><a class="btn alt" target="_blank" rel="noopener" href="https://wa.me/'+WA+'?text='+encodeURIComponent(t.ajudaMsg+p.codigo+".")+'">'+esc(t.ajuda)+'</a></p></section>';
+    h+='<div class="voucher"><h2>Iguaçu Executive Transfer</h2><div>'+esc(t.vouT)+' · <b>'+esc(p.codigo)+'</b> · '+esc(p.nome)+'</div><table><tr><th>Data</th><th>'+esc(t.busca)+'</th><th></th><th></th></tr>'+
+      it.map(function(x){return '<tr><td>'+esc(x.data.split("-").reverse().join("/"))+' '+esc(x.hora)+'</td><td>'+esc(x.servico)+(x.origem?'<br>'+esc(x.origem):'')+(x.destino?' → '+esc(x.destino):'')+'</td><td>'+esc(x.categoria)+' · '+x.pax+'</td><td>'+esc(t.st[x.situacao]||"")+'</td></tr>'}).join("")+
+      '</table><p>'+esc(t.total)+': '+brl(p.total)+' · '+esc(t.pagoLbl)+': '+brl(p.pago)+' · '+esc(t.saldoLbl)+': '+brl(p.saldo)+'</p><p>WhatsApp +55 45 99118-5798 · iguacuexecutivetransfer.com.br</p></div>';
+    app.innerHTML=h;
+  }
+  document.addEventListener("click",function(e){
+    var l=e.target.closest("[data-l]");if(l&&l.dataset.l!==lang){carregar(l.dataset.l);return}
+    if(e.target.closest("#imprimir")){window.print();return}
+    var pg=e.target.closest("#pagar");
+    if(pg){pg.disabled=true;pg.textContent=txt().abrindo;fetch("/api/viagem/"+cod+"/pagar",{method:"POST",headers:{"x-token":token,"content-type":"application/json"},body:"{}"}).then(function(r){return r.json()}).then(function(r){if(r.ok&&r.url){location.href=r.url;return}pg.disabled=false;pg.textContent=txt().pagar;alertar(r.erro)},function(){pg.disabled=false;pg.textContent=txt().pagar;alertar("rede")});return}
+    var en=e.target.closest("#enviar");
+    if(en){var v=document.getElementById("info").value.trim(),m=document.getElementById("info-msg");if(v.length<3){document.getElementById("info").focus();return}en.disabled=true;
+      fetch("/api/viagem/"+cod+"/info",{method:"POST",headers:{"x-token":token,"content-type":"application/json"},body:JSON.stringify({texto:v})}).then(function(r){return r.json()}).then(function(r){en.disabled=false;if(r.ok){m.textContent=txt().infoOk;document.getElementById("info").value=""}else m.textContent=r.erro||"erro"},function(){en.disabled=false;m.textContent=txt().semInt})}
+  });
+  function alertar(c){var m=document.getElementById("info-msg");if(m)m.textContent=(c==="rede"?txt().semInt:"Não foi possível abrir o pagamento agora ("+c+"). Fale com a central.")}
+  carregar(null);
+})();
+</script>
+</body>
+</html>

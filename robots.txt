@@ -4,5 +4,6 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /parceiro/
 Disallow: /motorista/
+Disallow: /viagem/
 
 Sitemap: https://iguacuexecutivetransfer.com.br/sitemap.xml

@@ -63,7 +63,14 @@ code{color:var(--gold)}
   document.querySelectorAll("[data-t]").forEach(function(e){e.textContent=tx[e.dataset.t]});
   document.querySelectorAll(".cod").forEach(function(e){e.textContent=cod});
   document.querySelectorAll(".wa").forEach(function(e){e.href="https://wa.me/5545991185798?text="+encodeURIComponent(tx.msg+cod+".")});
-  function mostrar(id){["carregando","pago","pendente","cancelado"].forEach(function(x){document.getElementById(x).hidden=x!==id});if(id==="pendente"||id==="cancelado")outros()}
+  function mostrar(id){["carregando","pago","pendente","cancelado"].forEach(function(x){document.getElementById(x).hidden=x!==id});if(id==="pendente"||id==="cancelado")outros();if(id==="pago")viagem()}
+  /* link para o "Minha viagem" quando este navegador tem o token da reserva */
+  function viagem(){
+    var tk=null;try{var u=JSON.parse(localStorage.getItem("iet_ultimoPedido")||"null");if(u&&u.codigo===cod)tk=u.token;if(!tk)tk=(JSON.parse(localStorage.getItem("iet_viagens")||"{}"))[cod]}catch(e){}
+    if(!tk||!/^[a-f0-9]{16,64}$/.test(tk)||document.getElementById("mv"))return;
+    var a=document.createElement("a");a.id="mv";a.className="btn";a.style.marginRight="8px";a.href="/viagem/?p="+cod+(lang!=="pt"?"&lang="+lang:"")+"#t="+tk;a.textContent={pt:"Ver minha viagem",en:"View my trip",es:"Ver mi viaje"}[lang]||"Ver minha viagem";
+    var w=document.querySelector("#pago .wa");w.parentNode.insertBefore(a,w);
+  }
   /* reserva feita neste navegador e ainda sem pagamento: oferece as duas formas de pagar */
   function outros(){
     var u=null;try{u=JSON.parse(localStorage.getItem("iet_ultimoPedido")||"null")}catch(e){}

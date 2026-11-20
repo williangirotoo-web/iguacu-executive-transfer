@@ -40,8 +40,21 @@
           [["confirmado", "Confirmado pelo motorista"], ["concluido", "Concluído"], ["no_show", "Cliente não apareceu"], ["cancelado", "Cancelar serviço"]].filter(function (a) { return a[0] !== s.status; })
             .map(function (a) { return '<button class="o-btn' + (a[0] === "cancelado" || a[0] === "no_show" ? " perigo" : "") + '" type="button" data-st="' + a[0] + '">' + a[1] + '</button>'; }).join("") + '</div><div id="st-motivo"></div>';
       }
+      h += '<h2 class="o-h2">Minha viagem do cliente</h2><div id="mv"><button class="o-btn" type="button" id="mv-gerar">Pegar link para enviar ao cliente</button></div>';
       h += '<p class="o-note">Pedido completo no <a href="/admin/" style="color:var(--o-gold)">painel de reservas</a>.</p>';
       d.innerHTML = h;
+      var mvb = d.querySelector("#mv-gerar");
+      if (mvb) mvb.onclick = function () {
+        mvb.disabled = true;
+        O.api("/api/admin/ops/pedidos/" + s.codigo + "/link").then(function (r) {
+          if (!r.ok) { O.toast(r.mensagem); mvb.disabled = false; return; }
+          var tel = String(r.telefone || "").replace(/\D/g, ""), pn = String(r.nome || "").split(" ")[0];
+          var msg = { pt: "Olá, " + pn + "! Aqui está a sua viagem com a Iguaçu Executive Transfer: horários, motorista e pagamentos. Guarde este link: ", en: "Hello " + pn + "! Here is your trip with Iguaçu Executive Transfer: times, driver and payments. Keep this link: ", es: "¡Hola, " + pn + "! Aquí está su viaje con Iguaçu Executive Transfer: horarios, chofer y pagos. Guarde este enlace: " }[r.idioma] || "";
+          d.querySelector("#mv").innerHTML = '<div class="o-field"><input readonly id="mv-link" value="' + esc(r.link) + '"></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">' +
+            (tel.length >= 10 ? '<a class="o-btn pri" target="_blank" rel="noopener" href="https://wa.me/' + (tel.length <= 11 ? "55" + tel : tel) + "?text=" + encodeURIComponent(msg + r.link) + '">Enviar no WhatsApp</a>' : "") +
+            '<a class="o-btn" target="_blank" rel="noopener" href="' + esc(r.link) + '">Abrir</a></div>';
+        });
+      };
       var form = d.querySelector("#atr");
       function enviar(corpo) {
         var av = d.querySelector("#atr-av"); av.innerHTML = "";

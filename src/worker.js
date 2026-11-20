@@ -4,6 +4,7 @@ import { normalizarItem, cotar, cotarTodas, valorAgora, servico, aplicarPrecos, 
 import { buscarLugares, resolverRota } from "./rota.js";
 import { assistente } from "./assistente.js";
 import { ops, sincronizarServicos, portalMotorista } from "./ops.js";
+import { viagemApi } from "./viagem.js";
 import { EmailMessage } from "cloudflare:email";
 
 export const STATUS = ["solicitacao", "pagamento_pendente", "aprovado", "aguardando_confirmacao", "confirmada", "concluida", "cancelada"];
@@ -1261,6 +1262,7 @@ async function api(req, env, ctx, url) {
   if (p.startsWith("/api/parceiro/") && m === "GET") return areaParceiro(req, env, url);
   if (p.startsWith("/api/motorista/")) return areaMotorista(req, env, url);
   if (p.startsWith("/api/condutor/")) return portalMotorista(req, env, url, { enviarAviso });
+  if (p.startsWith("/api/viagem/")) return viagemApi(req, env, url, { enviarAviso, gerarLinkPagamento });
   if (p === "/api/pagamentos/infinitepay" && m === "POST") return avisoInfinitePay(req, env, ctx, url);
   if (p === "/api/assistente" && m === "POST") {
     let b; try { b = await lerJson(req, 12000); } catch { return erro("json_invalido"); }
@@ -1492,7 +1494,7 @@ function comPrecos(rw) {
 function comApp(res, url) {
   const p = url.pathname;
   if (!res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
-  if (p.startsWith("/admin") || p.startsWith("/parceiro/") || p.startsWith("/motorista/") || p === "/offline.html") return res;
+  if (p.startsWith("/admin") || p.startsWith("/parceiro/") || p.startsWith("/motorista/") || p.startsWith("/viagem/") || p === "/offline.html") return res;
   const k = HERO_VIDEO[p];
   let rw = comPrecos(new HTMLRewriter()).on("head", { element(el) { el.append(APP_HEAD + (k ? HV_CSS : ""), { html: true }); } });
   if (k) {

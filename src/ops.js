@@ -3,6 +3,7 @@
 import { papelDe, permissoes, pode } from "./acesso.js";
 import { CONFIG, CATEGORIAS } from "./precos.js";
 import { servico } from "./cotacao.js";
+import { linkViagem } from "./viagem.js";
 import { duracaoPadrao, fimPrevisto, statusInicial, PEDIDO_GERA_SERVICO, STATUS_FINAIS, STATUS_SERVICO, validarMotorista, validarVeiculo, checarAtribuicao, sugerir, alertas, fluxoServico, etapaPermitida, mostrarContato } from "./ops-regras.js";
 
 const json = (obj, status = 200) => new Response(JSON.stringify(obj), {
@@ -435,6 +436,13 @@ export async function ops(req, env, url, user, h = {}) {
   // quem sou eu e o que posso fazer (as telas usam isto para montar o menu; o servidor confere de novo em cada rota)
   if (partes[0] === "eu" && req.method === "GET") {
     return json({ ok: true, email: user.email, papel, permissoes: permissoes(papel) });
+  }
+
+  // link do "Minha viagem" para mandar ao cliente
+  if (partes[0] === "pedidos" && /^IET-[A-Z0-9]{6}$/.test(partes[1] || "") && partes[2] === "link" && req.method === "GET") {
+    if (!pode(papel, "ops.ver")) return erro("sem_permissao", 403);
+    const l = await linkViagem(env, partes[1], url.origin);
+    return l ? json({ ok: true, ...l }) : erro("nao_encontrado", 404);
   }
 
   // reserva manual (venda fechada no WhatsApp, telefone, indicação...)
