@@ -3,7 +3,7 @@ import { CONFIG, CATEGORIAS, SERVICOS, CONSULTA, HORA_EXTRA, POR_HORA, POR_KM, D
 import { normalizarItem, cotar, cotarTodas, valorAgora, servico, aplicarPrecos, PRECOS_PADRAO } from "./cotacao.js";
 import { buscarLugares, resolverRota } from "./rota.js";
 import { assistente } from "./assistente.js";
-import { ops, sincronizarServicos } from "./ops.js";
+import { ops, sincronizarServicos, portalMotorista } from "./ops.js";
 import { EmailMessage } from "cloudflare:email";
 
 export const STATUS = ["solicitacao", "pagamento_pendente", "aprovado", "aguardando_confirmacao", "confirmada", "concluida", "cancelada"];
@@ -1260,6 +1260,7 @@ async function api(req, env, ctx, url) {
   if (p === "/api/parceiros" && m === "POST") return cadastrarParceiro(req, env, ctx);
   if (p.startsWith("/api/parceiro/") && m === "GET") return areaParceiro(req, env, url);
   if (p.startsWith("/api/motorista/")) return areaMotorista(req, env, url);
+  if (p.startsWith("/api/condutor/")) return portalMotorista(req, env, url, { enviarAviso });
   if (p === "/api/pagamentos/infinitepay" && m === "POST") return avisoInfinitePay(req, env, ctx, url);
   if (p === "/api/assistente" && m === "POST") {
     let b; try { b = await lerJson(req, 12000); } catch { return erro("json_invalido"); }
@@ -1314,7 +1315,7 @@ async function api(req, env, ctx, url) {
   const mm = p.match(/^\/api\/pedidos\/(IET-[A-Z0-9]{6})$/);
   if (mm && m === "GET") return verPedidoCliente(env, mm[1], url.searchParams.get("t"));
   // plataforma de gestão: fica dentro de /api/admin/ para continuar atrás do mesmo Cloudflare Access do painel
-  if (p.startsWith("/api/admin/ops/")) { const u = await verificarAccess(req, env); return u ? ops(req, env, url, u, { prepararBanco }) : erro("nao_autorizado", 401); }
+  if (p.startsWith("/api/admin/ops/")) { const u = await verificarAccess(req, env); return u ? ops(req, env, url, u, { prepararBanco, enviarAviso }) : erro("nao_autorizado", 401); }
   if (p.startsWith("/api/admin")) return admin(req, env, url);
   return erro("rota", 404);
 }

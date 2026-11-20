@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#0c0d0f">
+<title>Motorista | Iguaçu Executive Transfer</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/ops.css?v=2">
+<style>
+body.ops{min-height:100vh;display:flex;flex-direction:column}
+.mt-top{display:flex;justify-content:space-between;align-items:center;padding:calc(12px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+.mt-top b{font-family:var(--o-brand);font-size:1.3rem}
+.mt-main{flex:1;padding:0 max(14px,env(safe-area-inset-right,0px)) 96px max(14px,env(safe-area-inset-left,0px));max-width:560px;width:100%;margin:0 auto}
+.mt-card{background:var(--o-panel);border:1px solid var(--o-line);border-radius:16px;padding:16px}
+.mt-hora{font-size:2.1rem;font-weight:700;letter-spacing:-.02em;line-height:1}
+.mt-dia{color:var(--o-mut);font-size:.85rem}
+.mt-rota{margin:12px 0;display:grid;grid-template-columns:14px 1fr;gap:4px 10px}
+.mt-rota i{width:10px;height:10px;border-radius:50%;border:2px solid var(--o-fg);margin-top:5px}
+.mt-rota i.d{background:var(--o-fg)}
+.mt-rota .ln{width:2px;background:var(--o-line2);margin-left:4px;height:14px}
+.mt-rota small{color:var(--o-mut)}
+.mt-fatos{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.mt-fatos span{background:var(--o-sunk);border-radius:8px;padding:5px 9px;font-size:.85rem}
+.mt-obs{background:var(--o-amber-bg);border-radius:10px;padding:9px 11px;font-size:.9rem;margin:8px 0}
+.mt-passos{display:flex;gap:4px;margin:14px 0 10px}
+.mt-passos i{flex:1;height:5px;border-radius:3px;background:var(--o-line2)}
+.mt-passos i.on{background:var(--o-gold)}
+.mt-big{width:100%;border:0;border-radius:14px;padding:18px;font-size:1.1rem;font-weight:700;background:var(--o-gold);color:var(--o-gold-ink)}
+.mt-big[disabled]{opacity:.6}
+.mt-acoes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.mt-acoes a,.mt-acoes button{display:flex;align-items:center;justify-content:center;border:1px solid var(--o-line2);background:var(--o-panel);border-radius:12px;padding:12px 4px;font-size:.82rem;font-weight:600;text-decoration:none;color:var(--o-fg);min-height:46px;text-align:center}
+.mt-lista .it{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 4px;border-bottom:1px solid var(--o-line)}
+.mt-lista .it b{font-variant-numeric:tabular-nums}
+.mt-h{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--o-mut);margin:22px 0 6px;font-weight:600}
+.mt-tab{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(3,1fr);background:var(--o-panel);border-top:1px solid var(--o-line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:10}
+.mt-tab button{border:0;background:none;padding:12px 0 14px;font-size:.78rem;font-weight:600;color:var(--o-faint)}
+.mt-tab button[aria-current="page"]{color:var(--o-gold)}
+.mt-fila{background:var(--o-amber-bg);color:var(--o-fg);border-radius:10px;padding:10px 12px;font-size:.85rem;margin-bottom:12px}
+.mt-placa{position:fixed;inset:0;background:#fff;color:#111;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+.mt-placa b{font-family:var(--o-brand);font-size:clamp(2.6rem,13vw,6rem);line-height:1.05}
+.mt-placa span{margin-top:16px;letter-spacing:.2em;text-transform:uppercase;font-size:.8rem;color:#666}
+.mt-sem{padding:40px 10px;text-align:center;color:var(--o-mut)}
+.mt-form{display:grid;gap:10px;margin-top:12px}
+</style>
+</head>
+<body class="ops">
+<header class="mt-top"><b>IGUAÇU</b><span class="o-sub" id="ola"></span></header>
+<main class="mt-main" id="app"><div class="mt-sem">Carregando…</div></main>
+<nav class="mt-tab" aria-label="Seções" id="tabs" hidden><button type="button" data-tab="hoje" aria-current="page">Hoje</button><button type="button" data-tab="agenda">Agenda</button><button type="button" data-tab="historico">Histórico</button></nav>
+<div id="camada"></div>
+<script src="/js/ops-ui.js?v=2"></script>
+<script>
+(function(){
+  var O=window.OPS, esc=O.esc, app=document.getElementById("app"), tab="hoje", D=null, filaTimer=null;
+  var ST={atribuido:"Novo, falta confirmar",confirmado:"Confirmado",a_caminho:"A caminho",no_local:"No local",embarcado:"Embarcado",na_aduana:"Na aduana",no_atrativo:"No destino",concluido:"Concluído",no_show:"Cliente não apareceu"};
+  var IDI={pt:"Português",en:"Inglês",es:"Espanhol",fr:"Francês",it:"Italiano",de:"Alemão"};
+  var DS=["dom","seg","ter","qua","qui","sex","sáb"];
+  function ler(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}}
+  function gravar(k,v){try{if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  var m=location.hash.match(/k=([a-f0-9]{32})/); if(m){gravar("iet_condutor",m[1]);history.replaceState(null,"",location.pathname)}
+  var chave=ler("iet_condutor");
+  if(!chave){app.innerHTML='<div class="mt-sem"><b>Abra pelo link que você recebeu no WhatsApp.</b><p>O link de acesso é pessoal. Se perdeu, peça um novo à central.</p></div>';return}
+  function api(path,body){
+    return fetch("/api/condutor/"+path,body?{method:"POST",headers:{"x-motorista":chave,"content-type":"application/json"},body:JSON.stringify(body)}:{headers:{"x-motorista":chave}})
+      .then(function(r){return r.json().then(function(d){d.http=r.status;return d})});
+  }
+  var fila=function(){return ler("iet_fila")||[]};
+  function enviarFila(){
+    var f=fila(); if(!f.length){desenharFila();return Promise.resolve()}
+    var x=f[0];
+    return api("servicos/"+x.id+"/etapa",x.body).then(function(r){gravar("iet_fila",fila().slice(1));if(!r.ok&&r.erro!=="etapa")O.toast("Um toque guardado não foi aceito: "+(r.erro||""));return enviarFila()},function(){desenharFila()});
+  }
+  function desenharFila(){var b=document.getElementById("fila");var n=fila().length;if(b){b.hidden=!n;b.textContent=n+" atualização(ões) guardada(s) sem sinal. Enviando quando a internet voltar."}}
+  window.addEventListener("online",function(){enviarFila().then(carregar)});
+  function carregar(){
+    return api("servicos").then(function(r){
+      if(r.http===401){gravar("iet_condutor",null);app.innerHTML='<div class="mt-sem"><b>Seu link de acesso não vale mais.</b><p>Peça um novo link à central.</p></div>';document.getElementById("tabs").hidden=true;return}
+      if(!r.ok){app.innerHTML='<div class="mt-sem">Não deu para carregar agora. Puxe para atualizar ou tente de novo.</div>';return}
+      D=r; document.getElementById("ola").textContent="Olá, "+r.motorista.nome.split(" ")[0]; document.getElementById("tabs").hidden=false; desenhar();
+    },function(){app.innerHTML='<div class="mt-sem">Sem conexão. Tente de novo quando tiver sinal.</div>'});
+  }
+  var dataTxt=function(s){var d=new Date(s.data+"T12:00:00Z");return DS[d.getUTCDay()]+" "+s.data.split("-").reverse().slice(0,2).join("/")};
+  function mapa(s){var alvo=["embarcado","na_aduana","no_atrativo"].indexOf(s.status)>=0?s.destino:s.origem;return alvo?"https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(alvo):null}
+  function cartao(s){
+    var fl=s.fluxo, idx=["atribuido"].concat(fl.map(function(e){return e[0]})).indexOf(s.status), prox=fl[idx]||null, tel=String(s.telefone||"").replace(/\D/g,"");
+    var bag=[s.malas?s.malas+" mala(s)":"",s.malas_bordo?s.malas_bordo+" de mão":"",s.mochilas?s.mochilas+" mochila(s)":"",s.cadeirinhas?s.cadeirinhas+" cadeirinha(s)":""].filter(Boolean).join(" · ");
+    var passos="";for(var i=0;i<fl.length;i++)passos+='<i class="'+(i<idx?"on":"")+'"></i>';
+    var mp=mapa(s), comecou=Date.parse(s.inicio_utc)<=Date.parse(D.agora);
+    return '<div class="mt-card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div><div class="mt-hora">'+esc(s.hora)+'</div><div class="mt-dia">'+dataTxt(s)+' · '+esc(ST[s.status]||s.status)+'</div></div><span class="o-pill o-blue" title="Idioma do cliente">'+esc(IDI[s.idioma]||s.idioma)+'</span></div>'+
+      '<div class="mt-rota"><i></i><div><b>'+esc(s.origem||"Local de busca a confirmar")+'</b>'+(s.voo?'<br><small>Voo: '+esc(s.voo)+'</small>':'')+'</div><div class="ln"></div><div></div><i class="d"></i><div><b>'+esc(s.destino||"Destino a confirmar")+'</b><br><small>'+esc(s.servico)+'</small></div></div>'+
+      '<div class="mt-fatos"><span>'+esc(s.cliente)+'</span><span>'+s.pax+' pessoa(s)</span>'+(bag?'<span>'+esc(bag)+'</span>':'')+(s.placa?'<span>'+esc(s.veiculo+" "+s.placa)+'</span>':'')+(s.fronteira?'<span>Cruza a fronteira</span>':'')+'</div>'+
+      (s.obs?'<div class="mt-obs">'+esc(s.obs)+'</div>':'')+(!s.contatoLiberado?'<p class="o-note" style="margin:6px 0">O contato do cliente aparece 24 horas antes do serviço.</p>':'')+
+      '<div class="mt-passos" aria-label="Progresso">'+passos+'</div>'+
+      (prox?'<button class="mt-big" type="button" data-etapa="'+prox[0]+'" data-id="'+s.id+'">'+esc(prox[1])+'</button>':'<button class="mt-big" type="button" disabled>'+esc(ST[s.status]||s.status)+'</button>')+
+      '<div id="fim-'+s.id+'"></div>'+
+      '<div class="mt-acoes">'+(mp?'<a href="'+mp+'" target="_blank" rel="noopener">Rota no Maps</a>':'<button type="button" disabled>Rota no Maps</button>')+
+      (tel.length>=10?'<a href="https://wa.me/'+(tel.length<=11?"55"+tel:tel)+'" target="_blank" rel="noopener">WhatsApp</a>':'<button type="button" disabled>WhatsApp</button>')+
+      '<button type="button" data-placa="'+s.id+'">Placa</button><button type="button" data-aviso="atraso" data-id="'+s.id+'">Atraso</button><button type="button" data-aviso="ocorrencia" data-id="'+s.id+'">Ocorrência</button>'+
+      (comecou&&s.status!=="concluido"?'<button type="button" data-noshow="'+s.id+'">Não apareceu</button>':'<button type="button" disabled>Não apareceu</button>')+'</div><div id="av-'+s.id+'"></div></div>';
+  }
+  function linha(s){return '<div class="it" data-ver="'+s.id+'"><span><b>'+esc(s.hora)+'</b> '+dataTxt(s)+'<br><small class="o-sub">'+esc(s.servico)+'</small></span>'+O.pill(s.status)+'</div>'}
+  function desenhar(){
+    document.querySelectorAll("[data-tab]").forEach(function(b){b.setAttribute("aria-current",b.dataset.tab===tab?"page":"false")});
+    var agora=Date.parse(D.agora), L=D.servicos, abertos=L.filter(function(s){return ["concluido","no_show"].indexOf(s.status)<0});
+    var h='<div class="mt-fila" id="fila" hidden></div>';
+    if(tab==="hoje"){
+      var foco=abertos.filter(function(s){return Date.parse(s.fim_previsto_utc)>agora-6*3600e3})[0];
+      h+=foco?'<p class="mt-h">'+(Date.parse(foco.inicio_utc)-agora<0?"Agora":"Próximo serviço")+'</p>'+cartao(foco):'<div class="mt-sem">Nenhum serviço pela frente. Quando a central atribuir, ele aparece aqui.</div>';
+      var depois=abertos.filter(function(s){return s!==foco&&Date.parse(s.inicio_utc)<agora+36*3600e3});
+      if(depois.length)h+='<p class="mt-h">Depois</p><div class="mt-lista">'+depois.map(linha).join("")+'</div>';
+      var novos=abertos.filter(function(s){return s.status==="atribuido"&&s!==foco&&depois.indexOf(s)<0});
+      if(novos.length)h+='<p class="mt-h">Novos para confirmar</p><div class="mt-lista">'+novos.map(linha).join("")+'</div>';
+    }else if(tab==="agenda"){
+      h+=abertos.length?'<div class="mt-lista">'+abertos.map(linha).join("")+'</div>':'<div class="mt-sem">Agenda vazia.</div>';
+    }else{
+      var feitos=L.filter(function(s){return ["concluido","no_show"].indexOf(s.status)>=0}).reverse();
+      h+=feitos.length?'<div class="mt-lista">'+feitos.map(function(s){return '<div class="it"><span><b>'+esc(s.hora)+'</b> '+dataTxt(s)+'<br><small class="o-sub">'+esc(s.servico)+(s.recebido_valor?" · recebeu "+O.brl(s.recebido_valor):"")+'</small></span>'+O.pill(s.status)+'</div>'}).join("")+'</div>':'<div class="mt-sem">Sem serviços nos últimos 7 dias.</div>';
+    }
+    app.innerHTML=h; desenharFila();
+  }
+  function avancar(id,body,txt){
+    var s=D.servicos.filter(function(x){return x.id===id})[0];
+    return api("servicos/"+id+"/etapa",body).then(function(r){
+      if(r.ok){O.toast(txt||"Atualizado");return carregar()}
+      if(r.erro==="etapa"){O.toast("Essa etapa já foi registrada.");return carregar()}
+      O.toast("Não deu certo: "+(r.erro||"tente de novo"));
+    },function(){
+      var f=fila();f.push({id:id,body:body});gravar("iet_fila",f);
+      if(s&&body.etapa){s.status=body.etapa;desenhar()} desenharFila(); O.toast("Sem sinal. Guardado para enviar depois.");
+      if(!filaTimer)filaTimer=setInterval(function(){if(fila().length)enviarFila().then(function(){if(!fila().length)carregar()})},20000);
+    });
+  }
+  document.addEventListener("click",function(e){
+    var t=e.target.closest("[data-tab]");if(t){tab=t.dataset.tab;desenhar();return}
+    var v=e.target.closest("[data-ver]");if(v){tab="hoje";var s=D.servicos.filter(function(x){return x.id===+v.dataset.ver})[0];app.innerHTML='<p class="mt-h"><button class="o-btn" type="button" data-tab="agenda">‹ Voltar</button></p>'+cartao(s);return}
+    var b=e.target.closest("[data-etapa]");
+    if(b){var id=+b.dataset.id,et=b.dataset.etapa;
+      if(et==="concluido"){var box=document.getElementById("fim-"+id);if(box.innerHTML)return;
+        box.innerHTML='<div class="mt-form"><b>Recebeu algum valor do cliente?</b><label class="o-field">Forma<select id="rf"><option value="nada">Não recebi nada</option><option value="dinheiro">Dinheiro</option><option value="pix">Pix</option><option value="cartao">Cartão</option></select></label><label class="o-field">Valor (R$)<input id="rv" inputmode="decimal" placeholder="0,00"></label><button class="mt-big" type="button" id="fim-ok">Concluir corrida</button></div>';
+        b.hidden=true;document.getElementById("fim-ok").onclick=function(){var fo=document.getElementById("rf").value,va=document.getElementById("rv").value;if(fo!=="nada"&&!va){O.toast("Informe o valor recebido");return}this.disabled=true;avancar(id,{etapa:"concluido",recebido:{forma:fo,valor:va||"0"}},"Corrida concluída")};return}
+      b.disabled=true;avancar(id,{etapa:et});return}
+    var p=e.target.closest("[data-placa]");if(p){var s2=D.servicos.filter(function(x){return x.id===+p.dataset.placa})[0];document.getElementById("camada").innerHTML='<div class="mt-placa" role="dialog" aria-label="Placa com o nome do cliente" data-fecha><b>'+esc(s2.cliente)+'</b><span>Iguaçu Executive Transfer · toque para fechar</span></div>';return}
+    if(e.target.closest("[data-fecha]")){document.getElementById("camada").innerHTML="";return}
+    var a=e.target.closest("[data-aviso]");
+    if(a){var bx=document.getElementById("av-"+a.dataset.id);bx.innerHTML='<div class="mt-form"><label class="o-field">'+(a.dataset.aviso==="atraso"?"Quanto tempo e por quê?":"O que aconteceu?")+'<textarea id="avt" rows="2" maxlength="300"></textarea></label><button class="o-btn pri" type="button" id="av-ok">Enviar para a central</button></div>';
+      document.getElementById("av-ok").onclick=function(){var tx=document.getElementById("avt").value.trim();if(tx.length<2){O.toast("Escreva o aviso");return}this.disabled=true;avancar(+a.dataset.id,{tipo:a.dataset.aviso,texto:tx},"Aviso enviado à central")};return}
+    var n=e.target.closest("[data-noshow]");
+    if(n){var bn=document.getElementById("av-"+n.dataset.noshow);bn.innerHTML='<div class="mt-form"><label class="o-field">Quanto tempo esperou e onde? (opcional)<textarea id="nst" rows="2" maxlength="300"></textarea></label><button class="o-btn perigo" type="button" id="ns-ok">Confirmar: cliente não apareceu</button></div>';
+      document.getElementById("ns-ok").onclick=function(){this.disabled=true;avancar(+n.dataset.noshow,{tipo:"no_show",texto:document.getElementById("nst").value},"Registrado")}}
+  });
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)enviarFila().then(carregar)});
+  enviarFila().then(carregar);
+})();
+</script>
+</body>
+</html>

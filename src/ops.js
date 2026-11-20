@@ -3,7 +3,7 @@
 import { papelDe, permissoes, pode } from "./acesso.js";
 import { CONFIG, CATEGORIAS } from "./precos.js";
 import { servico } from "./cotacao.js";
-import { duracaoPadrao, fimPrevisto, statusInicial, PEDIDO_GERA_SERVICO, STATUS_FINAIS, STATUS_SERVICO, validarMotorista, validarVeiculo, checarAtribuicao, sugerir, alertas } from "./ops-regras.js";
+import { duracaoPadrao, fimPrevisto, statusInicial, PEDIDO_GERA_SERVICO, STATUS_FINAIS, STATUS_SERVICO, validarMotorista, validarVeiculo, checarAtribuicao, sugerir, alertas, fluxoServico, etapaPermitida, mostrarContato } from "./ops-regras.js";
 
 const json = (obj, status = 200) => new Response(JSON.stringify(obj), {
   status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex" },
@@ -338,6 +338,92 @@ async function mudarStatus(req, env, user, id) {
   return json({ ok: true, status: novo });
 }
 
+/* ---------------- pacote 3: portal do motorista próprio (/motorista/hoje.html) ----------------
+   Acesso por link pessoal com chave (no banco fica só o hash). O motorista vê só os serviços dele,
+   nunca valores do pedido, e o contato do cliente só perto do horário. */
+async function sha256hex(t) { return [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)))].map((b) => b.toString(16).padStart(2, "0")).join(""); }
+
+async function gerarAcesso(env, user, id, origem) {
+  const m = await env.DB.prepare("SELECT id, nome, telefone FROM motoristas WHERE id = ?").bind(id).first();
+  if (!m) return erro("nao_encontrado", 404);
+  const chave = tokenHex(), now = new Date().toISOString();
+  await env.DB.prepare("UPDATE motoristas SET chave_hash = ?, chave_em = ?, atualizado_em = ? WHERE id = ?").bind(await sha256hex("motorista:" + chave), now, now, id).run();
+  return json({ ok: true, link: origem + "/motorista/hoje.html#k=" + chave, nome: m.nome, telefone: m.telefone });
+}
+async function revogarAcesso(env, id) {
+  const r = await env.DB.prepare("UPDATE motoristas SET chave_hash = NULL, chave_em = NULL, atualizado_em = ? WHERE id = ?").bind(new Date().toISOString(), id).run();
+  return r.meta.changes ? json({ ok: true }) : erro("nao_encontrado", 404);
+}
+
+function paraMotorista(s, agora) {
+  const svc = servico(s.servico_id), contato = mostrarContato(s, agora);
+  return {
+    id: s.id, status: s.status, data: s.data, hora: s.hora, inicio_utc: s.inicio_utc, fim_previsto_utc: s.fim_previsto_utc,
+    servico: s.servico_nome, sentido: s.sentido, voo: s.voo, origem: s.origem, destino: s.destino, pax: s.pax, malas: s.malas, malas_bordo: s.malas_bordo,
+    mochilas: s.mochilas, cadeirinhas: s.cadeirinhas, obs: s.obs, idioma: s.idioma || "pt", codigo: s.codigo, placa: s.placa, veiculo: s.veiculo_modelo,
+    cliente: contato ? s.cliente : String(s.cliente || "").split(" ")[0], telefone: contato ? s.telefone : null, contatoLiberado: contato,
+    fronteira: !!(svc && svc.fronteira), fluxo: fluxoServico(svc, s), recebido_valor: s.recebido_valor, recebido_forma: s.recebido_forma,
+  };
+}
+
+export async function portalMotorista(req, env, url, h = {}) {
+  const chave = String(req.headers.get("x-motorista") || "");
+  if (!/^[a-f0-9]{32}$/.test(chave)) return erro("nao_autorizado", 401);
+  let m;
+  try { m = await env.DB.prepare("SELECT id, nome, status, idiomas FROM motoristas WHERE chave_hash = ?").bind(await sha256hex("motorista:" + chave)).first(); }
+  catch (e) { if (semTabela(e)) return erro("indisponivel", 503); throw e; }
+  if (!m || m.status === "inativo") return erro("nao_autorizado", 401);
+  const partes = url.pathname.replace(/^\/api\/condutor\/?/, "").split("/").filter(Boolean), agora = Date.now();
+  if (req.method !== "GET") { const orig = req.headers.get("origin"); if (orig && orig !== url.origin) return erro("origem", 403); }
+
+  if (partes[0] === "servicos" && partes.length === 1 && req.method === "GET") {
+    await sincronizarServicos(env);
+    const { results } = await env.DB.prepare(SQL_SERVICOS.replace("s.obs_operacao,", "s.obs_operacao, s.recebido_valor, s.recebido_forma,") +
+      " WHERE s.motorista_id = ? AND s.inicio_utc >= ? AND s.inicio_utc <= ? AND s.status <> 'cancelado' ORDER BY s.inicio_utc LIMIT 300")
+      .bind(m.id, new Date(agora - 7 * 864e5).toISOString(), new Date(agora + 21 * 864e5).toISOString()).all();
+    return json({ ok: true, motorista: { nome: m.nome }, agora: new Date(agora).toISOString(), servicos: results.map((s) => paraMotorista(s, agora)) });
+  }
+
+  if (partes[0] === "servicos" && /^\d+$/.test(partes[1] || "") && partes[2] === "etapa" && req.method === "POST") {
+    let b; try { b = await req.json(); } catch { return erro("json_invalido"); }
+    const s = await env.DB.prepare(SQL_SERVICOS.replace("s.obs_operacao,", "s.obs_operacao, s.recebido_valor, s.recebido_forma,") + " WHERE s.id = ? AND s.motorista_id = ?").bind(+partes[1], m.id).first();
+    if (!s) return erro("nao_encontrado", 404);
+    if (STATUS_FINAIS.includes(s.status)) return erro("servico_encerrado", 409);
+    const now = new Date(agora).toISOString(), nota = txt(b.texto, 300);
+    // avisos que não mudam a etapa: atraso e ocorrência
+    if (b.tipo === "atraso" || b.tipo === "ocorrencia") {
+      if (nota.length < 2) return erro("texto");
+      const rot = b.tipo === "atraso" ? "Atraso" : "Ocorrência";
+      await registrar(env, s, "motorista " + m.nome, b.tipo, `${rot} informado por ${m.nome} em ${s.servico_nome} (${s.data} ${s.hora}): ${nota}`);
+      if (h.enviarAviso) try { await h.enviarAviso(env, `${rot} · ${s.codigo} · ${m.nome}`, `${m.nome} informou ${rot.toLowerCase()} no serviço ${s.servico_nome}, ${s.data} às ${s.hora}, cliente ${s.cliente}.\n\n${nota}\n\nPainel: ${url.origin}/admin/hoje.html`); } catch (e) { console.error("aviso motorista", e && e.message); }
+      return json({ ok: true });
+    }
+    if (b.tipo === "no_show") {
+      if (Date.parse(s.inicio_utc) > agora) return erro("cedo");
+      await env.DB.prepare("UPDATE servicos SET status = 'no_show', atualizado_em = ? WHERE id = ?").bind(now, s.id).run();
+      await registrar(env, s, "motorista " + m.nome, "status_servico", `${m.nome} marcou que o cliente não apareceu em ${s.servico_nome} (${s.data} ${s.hora}).${nota ? " " + nota : ""}`, s.status, "no_show");
+      if (h.enviarAviso) try { await h.enviarAviso(env, `Cliente não apareceu · ${s.codigo}`, `${m.nome} marcou "não apareceu" em ${s.servico_nome}, ${s.data} às ${s.hora}, cliente ${s.cliente}.${nota ? "\n\n" + nota : ""}\n\nPainel: ${url.origin}/admin/hoje.html`); } catch (e) { console.error("aviso motorista", e && e.message); }
+      return json({ ok: true, status: "no_show" });
+    }
+    const fluxo = fluxoServico(servico(s.servico_id), s), nova = String(b.etapa || "");
+    if (!etapaPermitida(fluxo, s.status, nova)) return erro("etapa", 409, { atual: s.status });
+    let recebido = null, forma = null;
+    if (nova === "concluido" && b.recebido) {
+      recebido = dinheiro(b.recebido.valor); forma = ["dinheiro", "pix", "cartao", "nada"].includes(b.recebido.forma) ? b.recebido.forma : "nada";
+      if (!(recebido >= 0) || recebido > 100000) return erro("valor");
+      if (forma === "nada") recebido = 0;
+    }
+    const col = ETAPA_COLUNA[nova];
+    await env.DB.prepare(`UPDATE servicos SET status = ?, atualizado_em = ?${col ? ", " + col + " = COALESCE(" + col + ", ?)" : ""}${nova === "concluido" ? ", recebido_valor = ?, recebido_forma = ?" : ""} WHERE id = ?`)
+      .bind(...[nova, now].concat(col ? [now] : [], nova === "concluido" ? [recebido, forma] : [], [s.id])).run();
+    const rot = (fluxo.find((e) => e[0] === nova) || [])[2] || nova;
+    await registrar(env, s, "motorista " + m.nome, "status_servico", `${m.nome}: ${rot} · ${s.servico_nome} (${s.data} ${s.hora})` + (recebido ? `. Recebeu R$ ${recebido.toFixed(2).replace(".", ",")} (${forma}).` : ""), s.status, nova);
+    if (recebido > 0 && h.enviarAviso) try { await h.enviarAviso(env, `Recebido no dia R$ ${recebido.toFixed(2).replace(".", ",")} · ${s.codigo}`, `${m.nome} concluiu ${s.servico_nome} (${s.data} ${s.hora}) e recebeu R$ ${recebido.toFixed(2).replace(".", ",")} em ${forma} do cliente ${s.cliente}.`); } catch (e) { console.error("aviso motorista", e && e.message); }
+    return json({ ok: true, status: nova });
+  }
+  return erro("rota", 404);
+}
+
 export async function ops(req, env, url, user, h = {}) {
   const papel = await papelDe(env, user && user.email);
   if (!papel) return erro("sem_permissao", 403);
@@ -358,6 +444,11 @@ export async function ops(req, env, url, user, h = {}) {
   }
 
   try {
+    if (partes[0] === "motoristas" && /^\d+$/.test(partes[1] || "") && partes[2] === "acesso") {
+      if (!pode(papel, "cadastros.editar")) return erro("sem_permissao", 403);
+      if (req.method === "POST") return await gerarAcesso(env, user, +partes[1], url.origin);
+      if (req.method === "DELETE") return await revogarAcesso(env, +partes[1]);
+    }
     if (partes[0] === "motoristas" || partes[0] === "veiculos") return await cadastro(req, env, user, papel, partes[0], partes);
     if (partes[0] === "servicos" && partes.length === 1 && req.method === "GET") {
       if (!pode(papel, "ops.ver")) return erro("sem_permissao", 403);

@@ -193,3 +193,29 @@ export function alertas(dados, agora = Date.now()) {
 }
 const fmt = (v) => Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 function servico_temVoo(s) { return s.servico_id && /^(igu|igr)-/.test(s.servico_id); }
+
+/* ---------------- pacote 3: etapas que o motorista toca no celular, por tipo de serviço ---------------- */
+// Devolve as etapas depois de "atribuido", na ordem. Cada uma: [status, texto do botão, texto do estado].
+export function fluxoServico(svc, item = {}) {
+  const chegadaAero = svc && svc.voo && item.sentido === "chegada";
+  const f = [["confirmado", "Confirmar serviço", "Confirmado"]];
+  if (chegadaAero) f.push(["no_local", "Cheguei ao desembarque", "No desembarque"]);
+  else f.push(["a_caminho", "Estou a caminho", "A caminho"], ["no_local", "Cheguei ao local", "No local"]);
+  f.push(["embarcado", "Passageiro embarcou", "Embarcado"]);
+  if (svc && svc.fronteira) f.push(["na_aduana", "Cheguei à aduana", "Na aduana"]);
+  if (svc && svc.tipo === "passeio") f.push(["no_atrativo", "Cheguei ao destino do passeio", "No destino, aguardando"]);
+  f.push(["concluido", "Finalizar corrida", "Concluído"]);
+  return f;
+}
+
+/* O motorista pode avançar para qualquer etapa à frente (se esquecer um toque, não trava). Nunca volta. */
+export function etapaPermitida(fluxo, atual, nova) {
+  const ordem = ["atribuido"].concat(fluxo.map((e) => e[0]));
+  const i = ordem.indexOf(atual), j = ordem.indexOf(nova);
+  return i >= 0 && j > i;
+}
+
+/* Dados do cliente (nome e telefone) só aparecem perto do serviço: de 24 h antes até 24 h depois do fim. */
+export function mostrarContato(s, agora = Date.now()) {
+  return Date.parse(s.inicio_utc) - agora < 24 * 3600e3 && agora - Date.parse(s.fim_previsto_utc) < 24 * 3600e3;
+}

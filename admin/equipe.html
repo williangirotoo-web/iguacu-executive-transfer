@@ -90,7 +90,16 @@
   function abrir(item){
     var mot=aba==="motoristas", t=item?(mot?item.nome:item.placa):(mot?"Novo motorista":"Novo veículo");
     var d=O.painel('<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><h1>'+O.esc(t)+'</h1><button class="o-x" type="button" data-o-fechar aria-label="Fechar">×</button></div><form id="cad" novalidate>'+(mot?formMotorista(item):formVeiculo(item))+
-      '<p class="nr-erro" id="cad-msg" role="alert" style="color:var(--o-red);margin:12px 0 0"></p><div class="eq-acoes"><button class="o-btn" type="button" data-o-fechar>Cancelar</button><button class="o-btn pri" type="submit">Salvar</button></div></form>',t);
+      '<p class="nr-erro" id="cad-msg" role="alert" style="color:var(--o-red);margin:12px 0 0"></p><div class="eq-acoes"><button class="o-btn" type="button" data-o-fechar>Cancelar</button><button class="o-btn pri" type="submit">Salvar</button></div></form>'+(mot&&item?'<h2 class="o-h2">Acesso ao app do motorista</h2><div id="acesso-box"><p class="o-sub">'+(item.tem_acesso?"Tem link ativo. Gerar outro desliga o anterior.":"Ainda sem link de acesso.")+'</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="o-btn pri" type="button" id="ac-gerar">'+(item.tem_acesso?"Gerar novo link":"Gerar link de acesso")+'</button>'+(item.tem_acesso?'<button class="o-btn perigo" type="button" id="ac-revogar">Desligar acesso</button>':'')+'</div></div>':''),t);
+    var ag=d.querySelector("#ac-gerar"), ar=d.querySelector("#ac-revogar");
+    if(ag)ag.onclick=function(){ag.disabled=true;O.api("/api/admin/ops/motoristas/"+item.id+"/acesso",{method:"POST",body:{}}).then(function(r){
+      if(!r.ok){O.toast(r.mensagem);ag.disabled=false;return}
+      var tel=String(r.telefone||"").replace(/\D/g,""), msg="Olá, "+r.nome.split(" ")[0]+"! Este é o seu acesso ao app de motorista da Iguaçu Executive Transfer. Abra no celular e salve na tela inicial: "+r.link;
+      d.querySelector("#acesso-box").innerHTML='<p class="o-sub">Link criado. Ele só aparece agora: envie ao motorista.</p><div class="o-field"><input readonly value="'+O.esc(r.link)+'" id="ac-link"></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">'+(tel.length>=10?'<a class="o-btn pri" target="_blank" rel="noopener" href="https://wa.me/'+(tel.length<=11?"55"+tel:tel)+'?text='+encodeURIComponent(msg)+'">Enviar no WhatsApp</a>':'')+'<button class="o-btn" type="button" id="ac-copiar">Copiar link</button></div>';
+      d.querySelector("#ac-copiar").onclick=function(){var i=d.querySelector("#ac-link");i.select();try{navigator.clipboard.writeText(i.value).then(function(){O.toast("Link copiado")},function(){O.toast("Selecionado: copie com Ctrl+C")})}catch(e){O.toast("Selecionado: copie com Ctrl+C")}};
+      carregar();
+    })};
+    if(ar)ar.onclick=function(){if(ar.dataset.ok!=="1"){ar.dataset.ok="1";ar.textContent="Confirmar: desligar acesso";return}O.api("/api/admin/ops/motoristas/"+item.id+"/acesso",{method:"DELETE"}).then(function(r){if(r.ok){O.toast("Acesso desligado");O.fechar();carregar()}else O.toast(r.mensagem)})};
     d.querySelector("#cad").addEventListener("submit",function(e){
       e.preventDefault();var f=e.target,b={};
       [].forEach.call(f.elements,function(x){if(x.name&&x.name!=="idi")b[x.name]=x.value});
