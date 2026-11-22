@@ -66,6 +66,12 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:'Montserrat',sys
 .r-acl li[data-aci]:hover,.r-acl li[data-aci]:focus{background:rgba(212,175,55,.12);color:var(--gold)}
 .r-acl .r-acm{cursor:default;color:var(--mut,#9a9a9a)}
 .r-kminfo:empty{display:none}
+.r-arwarn{margin:8px 0 2px;padding:12px 14px;border-radius:12px;border:1px solid rgba(240,215,123,.5);background:rgba(212,175,55,.1);font-size:.82rem;line-height:1.45}
+.r-arwarn[hidden]{display:none}
+.r-help-b{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.r-btn.r-btn-tg{background:#229ed9;color:#fff;border-color:#229ed9}
+.r-arwarn b{color:var(--gold2)}
+.r-arwarn .r-btn{margin-top:8px;display:inline-flex}
 .r-kminfo{display:flex;flex-direction:column;gap:3px;margin:10px 0 4px;padding:12px 14px;border-radius:12px;font-size:.8rem;border:1px solid var(--line2)}
 .r-kmok{border-color:rgba(212,175,55,.45);background:linear-gradient(135deg,rgba(212,175,55,.12),rgba(212,175,55,.03))}
 .r-kmok b{color:var(--gold)}.r-kmok span{color:var(--mut,#9a9a9a);font-size:.74rem}
@@ -189,6 +195,7 @@ small.r-parc,.r-card-f small.r-parc,.r-price small.r-parc{all:unset;display:bloc
 .r-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(8,9,10,.75))}
 .r-badges{position:absolute;left:10px;right:10px;bottom:10px;z-index:1;display:flex;flex-wrap:wrap;gap:6px}
 .r-badges span{font-size:.62rem;font-weight:600;letter-spacing:.03em;background:rgba(8,9,10,.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(212,175,55,.35);color:var(--gold2);border-radius:20px;padding:3px 9px}
+.r-badges span.r-top{background:var(--gold2);color:#111;border-color:var(--gold2);font-weight:700}
 .r-card-b{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
 .r-grp{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
 .r-card h3{font-family:'Cormorant Garamond',serif;font-size:1.28rem;margin:0;line-height:1.2;font-weight:600}
@@ -254,6 +261,11 @@ small.r-parc,.r-card-f small.r-parc,.r-price small.r-parc{all:unset;display:bloc
 .r-f span{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
 .r-f input,.r-f select,.r-f textarea,.r-checkout textarea{background:#0c0d0e;border:1px solid var(--line2);border-radius:10px;color:var(--txt);padding:11px 12px;font:inherit;font-size:.88rem;width:100%;transition:border-color .2s}
 .r-f input:focus,.r-f select:focus,.r-f textarea:focus{outline:none;border-color:var(--gold)}
+.r-telbox{display:grid;grid-template-columns:minmax(0,46%) minmax(0,1fr);gap:8px}
+.r-telbox .r-ddi{display:none}
+.r-f small.r-sm{font-size:.72rem;color:var(--mut);text-transform:none;letter-spacing:0}
+.r-opts.r-contato{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:520px){.r-opts.r-contato{grid-template-columns:1fr 1fr}}
 .r-falta,.r-f .r-falta{border-color:#e5484d!important;box-shadow:0 0 0 3px rgba(229,72,77,.18)}
 .r-row{display:flex;gap:12px;flex-wrap:wrap}.r-row .r-f{min-width:140px}
 .r-row3{align-items:flex-end}.r-row3 .r-f{flex:1 1 120px;min-width:110px}.r-malas-av{margin:2px 0 12px;padding:11px 13px;border:1px solid #ff8a80;border-left-width:4px;border-radius:8px;background:rgba(255,82,82,.10);color:#ffcdd2;font-size:.82rem;line-height:1.45;font-weight:600}
@@ -438,7 +450,7 @@ h2.r-paises-t{font-family:inherit;font-weight:400;text-align:start;line-height:1
   <ol class="r-como" id="r-como"></ol>
   <h2 id="r-faq-t">Perguntas frequentes</h2>
   <div class="r-faq" id="r-faq"></div>
-  <div class="r-help"><p id="r-wa-t">Prefere falar com a gente?</p><a class="r-btn r-btn-wa" id="r-wa-b" href="https://wa.me/5545991185798" target="_blank" rel="noopener">Chamar no WhatsApp</a></div>
+  <div class="r-help"><p id="r-wa-t">Prefere falar com a gente?</p><div class="r-help-b"><a class="r-btn r-btn-wa" id="r-wa-b" href="https://wa.me/5545991185798" target="_blank" rel="noopener">Chamar no WhatsApp</a><a class="r-btn r-btn-tg" id="r-tg-b" href="https://t.me/+5545991185798" target="_blank" rel="noopener">Telegram</a></div></div>
 </section>
 </main>
 <dialog id="r-modal"><form id="r-modal-b" novalidate></form></dialog>

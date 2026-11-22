@@ -84,7 +84,7 @@ body.ops{min-height:100vh;display:flex;flex-direction:column}
   var dataTxt=function(s){var d=new Date(s.data+"T12:00:00Z");return DS[d.getUTCDay()]+" "+s.data.split("-").reverse().slice(0,2).join("/")};
   function mapa(s){var alvo=["embarcado","na_aduana","no_atrativo"].indexOf(s.status)>=0?s.destino:s.origem;return alvo?"https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(alvo):null}
   function cartao(s){
-    var fl=s.fluxo, idx=["atribuido"].concat(fl.map(function(e){return e[0]})).indexOf(s.status), prox=fl[idx]||null, tel=String(s.telefone||"").replace(/\D/g,"");
+    var fl=s.fluxo, idx=["atribuido"].concat(fl.map(function(e){return e[0]})).indexOf(s.status), prox=fl[idx]||null, tel = (function(t){var d=String(t||"").replace(/\D/g,"");return String(t||"").trim().charAt(0)!=="+"&&d.length>=10&&d.length<=11?"55"+d:d})(s.telefone);
     var bag=[s.malas?s.malas+" mala(s)":"",s.malas_bordo?s.malas_bordo+" de mão":"",s.mochilas?s.mochilas+" mochila(s)":"",s.cadeirinhas?s.cadeirinhas+" cadeirinha(s)":""].filter(Boolean).join(" · ");
     var passos="";for(var i=0;i<fl.length;i++)passos+='<i class="'+(i<idx?"on":"")+'"></i>';
     var mp=mapa(s), comecou=Date.parse(s.inicio_utc)<=Date.parse(D.agora);
@@ -96,7 +96,7 @@ body.ops{min-height:100vh;display:flex;flex-direction:column}
       (prox?'<button class="mt-big" type="button" data-etapa="'+prox[0]+'" data-id="'+s.id+'">'+esc(prox[1])+'</button>':'<button class="mt-big" type="button" disabled>'+esc(ST[s.status]||s.status)+'</button>')+
       '<div id="fim-'+s.id+'"></div>'+
       '<div class="mt-acoes">'+(mp?'<a href="'+mp+'" target="_blank" rel="noopener">Rota no Maps</a>':'<button type="button" disabled>Rota no Maps</button>')+
-      (tel.length>=10?'<a href="https://wa.me/'+(tel.length<=11?"55"+tel:tel)+'" target="_blank" rel="noopener">WhatsApp</a>':'<button type="button" disabled>WhatsApp</button>')+
+      (tel.length>=10?'<a href="https://wa.me/'+tel+'" target="_blank" rel="noopener">WhatsApp</a>':'<button type="button" disabled>WhatsApp</button>')+
       '<button type="button" data-placa="'+s.id+'">Placa</button><button type="button" data-aviso="atraso" data-id="'+s.id+'">Atraso</button><button type="button" data-aviso="ocorrencia" data-id="'+s.id+'">Ocorrência</button>'+
       (comecou&&s.status!=="concluido"?'<button type="button" data-noshow="'+s.id+'">Não apareceu</button>':'<button type="button" disabled>Não apareceu</button>')+'</div><div id="av-'+s.id+'"></div></div>';
   }

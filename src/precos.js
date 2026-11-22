@@ -9,6 +9,7 @@
 
 export const CONFIG = {
   whatsapp: "5545991185798",
+  telegram: "+5545991185798", // mesmo número do WhatsApp
   emailAvisos: "atendimento@g7.taxi.br",
   fuso: "-03:00", // Foz do Iguaçu (sem horário de verão)
 
@@ -77,11 +78,11 @@ const N = (pt, en, es) => ({ pt, en, es });
 /* tipo: transfer (só ida) | passeio (ida e volta) | hora | diaria | viagem (outra cidade, só ida) */
 export const SERVICOS = [
   // ---------- Aeroportos (só ida) ----------
-  { id: "igu-foz", grupo: "aeroporto", tipo: "transfer", voo: true, sentido: true, foto: "transfer-aeroporto-suv-executivo-corolla-cross",
+  { id: "igu-foz", top: 4, grupo: "aeroporto", tipo: "transfer", voo: true, sentido: true, foto: "transfer-aeroporto-suv-executivo-corolla-cross",
     nome: N("Aeroporto de Foz (IGU) ⇄ hotel em Foz", "Foz Airport (IGU) ⇄ hotel in Foz", "Aeropuerto de Foz (IGU) ⇄ hotel en Foz"),
     desc: N("Motorista com placa de identificação no desembarque. 1 hora de espera grátis após o pouso.", "Driver with a name sign at arrivals. 1 hour free waiting after landing.", "Chofer con cartel en arribos. 1 hora de espera gratis tras el aterrizaje."),
     precos: P(350, 1100, 1200, 400, 5000) },
-  { id: "igu-pi", grupo: "aeroporto", tipo: "transfer", voo: true, sentido: true, fronteira: true, foto: "marco-das-tres-fronteiras",
+  { id: "igu-pi", top: 2, grupo: "aeroporto", tipo: "transfer", voo: true, sentido: true, fronteira: true, foto: "marco-das-tres-fronteiras",
     nome: N("Aeroporto de Foz (IGU) ⇄ hotel em Puerto Iguazú (AR)", "Foz Airport (IGU) ⇄ hotel in Puerto Iguazú (AR)", "Aeropuerto de Foz (IGU) ⇄ hotel en Puerto Iguazú (AR)"),
     desc: N("Direto ao seu hotel na Argentina, com travessia da fronteira.", "Straight to your hotel in Argentina, border crossing included.", "Directo a su hotel en Argentina, con cruce de frontera."),
     precos: P(400, 1150, 1300, 500, 5000) },
@@ -100,7 +101,7 @@ export const SERVICOS = [
     nome: N("Aeroporto de Foz (IGU) ⇄ Feirinha de Puerto Iguazú (AR)", "Foz Airport (IGU) ⇄ Puerto Iguazú Feirinha (AR)", "Aeropuerto de Foz (IGU) ⇄ Feirinha de Puerto Iguazú (AR)"),
     desc: N("Do desembarque direto para a Feirinha de Puerto Iguazú (vinhos, queijos e alfajores), com travessia da fronteira.", "From arrivals straight to the Puerto Iguazú Feirinha market (wines, cheeses and alfajores), border crossing included.", "De arribos directo a la Feirinha de Puerto Iguazú (vinos, quesos y alfajores), con cruce de frontera."),
     precos: P(500, 1150, 1300, 600, 5000) },
-  { id: "igu-picentro", grupo: "aeroporto", tipo: "transfer", voo: true, sentido: true, fronteira: true, foto: "marco-das-tres-fronteiras",
+  { id: "igu-picentro", top: 3, grupo: "aeroporto", tipo: "transfer", voo: true, sentido: true, fronteira: true, foto: "marco-das-tres-fronteiras",
     fixo: N("Centro de Puerto Iguazú", "Downtown Puerto Iguazú", "Centro de Puerto Iguazú"),
     nome: N("Aeroporto de Foz (IGU) ⇄ centro de Puerto Iguazú (AR)", "Foz Airport (IGU) ⇄ downtown Puerto Iguazú (AR)", "Aeropuerto de Foz (IGU) ⇄ centro de Puerto Iguazú (AR)"),
     desc: N("Do desembarque ao centro de Puerto Iguazú (restaurantes, lojas e hotéis), com travessia da fronteira.", "From arrivals to downtown Puerto Iguazú (restaurants, shops and hotels), border crossing included.", "De arribos al centro de Puerto Iguazú (restaurantes, tiendas y hoteles), con cruce de frontera."),
@@ -132,9 +133,9 @@ export const SERVICOS = [
     nome: N("Cataratas Argentinas — somente ida", "Argentine Falls — one way", "Cataratas Argentinas — solo ida"),
     desc: N("Do seu hotel em Foz até o parque ou um hotel em Puerto Iguazú.", "From your Foz hotel to the park or a Puerto Iguazú hotel.", "De su hotel en Foz al parque o a un hotel en Puerto Iguazú."),
     precos: P(500, 600, 700, 750, 3500) },
-  { id: "foz-pi", grupo: "passeios", tipo: "transfer", fronteira: true, foto: "cataratas-do-iguacu-vista-aerea",
-    nome: N("Hotel em Foz → hotel em Puerto Iguazú (AR) — só ida", "Foz hotel → Puerto Iguazú hotel (AR) — one way", "Hotel en Foz → hotel en Puerto Iguazú (AR) — solo ida"),
-    desc: N("De um hotel ou endereço em Foz até o seu hotel em Puerto Iguazú, com o motorista cruzando a fronteira.", "From a hotel or address in Foz to your hotel in Puerto Iguazú, with the driver crossing the border.", "De un hotel o dirección en Foz a su hotel en Puerto Iguazú, con el chofer cruzando la frontera."),
+  { id: "foz-pi", top: 1, grupo: "passeios", tipo: "transfer", fronteira: true, foto: "cataratas-do-iguacu-vista-aerea",
+    nome: N("Foz do Iguaçu → Puerto Iguazú (AR): hotel, Airbnb ou centro — só ida", "Foz do Iguaçu → Puerto Iguazú (AR): hotel, Airbnb or downtown — one way", "Foz do Iguaçu → Puerto Iguazú (AR): hotel, Airbnb o centro — solo ida"),
+    desc: N("De um hotel, Airbnb ou endereço em Foz até o seu hotel, Airbnb ou o centro de Puerto Iguazú, com o motorista cruzando a fronteira.", "From a hotel, Airbnb or address in Foz to your hotel, Airbnb or downtown Puerto Iguazú, with the driver crossing the border.", "De un hotel, Airbnb o dirección en Foz a su hotel, Airbnb o el centro de Puerto Iguazú, con el chofer cruzando la frontera."),
     precos: P(500, 1150, 1300, 600, 5000) },
   { id: "foz-cde", grupo: "passeios", tipo: "transfer", fronteira: true, foto: "foz-do-iguacu-cidade-rio-parana",
     nome: N("Hotel em Foz → Ciudad del Este (PY) — só ida", "Foz hotel → Ciudad del Este (PY) — one way", "Hotel en Foz → Ciudad del Este (PY) — solo ida"),

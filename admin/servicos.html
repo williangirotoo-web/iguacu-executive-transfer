@@ -60,9 +60,9 @@
   }
   function ficha(s){
     var bag=[s.malas?s.malas+" mala(s) grande(s)":"",s.malas_bordo?s.malas_bordo+" de mão":"",s.mochilas?s.mochilas+" mochila(s)":"",s.cadeirinhas?s.cadeirinhas+" cadeirinha(s)":""].filter(Boolean).join(" · ")||"—";
-    var tel=String(s.telefone||"").replace(/\D/g,"");
+    var tel = (function(t){var d=String(t||"").replace(/\D/g,"");return String(t||"").trim().charAt(0)!=="+"&&d.length>=10&&d.length<=11?"55"+d:d})(s.telefone);
     O.painel('<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div><h1>'+O.esc(s.servico_nome)+'</h1><p class="o-sub">'+s.data.split("-").reverse().join("/")+' às '+O.esc(s.hora)+' · '+O.esc(s.codigo)+'</p></div><button class="o-x" type="button" data-o-fechar aria-label="Fechar">×</button></div>'+
-      '<div class="o-kv"><span>Situação</span><span>'+O.pill(s.status)+(s.importado?' <span class="mut">(trazido do histórico)</span>':'')+'</span><span>Cliente</span><b>'+O.esc(s.cliente)+'</b><span>WhatsApp</span><span>'+O.esc(s.telefone)+(tel.length>=10?' · <a href="https://wa.me/'+(tel.length<=11?"55"+tel:tel)+'" target="_blank" rel="noopener" style="color:var(--o-gold)">abrir</a>':'')+'</span>'+
+      '<div class="o-kv"><span>Situação</span><span>'+O.pill(s.status)+(s.importado?' <span class="mut">(trazido do histórico)</span>':'')+'</span><span>Cliente</span><b>'+O.esc(s.cliente)+'</b><span>WhatsApp</span><span>'+O.esc(s.telefone)+(tel.length>=10?' · <a href="https://wa.me/'+tel+'" target="_blank" rel="noopener" style="color:var(--o-gold)">abrir</a>':'')+'</span>'+
       '<span>Buscar em</span><span>'+O.esc(s.origem||"—")+'</span><span>Levar para</span><span>'+O.esc(s.destino||"—")+'</span><span>Voo</span><span>'+O.esc(s.voo||"—")+'</span>'+
       '<span>Grupo</span><span>'+s.pax+' pessoa(s) · '+O.esc(CATS[s.categoria]||s.categoria)+'</span><span>Bagagem</span><span>'+O.esc(bag)+'</span><span>Observação</span><span>'+O.esc(s.obs||"—")+'</span>'+
       (s.valor!=null?'<span>Valor do trecho</span><span>'+O.brl(s.valor)+'</span>':'')+'<span>Ocupa até</span><span>'+new Date(s.fim_previsto_utc).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})+' (estimativa)</span></div>'+

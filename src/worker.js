@@ -119,6 +119,7 @@ async function prepararBanco(env) {
   if (!cols.includes("desconto")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN desconto REAL").run();
   const colsItens = (await env.DB.prepare("PRAGMA table_info(itens)").all()).results.map((c) => c.name);
   if (!colsItens.includes("obs")) await env.DB.prepare("ALTER TABLE itens ADD COLUMN obs TEXT").run();
+  if (!cols.includes("contato")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN contato TEXT").run();
   if (!cols.includes("taxa_pagamento")) await env.DB.prepare("ALTER TABLE pedidos ADD COLUMN taxa_pagamento REAL").run();
   if (!colsItens.includes("malas_bordo")) await env.DB.prepare("ALTER TABLE itens ADD COLUMN malas_bordo INTEGER").run();
   if (!colsItens.includes("mochilas")) await env.DB.prepare("ALTER TABLE itens ADD COLUMN mochilas INTEGER").run();
@@ -165,7 +166,7 @@ function catalogo(env) {
   return {
     ok: true,
     config: {
-      whatsapp: CONFIG.whatsapp, antecedenciaHoras: CONFIG.antecedenciaHoras, antecedenciaViagensHoras: CONFIG.antecedenciaViagensHoras,
+      whatsapp: CONFIG.whatsapp, telegram: CONFIG.telegram, antecedenciaHoras: CONFIG.antecedenciaHoras, antecedenciaViagensHoras: CONFIG.antecedenciaViagensHoras,
       cancelamento: CONFIG.cancelamento, feriadoAcrescimoPct: CONFIG.feriadoAcrescimoPct, esperaAeroporto: CONFIG.esperaAeroporto,
       cadeirinha: CONFIG.cadeirinha, pet: CONFIG.pet, sinalPct: CONFIG.sinalPct, paypalTaxaPct: CONFIG.paypalTaxaPct, parcelasSemJuros: CONFIG.parcelasSemJuros || 1, pagamento: CONFIG.pagamento,
       pagamentoViagens: CONFIG.pagamentoViagens, horaExtra: HORA_EXTRA, porHora: { minimoHoras: POR_HORA.minimoHoras, maximoHoras: POR_HORA.maximoHoras, pacoteHoras: POR_HORA.pacoteHoras, pacoteMult: POR_HORA.pacoteMult },
@@ -229,8 +230,16 @@ function bagagensTxt(it) {
   if (m) p.push(`${m} mochila(s)/bolsa(s)`);
   return p.join(" · ");
 }
+const CONTATO_NOME = { whatsapp: "WhatsApp", telegram: "Telegram", sms: "SMS", email: "E-mail" };
+// telefone só com dígitos e código do país (números antigos sem "+" e com 10–11 dígitos são do Brasil)
+export function telInternacional(t) {
+  const bruto = String(t || "").trim(), d = bruto.replace(/\D/g, "");
+  if (d.length < 8) return "";
+  return !bruto.startsWith("+") && d.length <= 11 ? "55" + d : d;
+}
 function resumoTexto(p, itens, comLinks, origem) {
-  const linhas = [`Pedido ${p.codigo}`, `Cliente: ${p.nome}`, `WhatsApp/telefone: ${p.telefone}`, `E-mail: ${p.email}`];
+  const linhas = [`Pedido ${p.codigo}`, `Cliente: ${p.nome}`, `Celular: ${p.telefone}`, `E-mail: ${p.email}`];
+  if (p.contato) linhas.push(`Prefere contato por: ${CONTATO_NOME[p.contato] || p.contato}`);
   if (p.pais) linhas.push(`País: ${p.pais}`);
   linhas.push("");
   itens.forEach((it, i) => {
@@ -256,9 +265,13 @@ function resumoTexto(p, itens, comLinks, origem) {
   linhas.push("", `Total: ${brl(p.total)}`, `A pagar na reserva: ${brl(p.valor_agora)}`, `Restante no dia: ${brl(p.total - p.valor_agora)}`);
   if (p.observacoes) linhas.push("", `Observações: ${p.observacoes}`);
   if (comLinks) {
-    const tel = String(p.telefone).replace(/\D/g, "");
     linhas.push("", `Painel: ${origem}/admin/#${p.codigo}`);
-    if (tel.length >= 10) linhas.push(`WhatsApp do cliente: https://wa.me/${tel.length <= 11 && !String(p.telefone || "").trim().startsWith("+") ? "55" + tel : tel}`);
+    const intl = telInternacional(p.telefone);
+    if (intl) {
+      linhas.push(`WhatsApp do cliente: https://wa.me/${intl}`);
+      linhas.push(`Telegram do cliente: https://t.me/+${intl}`);
+      linhas.push(`SMS / ligar: +${intl}`);
+    }
   }
   return linhas.join("\n");
 }
@@ -274,6 +287,8 @@ async function prepararKm(env, it) {
 }
 
 /* ---------------- criar pedido ---------------- */
+const ALT_ARGENTINA = { "igu-foz": "igu-pi", "igr-foz": "igr-pi" };
+export function ehArgentina(v) { return /puerto\s*iguaz|pto\.?\s*iguaz|argentin|lado argentino/i.test(String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")); }
 async function criarPedido(req, env, ctx) {
   let body;
   try { body = await lerJson(req); } catch { return erro("json_invalido"); }
@@ -283,10 +298,12 @@ async function criarPedido(req, env, ctx) {
 
   const c = body.cliente || {};
   const s = (v, n) => String(v == null ? "" : v).trim().slice(0, n);
-  const cliente = { nome: s(c.nome, 120), email: s(c.email, 160).toLowerCase(), telefone: s(c.telefone, 40), pais: s(c.pais, 60), observacoes: s(c.observacoes, 1000) };
+  const cliente = { nome: s(c.nome, 120), email: s(c.email, 160).toLowerCase(), telefone: s(c.telefone, 40), pais: s(c.pais, 60), observacoes: s(c.observacoes, 1000),
+    contato: ["whatsapp", "telegram", "sms", "email"].includes(c.contato) ? c.contato : "whatsapp" };
   if (cliente.nome.length < 3) return erro("nome");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(cliente.email)) return erro("email");
-  if (cliente.telefone.replace(/\D/g, "").length < 8) return erro("telefone");
+  const digTel = cliente.telefone.replace(/\D/g, "").length;
+  if (digTel < 8 || digTel > 15) return erro("telefone");
   if (body.consentimento !== true) return erro("consentimento");
   const idioma = ["pt", "en", "es"].includes(body.idioma) ? body.idioma : "pt";
 
@@ -301,6 +318,8 @@ async function criarPedido(req, env, ctx) {
     const cot = cotar(it, agora);
     if (!cot.ok) return erro("item_invalido", 422, { item: i, motivo: cot.erro, detalhe: cot });
     if (!it.origem) return erro("item_invalido", 422, { item: i, motivo: "origem" });
+    // serviço do lado brasileiro com endereço na Argentina (cliente escolheu "hotel em Foz" e digitou Puerto Iguazú)
+    if (ALT_ARGENTINA[it.servico] && ehArgentina(it.sentido === "saida" ? it.origem : it.destino)) return erro("item_invalido", 422, { item: i, motivo: "destino_argentina" });
     itens.push({ it, cot, svc: servico(it.servico) });
   }
   let cupom = null;
@@ -342,10 +361,10 @@ async function criarPedido(req, env, ctx) {
     codigo = "IET-" + aleatorio(6);
     try {
       const r = await env.DB.prepare(`INSERT INTO pedidos (codigo, token, criado_em, atualizado_em, status, idioma, nome, email, telefone, pais, observacoes,
-        consentimento_em, total, valor_agora, modo_pagamento, ip_hash, origem, parceiro_id, cupom, desconto, taxa_pagamento) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+        consentimento_em, total, valor_agora, modo_pagamento, ip_hash, origem, parceiro_id, cupom, desconto, taxa_pagamento, contato) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
         .bind(codigo, token, now, now, "solicitacao", idioma, cliente.nome, cliente.email, cliente.telefone, cliente.pais || null,
           cliente.observacoes || null, now, pag.total, pag.agora, escolha, ipHash, new URL(req.url).hostname, parceiro ? parceiro.id : null,
-          cupom ? cupom.codigo : null, cupom ? Math.round(itens.reduce((a, x) => a + x.cot.linhas.filter((l) => l.k === "cupom").reduce((b, l) => b - l.valor, 0), 0) * 100) / 100 : null, taxaPag || null).run();
+          cupom ? cupom.codigo : null, cupom ? Math.round(itens.reduce((a, x) => a + x.cot.linhas.filter((l) => l.k === "cupom").reduce((b, l) => b - l.valor, 0), 0) * 100) / 100 : null, taxaPag || null, cliente.contato).run();
       pedidoId = r.meta.last_row_id;
     } catch (e) { if (!String(e.message).includes("UNIQUE")) throw e; }
   }
@@ -823,7 +842,6 @@ async function capturarPayPal(env, b, origem) {
 
 /* Cria o link no InfinitePay e registra no pedido (usado pelo painel e pela reserva com pagamento na hora) */
 async function gerarLinkPagamento(env, ped, desc, valor, origem, autor, provedor = "infinitepay", idioma = "pt") {
-  const tel = String(ped.telefone || "").replace(/\D/g, "");
   const order_nsu = ped.codigo + "-" + aleatorio(4);
   if (provedor === "paypal") {
     const lg = idioma === "pt" ? "" : "&lang=" + idioma;
@@ -842,7 +860,7 @@ async function gerarLinkPagamento(env, ped, desc, valor, origem, autor, provedor
   const corpo = { handle: env.INFINITEPAY_HANDLE, order_nsu, redirect_url: origem + "/reservar/pago/?pedido=" + ped.codigo,
     webhook_url: origem + "/api/pagamentos/infinitepay",
     items: [{ description: (desc + " · reserva " + ped.codigo + " · Iguaçu Executive Transfer").slice(0, 120), price: Math.round(valor * 100), quantity: 1 }],
-    customer: { name: ped.nome, email: ped.email, ...(tel.length >= 10 ? { phone_number: "+" + (tel.length <= 11 ? "55" : "") + tel } : {}) } };
+    customer: { name: ped.nome, email: ped.email, ...(telInternacional(ped.telefone) ? { phone_number: "+" + telInternacional(ped.telefone) } : {}) } };
   const r = await ipCriarLink(env, corpo);
   if (r.erro) return r;
   const now = agoraIso();

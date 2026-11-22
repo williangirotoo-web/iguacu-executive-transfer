@@ -14,12 +14,12 @@
     Promise.all([O.api("/api/admin/ops/servicos/" + id + "/sugestoes"), permissoes()]).then(function (r) {
       var x = r[0], verValor = r[1].indexOf("valores.ver") >= 0, editar = r[1].indexOf("ops.editar") >= 0;
       if (!x.ok) { d.innerHTML = '<p class="o-sub">' + esc(x.mensagem) + '</p>'; return; }
-      var s = x.servico, tel = String(s.telefone || "").replace(/\D/g, "");
+      var s = x.servico, tel = (function(t){var d=String(t||"").replace(/\D/g,"");return String(t||"").trim().charAt(0)!=="+"&&d.length>=10&&d.length<=11?"55"+d:d})(s.telefone);
       var bag = [s.malas ? s.malas + " mala(s)" : "", s.malas_bordo ? s.malas_bordo + " de mão" : "", s.mochilas ? s.mochilas + " mochila(s)" : "", s.cadeirinhas ? s.cadeirinhas + " cadeirinha(s)" : ""].filter(Boolean).join(" · ") || "sem bagagem informada";
       var exec = s.motorista_nome ? esc(s.motorista_nome) + (s.placa ? " · " + esc(s.placa) : "") : s.parceiro_nome ? esc(s.parceiro_nome) + " (parceiro)" : "ninguém";
       var h = '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div><h1>' + esc(s.servico_nome) + '</h1><p class="o-sub">' + data(s) + ' · ' + esc(s.codigo) + '</p></div><button class="o-x" type="button" data-o-fechar aria-label="Fechar">×</button></div>' +
         '<div class="o-kv"><span>Situação</span><span>' + O.pill(s.status) + '</span><span>Executor</span><b>' + exec + '</b><span>Cliente</span><span>' + esc(s.cliente) + ' · ' + esc((s.idioma || "pt").toUpperCase()) +
-        (tel.length >= 10 ? ' · <a href="https://wa.me/' + (tel.length <= 11 ? "55" + tel : tel) + '" target="_blank" rel="noopener" style="color:var(--o-gold)">WhatsApp</a>' : "") + '</span>' +
+        (tel.length >= 10 ? ' · <a href="https://wa.me/' + tel + '" target="_blank" rel="noopener" style="color:var(--o-gold)">WhatsApp</a>' : "") + '</span>' +
         '<span>Grupo</span><span>' + s.pax + ' pessoa(s) · ' + esc(CATS[s.categoria] || s.categoria) + ' · ' + esc(bag) + '</span><span>Trajeto</span><span>' + esc(s.origem || "—") + ' → ' + esc(s.destino || "—") + '</span>' +
         (s.voo ? '<span>Voo</span><span>' + esc(s.voo) + '</span>' : '') + (s.obs ? '<span>Observação</span><span>' + esc(s.obs) + '</span>' : '') + '</div>';
       if (editar && ["concluido", "no_show", "cancelado"].indexOf(s.status) < 0) {
@@ -48,10 +48,10 @@
         mvb.disabled = true;
         O.api("/api/admin/ops/pedidos/" + s.codigo + "/link").then(function (r) {
           if (!r.ok) { O.toast(r.mensagem); mvb.disabled = false; return; }
-          var tel = String(r.telefone || "").replace(/\D/g, ""), pn = String(r.nome || "").split(" ")[0];
+          var tel = (function(t){var d=String(t||"").replace(/\D/g,"");return String(t||"").trim().charAt(0)!=="+"&&d.length>=10&&d.length<=11?"55"+d:d})(r.telefone), pn = String(r.nome || "").split(" ")[0];
           var msg = { pt: "Olá, " + pn + "! Aqui está a sua viagem com a Iguaçu Executive Transfer: horários, motorista e pagamentos. Guarde este link: ", en: "Hello " + pn + "! Here is your trip with Iguaçu Executive Transfer: times, driver and payments. Keep this link: ", es: "¡Hola, " + pn + "! Aquí está su viaje con Iguaçu Executive Transfer: horarios, chofer y pagos. Guarde este enlace: " }[r.idioma] || "";
           d.querySelector("#mv").innerHTML = '<div class="o-field"><input readonly id="mv-link" value="' + esc(r.link) + '"></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">' +
-            (tel.length >= 10 ? '<a class="o-btn pri" target="_blank" rel="noopener" href="https://wa.me/' + (tel.length <= 11 ? "55" + tel : tel) + "?text=" + encodeURIComponent(msg + r.link) + '">Enviar no WhatsApp</a>' : "") +
+            (tel.length >= 10 ? '<a class="o-btn pri" target="_blank" rel="noopener" href="https://wa.me/' + tel + "?text=" + encodeURIComponent(msg + r.link) + '">Enviar no WhatsApp</a>' : "") +
             '<a class="o-btn" target="_blank" rel="noopener" href="' + esc(r.link) + '">Abrir</a></div>';
         });
       };

@@ -49,6 +49,9 @@
     return "https://wa.me/" + n + (texto ? "?text=" + encodeURIComponent(texto) : "");
   }
   var CST = { ofertada: "Aguardando resposta", aceita: "Aceita", recusada: "Recusada", cancelada: "Retirada" };
+  // links para falar com o cliente: WhatsApp, Telegram e SMS (o cliente escolhe o canal na reserva)
+  function contatoLinks(t) { var n = tel55(t); if (n.length < 10) return ""; var a = function (h, x) { return ' · <a style="color:var(--gold)" target="_blank" rel="noopener" href="' + h + '">' + x + "</a>"; };
+    return a("https://wa.me/" + n, "WhatsApp") + a("https://t.me/+" + n, "Telegram") + a("sms:+" + n, "SMS"); }
   function tel55(t) { var n = String(t || "").replace(/\D/g, ""); return n.length >= 10 && n.length <= 11 && String(t || "").trim().charAt(0) !== "+" ? "55" + n : n; }
   function blocoMotorista(it, corridas, mots, p) {
     var cs = corridas.filter(function (c) { return c.item_id === it.id; });
@@ -102,7 +105,7 @@
       var p = r.pedido, h = "";
       h += '<p><button class="btn gh" id="voltar" type="button">← Voltar</button></p><div class="det">';
       h += "<h2>" + esc(p.codigo) + " · " + esc(p.nome) + "</h2><p>" + badge(p.status) + ' <small style="color:var(--mut)">feito em ' + esc(quando(p.criado_em)) + " · idioma " + esc(p.idioma) + "</small></p>";
-      h += '<div class="grid2"><div><h3>Cliente</h3><div class="kv"><span>WhatsApp</span><span>' + esc(p.telefone) + "</span><span>E-mail</span><span>" + esc(p.email) + "</span>" +
+      h += '<div class="grid2"><div><h3>Cliente</h3><div class="kv"><span>Celular</span><span>' + esc(p.telefone) + contatoLinks(p.telefone) + "</span>" + (p.contato ? "<span>Prefere</span><span><b>" + esc({ whatsapp: "WhatsApp", telegram: "Telegram", sms: "SMS", email: "E-mail" }[p.contato] || p.contato) + "</b></span>" : "") + "<span>E-mail</span><span>" + esc(p.email) + "</span>" +
         (p.pais ? "<span>País</span><span>" + esc(p.pais) + "</span>" : "") + (r.parceiro ? '<span>Parceiro</span><span><a style="color:var(--gold)" href="/admin/parceiros.html#' + esc(r.parceiro.codigo) + '">' + esc(r.parceiro.empresa || r.parceiro.responsavel) + "</a> · comissão " + String(r.parceiro.comissao_pct || 0).replace(".", ",") + "% = " + brl(p.total * (r.parceiro.comissao_pct || 0) / 100) + "</span>" : "") + (p.observacoes ? "<span>Observações</span><span>" + esc(p.observacoes) + "</span>" : "") + "</div>" +
         '<p style="margin-top:12px"><a class="btn wa" target="_blank" rel="noopener" href="' + esc(waCliente(p, "Olá, " + p.nome.split(" ")[0] + "! Aqui é da Iguaçu Executive Transfer, sobre o seu pedido " + p.codigo + ".")) + '">Falar no WhatsApp</a> ' +
         '<a class="btn gh" href="mailto:' + esc(p.email) + "?subject=" + encodeURIComponent("Seu pedido " + p.codigo + " — Iguaçu Executive Transfer") + '">E-mail</a></p></div>';

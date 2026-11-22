@@ -13,7 +13,7 @@
       busca: "Buscar serviço, cidade ou passeio", ordem: "Ordenar", o_rec: "Recomendados", o_menor: "Menor preço", o_maior: "Maior preço", o_az: "Nome (A–Z)",
       paxF: "Pessoas", p_any: "Qualquer", p_4: "Até 4", p_6: "5 ou 6", p_7: "7 ou mais",
       nRes: "{n} serviços", nada: "Nenhum serviço encontrado com esses filtros.", limpar: "Limpar filtros",
-      b_espera: "Espera {n} h", b_fronteira: "Fronteira", b_hora: "Pacote 5 h", b_dia: "Dia inteiro", b_ida: "Só ida", b_iv: "Ida e volta",
+      arTit: "Este endereço fica na Argentina.", arTxt: "Para Puerto Iguazú o serviço é outro, com travessia da fronteira.", arBtn: "Trocar para o serviço certo", e_destino_argentina: "O endereço fica na Argentina: escolha o serviço para Puerto Iguazú.", b_top: "Mais procurado", b_espera: "Espera {n} h", b_fronteira: "Fronteira", b_hora: "Pacote 5 h", b_dia: "Dia inteiro", b_ida: "Só ida", b_iv: "Ida e volta",
       calcTit: "Não achou seu trajeto?", calcDesc: "Em breve: calcule pelo endereço de saída e destino. Por enquanto, peça a cotação no WhatsApp.", calcBtn: "Cotar no WhatsApp", calcDesc2: "Digite de onde sai e para onde vai: o preço fechado de cada categoria aparece na hora.", calcBtn2: "Calcular preço", ctaKm: "Outro destino? Veja o preço na hora", ctaKmSub: "Qualquer cidade no Brasil, Argentina ou Paraguai, saindo ou chegando em Foz do Iguaçu.", kmDe: "Saindo de", kmPara: "Indo para", kmDataVolta: "Data da volta", kmHoraVolta: "Horário da volta", kmVoltaDica: "Volta no mesmo dia: o motorista espera até {h} h no destino. Volta em outro dia: buscamos você na data e horário marcados.", kmCalc: "Calculando o preço…", kmOk: "Trajeto confirmado", kmOkIV: "Trajeto confirmado · ida e volta", kmPorTrecho: "km por trecho", kmTotal: "km", e_volta_falta: "Informe a data e o horário da volta", e_volta_antes: "A volta precisa ser depois da ida", voltaTxt: "Volta", kmPh: "Cidade, hotel ou endereço", kmIdaVolta: "Ida e volta (com até {h} h de espera no destino)", kmInfo: "{km} km pela estrada · cerca de {t}", kmInfoIV: "{km} km por trecho (ida e volta) · cerca de {t} cada", kmFora: "Inclui a travessia da fronteira.", kmRegras: "Preço fechado por veículo, com pedágios. Saída ou destino na região de Foz do Iguaçu.", kmBusca: "Buscando…", kmNada: "Nenhum lugar encontrado. Tente o nome da cidade.", e_rota_falta: "Escolha a origem e o destino na lista", e_fora_regiao: "Saída ou destino precisa ser na região de Foz do Iguaçu. Para outros trajetos, fale no WhatsApp.", e_pais_nao_atende: "Atendemos destinos no Brasil, Argentina e Paraguai.", e_km_max: "Acima de {max} km: peça a cotação no WhatsApp.", e_km_min: "Trajeto muito curto. Veja os serviços da lista.", e_rota_sem_estrada: "Não encontramos rota por estrada entre esses pontos.", e_calc_indisponivel: "Calculadora indisponível agora. Peça a cotação no WhatsApp.",
       comoTit: "Como funciona", faqTit: "Perguntas frequentes",
       faq: [["Como pago a reserva?", "Depois que confirmamos a disponibilidade, enviamos o link de pagamento pelo WhatsApp: Pix, cartão em até 3x sem juros (de 4x a 12x, com juros da operadora) ou PayPal. Categoria Comum e 7 lugares pagam 100% na reserva; Executivo e SUV podem pagar 50% de sinal."], ["Com quanta antecedência posso reservar?", "Pelo site, a partir de 1 hora antes na categoria Comum e 5 horas antes nas demais. Para viagens a outras cidades, 5 horas."], ["E se meu voo atrasar?", "Informe o número do voo na reserva: acompanhamos o horário de chegada. A primeira hora de espera após o pouso é grátis."], ["Posso cancelar?", "Sim. O cancelamento é grátis até {h} horas antes. Depois disso, devolvemos {d}% do valor pago."], ["Que documento preciso para Argentina ou Paraguai?", "Brasileiros: RG original (com menos de 10 anos) ou passaporte. Estrangeiros: passaporte. Menores de idade precisam de documentação própria."], ["O preço é por pessoa?", "Não. Todos os valores são por veículo, para o grupo inteiro, dentro da capacidade da categoria."]],
@@ -33,7 +33,7 @@
       espAero: "1 hora de espera grátis após o pouso. Depois, R$ {v} por hora.",
       add: "Adicionar à reserva", cancelar: "Cancelar", calculando: "Calculando…",
       carrinho: "Sua reserva", vazio: "Nenhum serviço adicionado ainda.", detalhes: "Ver detalhes do pacote", compartilhar: "Compartilhar este pacote", shareTit: "Link do seu pacote", shareWa: "Enviar no WhatsApp", shareEq: "Mandar para a nossa equipe", shareCopy: "Copiar link", shareCopiado: "Copiado!", shareMais: "Mais opções", shareTxt: "Montei este pacote de transfer em Foz do Iguaçu: {u}", shareEqTxt: "Olá! Montei este pacote no site e quero reservar: {u}", shareDica: "Quem abrir o link vê o mesmo pacote, com o preço recalculado na hora.", shareGerando: "Gerando link…", pacoteOk: "Pacote compartilhado: {n} serviço(s) no seu carrinho. Confira e finalize a reserva.", pacoteFalha: "Precisa de nova data ou ajuste: {l}", pacoteDesfazer: "Desfazer", pacoteErro: "Não foi possível abrir este pacote. O link pode ter expirado.", diariaNota: "Cada dia inclui {h} horas e {km} km, com combustível, pedágio, estacionamento e alimentação do motorista. Km além de {km} no dia: {v} por km nesta categoria, acertado no fim do dia.", moedaTit: "Ver também em:", moedaBrl: "Só R$", fxPag: "A cobrança é em reais. No PayPal ou no cartão internacional, o seu banco converte pela cotação do dia.", vazioTit: "Seu carrinho está vazio", vazioTxt: "Clique em Escolher num serviço e ele aparece aqui, com o preço.", vazioDica: "Dá para juntar vários num pedido só: chegada do aeroporto, passeios e a volta.", total: "Total", remover: "Remover", continuar: "Continuar", verReserva: "Finalizar →",
-      dados: "Seus dados", nome: "Nome completo", email: "E-mail", tel: "WhatsApp com DDD/código do país", pais: "País", obs: "Observações (opcional)",
+      dados: "Seus dados", nome: "Nome completo", email: "E-mail", tel: "Celular (WhatsApp)", pais: "País", telDica: "Escolha o país e digite o número com DDD.", telOutro: "Outro país", contatoPor: "Como prefere que a gente fale com você?", e_telefone_pais: "Confira o celular: escolha o país e digite o número completo, com DDD.", obs: "Observações (opcional)",
       pagar: "Pagamento na reserva", pSinal: "Pagar {p}% de sinal na reserva e o restante ao motorista no dia",
       pTotal: "Pagar 100% na reserva", aPagar: "A pagar na reserva", restante: "Restante no dia",
       regraPag: "Categoria Comum e 7 lugares: 100% na reserva. Executivo Luxo e viagens para outras cidades: {p}% de sinal.", regraTotal: "Nesta reserva, o pagamento é de 100% no momento da reserva.", regraSinal: "Nesta reserva, você paga o sinal agora e o restante ao motorista no dia.", regraEscolha: "Nesta reserva, você pode pagar {p}% de sinal agora e o restante ao motorista no dia, ou pagar o total.",
@@ -65,7 +65,7 @@
       busca: "Search service, city or tour", ordem: "Sort", o_rec: "Recommended", o_menor: "Lowest price", o_maior: "Highest price", o_az: "Name (A–Z)",
       paxF: "People", p_any: "Any", p_4: "Up to 4", p_6: "5 or 6", p_7: "7 or more",
       nRes: "{n} services", nada: "No services match these filters.", limpar: "Clear filters",
-      b_espera: "{n} h waiting", b_fronteira: "Border", b_hora: "5-hour package", b_dia: "Full day", b_ida: "One way", b_iv: "Round trip",
+      arTit: "This address is in Argentina.", arTxt: "Puerto Iguazú needs a different service, with the border crossing included.", arBtn: "Switch to the right service", e_destino_argentina: "This address is in Argentina: please choose the Puerto Iguazú service.", b_top: "Most popular", b_espera: "{n} h waiting", b_fronteira: "Border", b_hora: "5-hour package", b_dia: "Full day", b_ida: "One way", b_iv: "Round trip",
       calcTit: "Can't find your route?", calcDesc: "Coming soon: price by pick-up and drop-off address. For now, ask for a quote on WhatsApp.", calcBtn: "Quote on WhatsApp", calcDesc2: "Enter pick-up and destination: the fixed price of each vehicle shows up instantly.", calcBtn2: "Get price", ctaKm: "Another destination? See the price instantly", ctaKmSub: "Any city in Brazil, Argentina or Paraguay, to or from Foz do Iguaçu.", kmDe: "From", kmPara: "To", kmDataVolta: "Return date", kmHoraVolta: "Return time", kmVoltaDica: "Same-day return: the driver waits up to {h} h at the destination. Return on another day: we pick you up on the date and time chosen.", kmCalc: "Calculating the price…", kmOk: "Route confirmed", kmOkIV: "Route confirmed · round trip", kmPorTrecho: "km each way", kmTotal: "km", e_volta_falta: "Enter the return date and time", e_volta_antes: "The return must be after the outbound trip", voltaTxt: "Return", kmPh: "City, hotel or address", kmIdaVolta: "Round trip (up to {h} h waiting at destination)", kmInfo: "{km} km by road · about {t}", kmInfoIV: "{km} km each way (round trip) · about {t} each", kmFora: "Border crossing included.", kmRegras: "Fixed price per vehicle, tolls included. Pick-up or destination in the Foz do Iguaçu area.", kmBusca: "Searching…", kmNada: "No place found. Try the city name.", e_rota_falta: "Choose pick-up and destination from the list", e_fora_regiao: "Pick-up or destination must be in the Foz do Iguaçu area. For other routes, contact us on WhatsApp.", e_pais_nao_atende: "We serve Brazil, Argentina and Paraguay.", e_km_max: "Over {max} km: ask for a quote on WhatsApp.", e_km_min: "Route too short. See the services listed.", e_rota_sem_estrada: "No road route found between these points.", e_calc_indisponivel: "Calculator unavailable right now. Ask for a quote on WhatsApp.",
       comoTit: "How it works", faqTit: "FAQ",
       faq: [["How do I pay?", "Once we confirm availability, we send a payment link on WhatsApp: Pix, card or PayPal. Standard and 7-seater pay 100% at booking; Executive and SUV can pay a 50% deposit."], ["How far in advance can I book?", "Online, from 1 hour before (Standard) and 5 hours before (other vehicles). Trips to other cities: 5 hours."], ["What if my flight is delayed?", "Add your flight number: we follow the arrival time. The first hour of waiting after landing is free."], ["Can I cancel?", "Yes. Cancellation is free up to {h} hours before. After that, {d}% is refunded."], ["Which document do I need for Argentina or Paraguay?", "Foreign visitors: passport. Brazilians: original ID card (issued less than 10 years ago) or passport. Minors need their own documents."], ["Is the price per person?", "No. All prices are per vehicle, for the whole group, within the vehicle capacity."]],
@@ -85,7 +85,7 @@
       espAero: "1 hour free waiting after landing. After that, R$ {v} per hour.",
       add: "Add to booking", cancelar: "Cancel", calculando: "Calculating…",
       carrinho: "Your booking", vazio: "No services added yet.", detalhes: "See package details", compartilhar: "Share this package", shareTit: "Your package link", shareWa: "Send on WhatsApp", shareEq: "Send to our team", shareCopy: "Copy link", shareCopiado: "Copied!", shareMais: "More options", shareTxt: "I put together this transfer package in Foz do Iguaçu: {u}", shareEqTxt: "Hello! I put together this package on the website and want to book it: {u}", shareDica: "Anyone who opens the link sees the same package, with the price recalculated instantly.", shareGerando: "Creating link…", pacoteOk: "Shared package: {n} service(s) in your cart. Review and complete your booking.", pacoteFalha: "Needs a new date or a change: {l}", pacoteDesfazer: "Undo", pacoteErro: "This package could not be opened. The link may have expired.", diariaNota: "Each day includes {h} hours and {km} km, with fuel, tolls, parking and the driver's meals. Km beyond {km} in a day: {v} per km in this vehicle, settled at the end of the day.", moedaTit: "Also show in:", moedaBrl: "R$ only", fxPag: "You are charged in Brazilian reais. With PayPal or an international card, your bank converts at the day's rate.", vazioTit: "Your cart is empty", vazioTxt: "Click Choose on a service and it shows up here, with the price.", vazioDica: "You can combine several in one booking: airport arrival, tours and the return.", total: "Total", remover: "Remove", continuar: "Continue", verReserva: "Checkout →",
-      dados: "Your details", nome: "Full name", email: "Email", tel: "WhatsApp with country code", pais: "Country", obs: "Notes (optional)",
+      dados: "Your details", nome: "Full name", email: "Email", tel: "Mobile phone", pais: "Country", telDica: "Choose your country and type your number. No need for the + code.", telOutro: "Other country", contatoPor: "How should we contact you?", e_telefone_pais: "Please check your phone: choose the country and type the full number, including area code.", obs: "Notes (optional)",
       pagar: "Payment at booking", pSinal: "Pay a {p}% deposit at booking and the rest to the driver on the day",
       pTotal: "Pay 100% at booking", aPagar: "Due at booking", restante: "Due on the day",
       regraPag: "Standard and 7-seater: 100% at booking. Luxury and trips to other cities: {p}% deposit.", regraTotal: "For this booking, 100% is paid when you book.", regraSinal: "For this booking, you pay a deposit now and the rest to the driver on the day.", regraEscolha: "For this booking, you can pay a {p}% deposit now and the rest to the driver on the day, or pay in full.",
@@ -117,7 +117,7 @@
       busca: "Buscar servicio, ciudad o paseo", ordem: "Ordenar", o_rec: "Recomendados", o_menor: "Menor precio", o_maior: "Mayor precio", o_az: "Nombre (A–Z)",
       paxF: "Personas", p_any: "Cualquiera", p_4: "Hasta 4", p_6: "5 o 6", p_7: "7 o más",
       nRes: "{n} servicios", nada: "Ningún servicio coincide con estos filtros.", limpar: "Limpiar filtros",
-      b_espera: "Espera {n} h", b_fronteira: "Frontera", b_hora: "Paquete 5 h", b_dia: "Día completo", b_ida: "Solo ida", b_iv: "Ida y vuelta",
+      arTit: "Esta dirección está en Argentina.", arTxt: "Para Puerto Iguazú el servicio es otro, con cruce de frontera.", arBtn: "Cambiar al servicio correcto", e_destino_argentina: "La dirección está en Argentina: elija el servicio a Puerto Iguazú.", b_top: "Más pedido", b_espera: "Espera {n} h", b_fronteira: "Frontera", b_hora: "Paquete 5 h", b_dia: "Día completo", b_ida: "Solo ida", b_iv: "Ida y vuelta",
       calcTit: "¿No encontró su trayecto?", calcDesc: "Próximamente: precio por dirección de salida y destino. Por ahora, pida la cotización por WhatsApp.", calcBtn: "Cotizar por WhatsApp", calcDesc2: "Ingrese origen y destino: el precio cerrado de cada vehículo aparece al instante.", calcBtn2: "Calcular precio", ctaKm: "¿Otro destino? Vea el precio al instante", ctaKmSub: "Cualquier ciudad de Brasil, Argentina o Paraguay, desde o hacia Foz do Iguaçu.", kmDe: "Desde", kmPara: "Hasta", kmDataVolta: "Fecha de regreso", kmHoraVolta: "Hora de regreso", kmVoltaDica: "Regreso el mismo día: el chofer espera hasta {h} h en destino. Regreso otro día: lo buscamos en la fecha y hora elegidas.", kmCalc: "Calculando el precio…", kmOk: "Trayecto confirmado", kmOkIV: "Trayecto confirmado · ida y vuelta", kmPorTrecho: "km por tramo", kmTotal: "km", e_volta_falta: "Indique la fecha y hora de regreso", e_volta_antes: "El regreso debe ser después de la ida", voltaTxt: "Regreso", kmPh: "Ciudad, hotel o dirección", kmIdaVolta: "Ida y vuelta (hasta {h} h de espera en destino)", kmInfo: "{km} km por ruta · unas {t}", kmInfoIV: "{km} km por tramo (ida y vuelta) · unas {t} cada uno", kmFora: "Incluye el cruce de frontera.", kmRegras: "Precio cerrado por vehículo, con peajes. Origen o destino en la región de Foz do Iguaçu.", kmBusca: "Buscando…", kmNada: "No encontramos el lugar. Pruebe con el nombre de la ciudad.", e_rota_falta: "Elija origen y destino de la lista", e_fora_regiao: "El origen o el destino debe estar en la región de Foz do Iguaçu. Para otros trayectos, escríbanos por WhatsApp.", e_pais_nao_atende: "Atendemos Brasil, Argentina y Paraguay.", e_km_max: "Más de {max} km: pida la cotización por WhatsApp.", e_km_min: "Trayecto muy corto. Vea los servicios de la lista.", e_rota_sem_estrada: "No encontramos ruta por carretera entre esos puntos.", e_calc_indisponivel: "Calculadora no disponible ahora. Pida la cotización por WhatsApp.",
       comoTit: "Cómo funciona", faqTit: "Preguntas frecuentes",
       faq: [["¿Cómo pago?", "Cuando confirmamos la disponibilidad, enviamos el link de pago por WhatsApp: Pix, tarjeta o PayPal. Estándar y 7 plazas pagan el 100% al reservar; Ejecutivo y SUV pueden pagar una seña del 50%."], ["¿Con cuánta anticipación puedo reservar?", "Online, desde 1 hora antes (Estándar) y 5 horas antes (demás vehículos). Viajes a otras ciudades: 5 horas."], ["¿Y si mi vuelo se atrasa?", "Indique el número de vuelo: seguimos el horario de llegada. La primera hora de espera tras el aterrizaje es gratis."], ["¿Puedo cancelar?", "Sí. La cancelación es gratis hasta {h} horas antes. Después, devolvemos el {d}% del valor."], ["¿Qué documento necesito para Argentina o Paraguay?", "Argentinos: DNI físico vigente o pasaporte. Otros extranjeros: pasaporte. Los menores necesitan documentación propia."], ["¿El precio es por persona?", "No. Todos los valores son por vehículo, para todo el grupo, dentro de la capacidad del vehículo."]],
@@ -137,7 +137,7 @@
       espAero: "1 hora de espera gratis tras el aterrizaje. Después, R$ {v} por hora.",
       add: "Agregar a la reserva", cancelar: "Cancelar", calculando: "Calculando…",
       carrinho: "Su reserva", vazio: "Todavía no agregó servicios.", detalhes: "Ver detalles del paquete", compartilhar: "Compartir este paquete", shareTit: "Link de su paquete", shareWa: "Enviar por WhatsApp", shareEq: "Enviar a nuestro equipo", shareCopy: "Copiar link", shareCopiado: "¡Copiado!", shareMais: "Más opciones", shareTxt: "Armé este paquete de traslados en Foz do Iguaçu: {u}", shareEqTxt: "¡Hola! Armé este paquete en el sitio y quiero reservarlo: {u}", shareDica: "Quien abra el link ve el mismo paquete, con el precio recalculado al instante.", shareGerando: "Generando link…", pacoteOk: "Paquete compartido: {n} servicio(s) en su carrito. Revise y finalice la reserva.", pacoteFalha: "Necesita nueva fecha o ajuste: {l}", pacoteDesfazer: "Deshacer", pacoteErro: "No se pudo abrir este paquete. El link puede haber expirado.", diariaNota: "Cada día incluye {h} horas y {km} km, con combustible, peajes, estacionamiento y comidas del chofer. Km por encima de {km} en el día: {v} por km en este vehículo, se paga al final del día.", moedaTit: "Ver también en:", moedaBrl: "Solo R$", fxPag: "El cobro es en reales. Con PayPal o tarjeta internacional, su banco convierte a la cotización del día.", vazioTit: "Su carrito está vacío", vazioTxt: "Haga clic en Elegir en un servicio y aparece aquí, con el precio.", vazioDica: "Puede juntar varios en un solo pedido: llegada al aeropuerto, paseos y el regreso.", total: "Total", remover: "Quitar", continuar: "Continuar", verReserva: "Finalizar →",
-      dados: "Sus datos", nome: "Nombre completo", email: "Email", tel: "WhatsApp con código de país", pais: "País", obs: "Observaciones (opcional)",
+      dados: "Sus datos", nome: "Nombre completo", email: "Email", tel: "Celular", pais: "País", telDica: "Elija el país y escriba su número con código de área.", telOutro: "Otro país", contatoPor: "¿Cómo prefiere que lo contactemos?", e_telefone_pais: "Revise el celular: elija el país y escriba el número completo, con código de área.", obs: "Observaciones (opcional)",
       pagar: "Pago en la reserva", pSinal: "Pagar una seña del {p}% en la reserva y el resto al chofer el día del viaje",
       pTotal: "Pagar el 100% en la reserva", aPagar: "A pagar en la reserva", restante: "Resto el día del viaje",
       regraPag: "Estándar y 7 plazas: 100% en la reserva. Lujo y viajes a otras ciudades: seña del {p}%.", regraTotal: "En esta reserva, se paga el 100% al reservar.", regraSinal: "En esta reserva, paga la seña ahora y el resto al chofer el día del viaje.", regraEscolha: "En esta reserva, puede pagar una seña del {p}% ahora y el resto al chofer el día del viaje, o pagar el total.",
@@ -186,6 +186,7 @@
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function brl(v) { return "R$ " + Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
   function track(ev, p) { try { if (typeof gtag === "function") gtag("event", ev, p || {}); } catch (e) {} }
+  function tgLink() { return "https://t.me/" + (CAT && CAT.config.telegram ? CAT.config.telegram : "+" + CAT.config.whatsapp); }
   function waLink(text) { return "https://wa.me/" + CAT.config.whatsapp + "?text=" + encodeURIComponent(text); }
   function api(path, body) {
     var h = body ? { "content-type": "application/json" } : {};
@@ -227,7 +228,7 @@
     $("#r-faq").innerHTML = t("faq").map(function (x) {
       return '<details class="reveal"><summary>' + esc(x[0]) + "</summary><p>" + esc(x[1].replace("{h}", h).replace("{d}", d)) + "</p></details>";
     }).join("");
-    txt("#r-wa-t", t("waAjuda")); txt("#r-seg", t("seg")); txt("#r-cob", t("cob")); var wb = $("#r-wa-b"); if (wb) { wb.textContent = t("waBtn"); wb.href = waLink(t("waAjuda")); }
+    txt("#r-wa-t", t("waAjuda")); txt("#r-seg", t("seg")); txt("#r-cob", t("cob")); var wb = $("#r-wa-b"); if (wb) { wb.textContent = t("waBtn"); wb.href = waLink(t("waAjuda")); } var tb = $("#r-tg-b"); if (tb && CAT) tb.href = tgLink();
     $$("[data-lang]").forEach(function (b) { b.classList.toggle("on", b.dataset.lang === S.lang); });
     var mo = $("#r-moedas");
     if (mo) {
@@ -258,7 +259,7 @@
     if (s.tipo === "diaria") b.push(t("b_dia"));
     if (s.espera) b.push(t("b_espera", { n: s.espera }));
     if (s.fronteira) b.push(t("b_fronteira"));
-    return b.map(function (x) { return "<span>" + esc(x) + "</span>"; }).join("");
+    return (s.top && s.top <= 3 ? '<span class="r-top">' + esc(t("b_top")) + "</span>" : "") + b.map(function (x) { return "<span>" + esc(x) + "</span>"; }).join("");
   }
   function noPais(s, p) { p = p || S.pais; return p === "todos" || (s.paises || ["br"]).indexOf(p) >= 0; }
   var FLAG = {
@@ -287,6 +288,8 @@
       if (S.pax !== "any" && minPrice(s, pm) == null) return false;
       return true;
     });
+    // recomendados: os mais procurados (campo "top" no catálogo) vêm primeiro, o resto na ordem do catálogo
+    if (S.sort === "rec") list = list.map(function (s, i) { return [s, i]; }).sort(function (a, b) { return ((a[0].top || 99) - (b[0].top || 99)) || (a[1] - b[1]); }).map(function (x) { return x[0]; });
     if (S.sort !== "rec") {
       list = list.slice().sort(function (a, b) {
         if (S.sort === "az") return L(a.nome).localeCompare(L(b.nome));
@@ -348,7 +351,7 @@
     if (s.tipo === "combo") { COMBO = { id: id, ids: s.combo, i: 0 }; track("select_content", { content_type: "combo", item_id: id }); return openSvc(s.combo[0], { sentido: "chegada", data: pre && pre.data, pax: pre && pre.pax }); }
     if (!pre || !pre.doCombo) { if (COMBO && COMBO.ids[COMBO.i] !== id) COMBO = null; }
     cur = { servico: id, categoria: null, pax: 2, malas: 0, malasBordo: 0, mochilas: 0, carros: 1, cadeirinhas: 0, pet: false, horasExtras: 0, horas: CAT.config.porHora.minimoHoras, dias: 1, sentido: "chegada", data: "", hora: "", voo: "", origem: "", destino: "" };
-    if (pre) { if (pre.data) cur.data = pre.data; if (pre.pax) cur.pax = pre.pax; if (pre.sentido) cur.sentido = pre.sentido; if (pre.local) cur.local = pre.local; if (pre.categoria) cur.categoria = pre.categoria; if (pre.malas != null) cur.malas = pre.malas; }
+    if (pre) { if (pre.data) cur.data = pre.data; if (pre.pax) cur.pax = pre.pax; if (pre.sentido) cur.sentido = pre.sentido; if (pre.local) cur.local = pre.local; if (pre.categoria) cur.categoria = pre.categoria; if (pre.malas != null) cur.malas = pre.malas; if (pre.hora) cur.hora = pre.hora; if (pre.voo) cur.voo = pre.voo; if (pre.malasBordo) cur.malasBordo = pre.malasBordo; if (pre.mochilas) cur.mochilas = pre.mochilas; if (pre.obs) cur.obs = pre.obs; }
     quotes = {};
     track("view_item", { item_id: id, item_name: s.nome.pt });
     renderModal();
@@ -393,10 +396,8 @@
   function provsDisp() { var c = CAT.config, a = []; if (c.pagamentoOnline) a.push("infinitepay"); if (c.paypal) a.push("paypal"); return a; }
   function traduzido() { var h = document.documentElement; return /translated/.test(h.className || "") || !!document.querySelector("html.translated-ltr,html.translated-rtl,body.translated-ltr"); }
   function paisDigitado() {
-    var el = document.querySelector('#r-checkout-f [name="pais"]'), v = el ? el.value.trim().toLowerCase() : "";
-    if (v.length < 2) return null;
-    try { v = v.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); } catch (e) {}
-    return /^(br|bra|brasil|brazil|bresil|brasile|brasilien|brazilie|brazylia)\b/.test(v) ? "br" : "fora";
+    var el = document.querySelector('#r-checkout-f [name="ddi"]'); if (!el) return null;
+    return el.value === "BR" ? "br" : "fora";
   }
   function provPadrao() {
     var d = provsDisp(); if (d.length < 2) return d[0] || null;
@@ -417,6 +418,17 @@
     var b = $("#r-send"); if (b && !b.disabled) b.textContent = t(pv ? "enviarPagar" : "enviar");
     updatePay();
   }
+  /* destino na Argentina digitado num serviço do lado brasileiro: sugere o serviço certo (com travessia da fronteira) */
+  var ALT_AR = { "igu-foz": "igu-pi", "igr-foz": "igr-pi" };
+  function ehArgentina(v) { try { v = String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, ""); } catch (e) {} return /puerto\s*iguaz|pto\.?\s*iguaz|argentin|lado argentino/i.test(v || ""); }
+  function avisoAr() {
+    var el = $("#r-arwarn"); if (!el || !cur) return false;
+    var alt = ALT_AR[cur.servico], ruim = !!alt && ehArgentina(cur.local);
+    el.hidden = !ruim;
+    // só redesenha se mudou: o "change" do campo (ao tocar no botão) não pode trocar o botão embaixo do dedo
+    if (ruim && el.dataset.alt !== alt) el.dataset.alt = alt, el.innerHTML = "<b>" + esc(t("arTit")) + "</b> " + esc(t("arTxt")) + ' <button type="button" class="r-btn" data-trocar="' + alt + '">' + esc(t("arBtn")) + "</button>";
+    return ruim;
+  }
   function aeroNome(id) { return /^igr/.test(id) ? "Aeroporto de Puerto Iguazú (IGR)" : "Aeroporto de Foz do Iguaçu (IGU)"; }
   function renderModal() {
     var s = svc(cur.servico), m = $("#r-modal-b"), cfg = CAT.config;
@@ -427,8 +439,8 @@
     f += '<div class="r-mgrid"><div class="r-mcol">' + step(1, "stQuando");
     if (s.sentido) f += field(t("sentido"), '<select name="sentido"><option value="chegada">' + esc(s.fixo ? t("chegadaF", { d: L(s.fixo) }) : t("chegada")) + '</option><option value="saida"' + (cur.sentido === "saida" ? " selected" : "") + '>' + esc(s.fixo ? t("saidaF", { d: L(s.fixo) }) : t("saida")) + "</option></select>");
     f += '<div class="r-row">' + field(t("data") + " *", '<input type="date" name="data" min="' + hoje() + '"' + (cur.data ? ' value="' + esc(cur.data) + '"' : "") + ' required>') +
-      field((s.voo ? t("horaVoo") : t("hora")) + " *", '<input type="time" name="hora" required>') + "</div>";
-    if (s.voo) f += field(t("voo"), '<input name="voo" placeholder="G3 1234" maxlength="20">');
+      field((s.voo ? t("horaVoo") : t("hora")) + " *", '<input type="time" name="hora" required' + (cur.hora ? ' value="' + esc(cur.hora) + '"' : "") + '>') + "</div>";
+    if (s.voo) f += field(t("voo"), '<input name="voo" placeholder="G3 1234" maxlength="20"' + (cur.voo ? ' value="' + esc(cur.voo) + '"' : "") + '>');
     f += "</section>" + step(2, "stOnde");
     if (s.tipo === "km") {
       var pk = cfg.porKm;
@@ -439,7 +451,7 @@
         '<div class="r-kminfo" id="r-kminfo" aria-live="polite"></div>' +
         '<p class="r-note">' + esc(t("kmRegras", { a: pk.acrescimoAcimaKm, p: pk.acrescimoPct })) + "</p>";
     } else if (s.sentido)
-    f += '<label class="r-f"><span id="r-local-l">' + esc(t(cur.sentido === "saida" ? "localSai" : "localCheg") + " *") + '</span><input name="local" required maxlength="160" autocomplete="street-address"' + (s.fixo ? ' value="' + esc(L(s.fixo)) + '"' : cur.local ? ' value="' + esc(cur.local) + '"' : "") + "></label>";
+    f += '<label class="r-f"><span id="r-local-l">' + esc(t(cur.sentido === "saida" ? "localSai" : "localCheg") + " *") + '</span><input name="local" required maxlength="160" autocomplete="street-address"' + (s.fixo ? ' value="' + esc(L(s.fixo)) + '"' : cur.local ? ' value="' + esc(cur.local) + '"' : "") + "></label>" + (ALT_AR[cur.servico] ? '<p class="r-arwarn" id="r-arwarn" role="alert" hidden></p>' : "");
     else
     f += '<div class="r-row">' + field(t("origem") + " *", '<input name="origem" required maxlength="160" autocomplete="street-address">') +
       field(s.tipo === "transfer" || s.tipo === "viagem" ? t("destino") : t("destinoOpc"), '<input name="destino" maxlength="160">') + "</div>";
@@ -453,7 +465,7 @@
     if (s.espera || s.tipo === "diaria") f += field(t("horasExtras"), num("horasExtras", cur.horasExtras, 0, 8));
     f += '<div class="r-row">' + field(t("cadeirinhas", { v: cfg.cadeirinha.valor }), num("cadeirinhas", cur.cadeirinhas, 0, 3)) +
       '<label class="r-chk r-chk-in"><input type="checkbox" name="pet"> <span>' + esc(t("pet")) + "</span></label></div>";
-    f += field(t("obsItem"), '<textarea name="obs" rows="2" maxlength="300" placeholder="' + esc(t("obsPh")) + '"></textarea>');
+    f += field(t("obsItem"), '<textarea name="obs" rows="2" maxlength="300" placeholder="' + esc(t("obsPh")) + '">' + esc(cur.obs || "") + '</textarea>');
     f += "</section>";
     var info = [];
     info.push(esc(t("cadNota")));
@@ -592,7 +604,7 @@
     if (g("local") !== undefined) {
       var loc = String(g("local")).trim(), ae = aeroNome(cur.servico);
       if (cur.sentido === "saida") { cur.origem = loc; cur.destino = ae; } else { cur.origem = ae; cur.destino = loc; }
-      cur.local = loc;
+      cur.local = loc; avisoAr();
       var ll = $("#r-local-l"); if (ll) ll.textContent = t(cur.sentido === "saida" ? "localSai" : "localCheg") + " *";
     }
     ["pax", "malas", "malasBordo", "mochilas", "carros", "cadeirinhas", "horasExtras", "horas", "dias"].forEach(function (k) { var v = g(k); if (v !== undefined) cur[k] = Math.max(0, parseInt(v, 10) || 0); });
@@ -676,6 +688,70 @@
     if (!$("#r-checkout").hidden) updatePay();
   }
 
+  /* ---------- telefone: país (código) + número, e canal de contato preferido ----------
+     O cliente escolhe o país numa lista (com bandeira e código) e digita só o número.
+     Se colar o número com "+", o país é trocado sozinho. Validação de tamanho por país. */
+  // [ISO, código, mín, máx dígitos do número nacional, exemplo]
+  var PAISES_TEL = [["BR", "55", 10, 11, "45 99999-9999"], ["AR", "54", 10, 11, "11 2345-6789"], ["PY", "595", 9, 9, "981 123456"], ["UY", "598", 8, 8, "94 123 456"],
+    ["CL", "56", 9, 9, "9 1234 5678"], ["US", "1", 10, 10, "909 913 4545"], ["CA", "1", 10, 10, "416 555 0123"], ["MX", "52", 10, 10, "55 1234 5678"],
+    ["CO", "57", 10, 10, "300 123 4567"], ["PE", "51", 9, 9, "912 345 678"], ["BO", "591", 8, 8, "7123 4567"], ["EC", "593", 9, 9, "99 123 4567"],
+    ["VE", "58", 10, 10, "412 123 4567"], ["PT", "351", 9, 9, "912 345 678"], ["ES", "34", 9, 9, "612 34 56 78"], ["FR", "33", 9, 9, "6 12 34 56 78"],
+    ["DE", "49", 10, 11, "1512 3456789"], ["IT", "39", 9, 10, "312 345 6789"], ["GB", "44", 10, 10, "7400 123456"], ["IE", "353", 9, 9, "85 123 4567"],
+    ["NL", "31", 9, 9, "6 12345678"], ["BE", "32", 9, 9, "470 12 34 56"], ["CH", "41", 9, 9, "78 123 45 67"], ["AT", "43", 10, 13, "664 123456"],
+    ["PL", "48", 9, 9, "512 345 678"], ["SE", "46", 9, 9, "70 123 45 67"], ["NO", "47", 8, 8, "406 12 345"], ["DK", "45", 8, 8, "20 12 34 56"],
+    ["FI", "358", 9, 10, "41 2345678"], ["IL", "972", 9, 9, "50 123 4567"], ["RU", "7", 10, 10, "912 345 6789"], ["ZA", "27", 9, 9, "71 123 4567"],
+    ["AU", "61", 9, 9, "412 345 678"], ["NZ", "64", 8, 10, "21 123 4567"], ["JP", "81", 10, 10, "90 1234 5678"], ["KR", "82", 9, 10, "10 1234 5678"],
+    ["CN", "86", 11, 11, "131 2345 6789"], ["IN", "91", 10, 10, "81234 56789"], ["AE", "971", 9, 9, "50 123 4567"]];
+  var TEL_POR_ISO = {}; PAISES_TEL.forEach(function (p) { TEL_POR_ISO[p[0]] = p; });
+  function nomePais(iso, lg) { try { return new Intl.DisplayNames([lg || (S.lang === "pt" ? "pt-BR" : S.lang)], { type: "region" }).of(iso) || iso; } catch (e) { return iso; } }
+  function bandeira(iso) { try { return String.fromCodePoint.apply(null, iso.split("").map(function (c) { return 127397 + c.charCodeAt(0); })); } catch (e) { return ""; } }
+  function paisInicial() {
+    var langs = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ""]);
+    for (var i = 0; i < langs.length; i++) { var m = /-([A-Za-z]{2})$/.exec(langs[i] || ""); if (m && TEL_POR_ISO[m[1].toUpperCase()]) { var iso = m[1].toUpperCase();
+      // navegador em português do Brasil numa página em inglês/espanhol (tradutor) não decide o país
+      if (!(iso === "BR" && S.lang !== "pt")) return iso; } }
+    return S.lang === "en" ? "US" : S.lang === "es" ? "AR" : "BR";
+  }
+  function telOpcoes(sel) {
+    var l = PAISES_TEL.map(function (p) { return { iso: p[0], ddi: p[1], nome: nomePais(p[0]) }; });
+    var fixos = ["BR", "AR", "PY", "US"], topo = l.filter(function (x) { return fixos.indexOf(x.iso) >= 0; }).sort(function (a, b) { return fixos.indexOf(a.iso) - fixos.indexOf(b.iso); });
+    var resto = l.filter(function (x) { return fixos.indexOf(x.iso) < 0; }).sort(function (a, b) { return a.nome.localeCompare(b.nome); });
+    var op = function (x) { return '<option value="' + x.iso + '"' + (x.iso === sel ? " selected" : "") + ">" + bandeira(x.iso) + " +" + x.ddi + " " + esc(x.nome) + "</option>"; };
+    return topo.map(op).join("") + '<option disabled>──────────</option>' + resto.map(op).join("") + '<option value="XX"' + (sel === "XX" ? " selected" : "") + ">🌐 " + esc(t("telOutro")) + "</option>";
+  }
+  function telIso() { var el = $('#r-checkout-f [name="ddi"]'); return el ? el.value : "BR"; }
+  function telAtualizarDica() {
+    var p = TEL_POR_ISO[telIso()], i = $('#r-checkout-f [name="telefone"]'), c = $("#r-ddi-cod");
+    if (i) i.placeholder = p ? p[4] : "+00 000 000 000";
+    if (c) c.textContent = p ? "+" + p[1] : "+";
+  }
+  // número colado com "+" ou com o código do país: troca o país e deixa só o número nacional
+  function telColado(el) {
+    var v = el.value.trim(); if (v.charAt(0) !== "+" && v.indexOf("00") !== 0) return;
+    var d = v.replace(/\D/g, "").replace(/^00/, ""), melhor = null;
+    PAISES_TEL.forEach(function (p) { if (d.indexOf(p[1]) === 0 && (!melhor || p[1].length > melhor[1].length)) melhor = p; });
+    if (!melhor) return;
+    if (melhor[1] === "1") { var at = TEL_POR_ISO[telIso()]; if (at && at[1] === "1") melhor = at; } // EUA e Canadá têm o mesmo código
+    var s = $('#r-checkout-f [name="ddi"]'); if (s) s.value = melhor[0];
+    el.value = d.slice(melhor[1].length); telAtualizarDica(); atualizarProv();
+  }
+  // telefone completo no formato internacional (+código número) ou erro
+  function telMontar() {
+    var iso = telIso(), bruto = g0("telefone"), d = bruto.replace(/\D/g, ""), p = TEL_POR_ISO[iso];
+    if (iso === "XX" || !p) { if (d.length < 8 || d.length > 15) return { erro: true }; return { tel: "+" + d, pais: "" }; }
+    if (d.indexOf(p[1]) === 0 && d.length > p[3]) d = d.slice(p[1].length); // digitou o código de novo
+    if (d.length > p[3] && d.charAt(0) === "0") d = d.slice(1); // 0 de discagem nacional
+    if (iso === "AR" && d.length === 10 && d.charAt(0) !== "9") d = "9" + d; // celular argentino no WhatsApp: +54 9
+    if (iso === "AR" && d.length === 11 && d.charAt(0) === "9") { /* ok */ } else if (d.length < p[2] || d.length > p[3]) return { erro: true };
+    return { tel: "+" + p[1] + " " + d, pais: nomePais(iso, "pt-BR") };
+  }
+  function g0(n) { var el = $('#r-checkout-f [name="' + n + '"]'); return el ? String(el.value || "").trim() : ""; }
+  function contatoHtml() {
+    var ops = [["whatsapp", "WhatsApp"], ["telegram", "Telegram"], ["sms", "SMS"], ["email", t("email")]];
+    return '<p class="r-lbl">' + esc(t("contatoPor")) + '</p><div class="r-opts r-contato">' + ops.map(function (o, i) {
+      return '<label class="r-opt' + (i === 0 ? " on" : "") + '"><input type="radio" name="contato" value="' + o[0] + '"' + (i === 0 ? " checked" : "") + "><span>" + esc(o[1]) + "</span></label>"; }).join("") + "</div>";
+  }
+
   /* ---------- checkout ---------- */
   var tsId = null;
   function renderCheckout() {
@@ -684,8 +760,10 @@
     var pc = parceiroAtual();
     var h = (pc ? '<div class="r-parc"><b>Reserva de parceiro: ' + esc(pc.nome || "") + '</b><span>Preencha os dados do passageiro. A reserva aparece na sua <a href="/parceiro/">área de parceiro</a> com a comissão.</span></div>' : "") +
       "<h2>" + esc(pc ? "Dados do passageiro" : t("dados")) + '</h2><div class="r-row">' + field(t("nome") + " *", '<input name="nome" required autocomplete="name" maxlength="120">') +
-      field(t("tel") + " *", '<input name="telefone" type="tel" required autocomplete="tel" maxlength="40" placeholder="+55 45 99999-9999">') + '</div><div class="r-row">' +
-      field(t("email") + " *", '<input name="email" type="email" required autocomplete="email" maxlength="160">') + field(t("pais"), '<input name="pais" autocomplete="country-name" maxlength="60">') + "</div>" +
+      field(t("email") + " *", '<input name="email" type="email" required autocomplete="email" maxlength="160">') + "</div>" +
+      '<div class="r-f"><span>' + esc(t("tel")) + ' *</span><div class="r-telbox"><select name="ddi" aria-label="' + esc(t("pais")) + '">' + telOpcoes(paisInicial()) + '</select>' +
+      '<span class="r-ddi" id="r-ddi-cod" aria-hidden="true"></span><input name="telefone" type="tel" inputmode="tel" required autocomplete="tel-national" maxlength="25" aria-label="' + esc(t("tel")) + '"></div>' +
+      '<small class="r-sm" id="r-tel-dica">' + esc(t("telDica")) + "</small></div>" + contatoHtml() +
       field(t("obs"), '<textarea name="observacoes" rows="2" maxlength="1000"></textarea>') +
       '<input type="text" name="website" tabindex="-1" autocomplete="off" class="r-hp" aria-hidden="true">' +
       (pc ? "" : '<div class="r-cupom" id="r-cupom"></div>') +
@@ -701,7 +779,7 @@
       '<p class="r-err" id="r-cerr" role="alert"></p><button type="submit" class="r-btn r-big" id="r-send">' + esc(t(pagOnline() ? "enviarPagar" : "enviar")) + '</button><div id="r-done"></div>';
     $("#r-checkout-f").innerHTML = h;
     if (pc) api("/api/parceiro/eu").then(function (r) { if (!r || !r.ok) { store.set("parceiro", null); var b = $(".r-parc"); if (b) b.remove(); } }).catch(function () {});
-    renderCupom(); updatePay(); atualizarProv();
+    telAtualizarDica(); renderCupom(); updatePay(); atualizarProv();
     if (cfg.turnstileSiteKey) loadTurnstile();
   }
   function loadTurnstile() {
@@ -764,13 +842,15 @@
     var f = $("#r-checkout-f"), g = function (n) { var el = f.querySelector('[name="' + n + '"]'); return el ? (el.type === "checkbox" ? el.checked : el.value.trim()) : ""; };
     var err = $("#r-cerr");
     if (!g("nome") || !g("telefone") || !g("email")) { err.textContent = t("e_campos"); apontarFalta(f, ["nome", "telefone", "email"]); return; }
+    var tm = telMontar();
+    if (tm.erro) { err.textContent = t("e_telefone_pais"); var ti = f.querySelector('[name="telefone"]'); if (ti) { ti.classList.add("r-falta"); ti.addEventListener("input", function () { this.classList.remove("r-falta"); }, { once: true }); ti.scrollIntoView({ behavior: "smooth", block: "center" }); try { ti.focus({ preventScroll: true }); } catch (x) {} } return; }
     if (!g("consentimento")) { err.textContent = t("e_consentimento"); return; }
     err.textContent = "";
     var btn = $("#r-send"); btn.disabled = true; btn.textContent = t("enviando");
     var body = {
       idioma: S.lang, consentimento: true, modoPagamento: escolhaAtual(), provedor: provAtual() || undefined, website: g("website"), cupom: S.cupom ? S.cupom.codigo : undefined,
       turnstile: tsId != null && window.turnstile ? window.turnstile.getResponse(tsId) : "",
-      cliente: { nome: g("nome"), email: g("email"), telefone: g("telefone"), pais: g("pais"), observacoes: g("observacoes") },
+      cliente: { nome: g("nome"), email: g("email"), telefone: tm.tel, pais: tm.pais, contato: (f.querySelector('[name="contato"]:checked') || {}).value || "whatsapp", observacoes: g("observacoes") },
       itens: S.cart.map(function (it) { var x = JSON.parse(JSON.stringify(it)); delete x.cot; return x; }),
     };
     track("begin_checkout", { value: pagamento(body.modoPagamento).total, currency: "BRL" });
@@ -794,7 +874,7 @@
       }
       $("#r-done").innerHTML = '<div class="r-ok"><h3>' + esc(t("okTit")) + "</h3><p>" + esc(t("okTxt", { c: r.codigo })) + "</p>" +
         '<div class="r-actions r-center"><a class="r-btn r-btn-wa" target="_blank" rel="noopener" href="' + esc(r.whatsapp) + '">' + esc(t("okWa")) +
-        '</a><button type="button" class="r-btn r-ghost" id="r-novo">' + esc(t("okNovo")) + "</button></div></div>";
+        '</a><a class="r-btn r-btn-tg" target="_blank" rel="noopener" href="' + esc(tgLink()) + '">Telegram</a><button type="button" class="r-btn r-ghost" id="r-novo">' + esc(t("okNovo")) + "</button></div></div>";
       $("#r-done").scrollIntoView({ behavior: "smooth", block: "center" });
     }).catch(function () { btn.disabled = false; btn.textContent = t(pagOnline() ? "enviarPagar" : "enviar"); err.textContent = t("e_rede"); });
   }
@@ -897,9 +977,13 @@
   });
   $("#r-modal-b").addEventListener("input", function (e) {
     if (e.target.dataset.ac) { acSearch(e.target); return; }
+    if (e.target.name === "local" && cur) { cur.local = e.target.value.trim(); avisoAr(); }
     if (["pax", "malas", "malasBordo", "mochilas", "carros", "horas", "dias", "horasExtras", "cadeirinhas"].indexOf(e.target.name) > -1) { readModal(); requestQuotes(); mostrarAvisoMalas(); }
   });
   $("#r-modal-b").addEventListener("click", function (e) {
+    var tr = e.target.closest && e.target.closest("[data-trocar]");
+    if (tr && cur) { readModal(); var c0 = cur; track("select_content", { content_type: "troca_argentina", item_id: tr.dataset.trocar });
+      openSvc(tr.dataset.trocar, { data: c0.data, hora: c0.hora, voo: c0.voo, pax: c0.pax, sentido: c0.sentido, local: c0.local, malas: c0.malas, malasBordo: c0.malasBordo, mochilas: c0.mochilas, obs: c0.obs }); return; }
     if (!e.target.closest || !e.target.closest("[data-maiscarro]") || !cur) return;
     var i = $('#r-modal-b [name="carros"]'); if (!i) return;
     i.value = Math.min(5, nCarros() + 1); readModal(); requestQuotes(); mostrarAvisoMalas();
@@ -912,6 +996,7 @@
     if (document.activeElement && document.activeElement.dataset && document.activeElement.dataset.ac) { var ul0 = $("#r-acl-" + document.activeElement.dataset.ac); if (ul0 && !ul0.hidden && acRes[document.activeElement.dataset.ac] && acRes[document.activeElement.dataset.ac].length) { acPick(document.activeElement.dataset.ac, 0); return; } }
     if (svc(cur.servico).tipo === "km" && (!cur.de || !cur.para)) { er.textContent = t("e_rota_falta"); return; }
     if (svc(cur.servico).tipo === "km" && cur.idaVolta && (!cur.dataVolta || !cur.horaVolta)) { er.textContent = t("e_volta_falta"); return; }
+    if (avisoAr()) { er.textContent = t("arTxt"); $("#r-arwarn").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
     if (!cur.origem || !cur.data || !cur.hora || (svc(cur.servico).sentido && !cur.local)) { er.textContent = t("e_campos"); apontarFalta($("#r-modal-b"), ["data", "hora", "local", "origem"]); return; }
     var q = cur.categoria && quotes[cur.categoria];
     if (!q || !q.ok) { er.textContent = t("e_cat"); return; }
@@ -942,10 +1027,12 @@
   $("#r-checkout-f").addEventListener("submit", submitCheckout);
   $("#r-checkout-f").addEventListener("change", function (e) {
     if (e.target.name === "modo") updatePay();
+    if (e.target.name === "ddi") { telAtualizarDica(); if (!S.prov) atualizarProv(); }
+    if (e.target.name === "contato") $$('#r-checkout-f .r-contato .r-opt').forEach(function (l) { l.classList.toggle("on", l.querySelector("input").checked); });
     if (e.target.name === "provedor") { S.prov = e.target.value; atualizarProv(); track("select_content", { content_type: "pagamento", item_id: S.prov }); }
   });
   // país digitado ou tradutor automático ligado: ajusta a sugestão enquanto o cliente não escolheu sozinho
-  $("#r-checkout-f").addEventListener("input", function (e) { if (e.target.name === "pais" && !S.prov) atualizarProv(); });
+  $("#r-checkout-f").addEventListener("input", function (e) { if (e.target.name === "telefone") telColado(e.target); });
   try { new MutationObserver(function () { if (!S.prov && !$("#r-checkout").hidden) atualizarProv(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["class", "lang"] }); } catch (e) {}
 
   /* reserva feita aqui que ficou sem pagamento (fechou a página do pagamento, cartão recusado...):
