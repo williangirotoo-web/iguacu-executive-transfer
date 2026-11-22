@@ -38,9 +38,11 @@
       if (!r.pedidos.length) { $("#rows").innerHTML = '<p class="empty">Nenhum pedido aqui.' + (filtro.periodo === "proximos" ? ' <a href="#" id="ver-todos" style="color:var(--gold)">Ver também as viagens passadas</a>' : "") + "</p>"; var vt = $("#ver-todos"); if (vt) vt.onclick = function (e) { e.preventDefault(); filtro.periodo = "todos"; $("#periodo").value = "todos"; carregar(); }; return; }
       // soma da lista que está na tela (canceladas só entram quando o filtro é "Cancelada")
       var somaLista = r.pedidos.reduce(function (a, x) { return a + (Number(x.total) || 0); }, 0);
+      var somaLiq = r.pedidos.reduce(function (a, x) { return a + (x.liquido != null ? Number(x.liquido) : Number(x.total) || 0); }, 0);
+      var semTaxa = r.pedidos.some(function (x) { return x.semTaxa; });
       var rotulo = filtro.status ? STATUS[filtro.status] : "Todos";
       var periodoTxt = filtro.q ? "na busca" : filtro.periodo === "proximos" && !filtro.status ? "nas próximas viagens" : "em todas as datas";
-      $("#rows").innerHTML = '<div class="soma"><span>' + esc(rotulo) + " · " + r.pedidos.length + " pedido" + (r.pedidos.length === 1 ? "" : "s") + " " + periodoTxt + '</span><span>Total <b>' + brl(somaLista) + "</b></span></div>" + r.pedidos.map(function (x) {
+      $("#rows").innerHTML = '<div class="soma"><span>' + esc(rotulo) + " · " + r.pedidos.length + " pedido" + (r.pedidos.length === 1 ? "" : "s") + " " + periodoTxt + '</span><span class="soma-v"><span>Bruto <b>' + brl(somaLista) + '</b></span><span>Líquido <b class="liq">' + brl(somaLiq) + "</b>" + (semTaxa ? ' <a href="/admin/ganhos.html#taxas" class="aviso" title="Falta informar a taxa de alguma forma de pagamento">*</a>' : "") + "</span></span></div>" + r.pedidos.map(function (x) {
         // vários trechos: mostra o primeiro e quantos mais (o resumo completo fica no detalhe do pedido)
         var partes = String(x.servicos || "").split(" + ").filter(Boolean), resumo = partes[0] || "";
         if (partes.length > 1) resumo += " + " + (partes.length - 1) + " trecho" + (partes.length > 2 ? "s" : "");

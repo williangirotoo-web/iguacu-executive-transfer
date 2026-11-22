@@ -290,6 +290,41 @@ async function prepararKm(env, it) {
    Viagens do mês (pela data da viagem, horário de Foz), quanto já foi pago de cada uma, o que falta
    e quanto dinheiro entrou no mês (pela data do pagamento: site, PayPal, manual e o que o motorista recebeu no dia). */
 const STATUS_VENDA = ["aprovado", "aguardando_confirmacao", "confirmada", "concluida"];
+/* taxas de recebimento (% que a maquininha/PayPal desconta), editáveis na tela Ganhos.
+   credito[n] = taxa do cartão em n parcelas; null = ainda não informada (o líquido avisa). */
+const TAXAS_PADRAO = { pix: 0, debito: null, credito: { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null, 10: null, 11: null, 12: null }, paypal: 6.6, manual: 0 };
+async function lerTaxas(env) {
+  try {
+    const r = await env.DB.prepare("SELECT valor, atualizado_em FROM config_admin WHERE chave = 'taxas'").first();
+    if (r) { const v = JSON.parse(r.valor || "{}"); return { ...TAXAS_PADRAO, ...v, credito: { ...TAXAS_PADRAO.credito, ...(v.credito || {}) }, atualizado_em: r.atualizado_em }; }
+  } catch {}
+  return { ...TAXAS_PADRAO, credito: { ...TAXAS_PADRAO.credito } };
+}
+// % descontado de um pagamento recebido; null = taxa desconhecida
+function taxaDoPagamento(tx, g) {
+  if (g.provedor === "paypal") return tx.paypal;
+  if (g.provedor === "infinitepay") {
+    const m = String(g.metodo || "").toLowerCase();
+    if (m === "pix") return tx.pix;
+    if (/debit/.test(m)) return tx.debito;
+    return tx.credito[Math.min(12, Math.max(1, Number(g.parcelas) || 1))];
+  }
+  return tx.manual || 0;
+}
+// líquido de cada pedido: total menos o que a maquininha/PayPal desconta dos pagamentos já recebidos
+async function liquidoDosPedidos(env, ids, tx) {
+  const out = {}; if (!ids.length) return out;
+  tx = tx || await lerTaxas(env);
+  for (let i = 0; i < ids.length; i += 90) {
+    const lote = ids.slice(i, i + 90);
+    const { results } = await env.DB.prepare(`SELECT pedido_id, provedor, metodo, parcelas, COALESCE(valor_pago, valor) AS v FROM pagamentos WHERE status = 'pago' AND pedido_id IN (${lote.map(() => "?").join(",")})`).bind(...lote).all();
+    for (const g of results) {
+      const pct = taxaDoPagamento(tx, g), o = out[g.pedido_id] || (out[g.pedido_id] = { taxa: 0, semTaxa: false });
+      if (pct == null) o.semTaxa = true; else o.taxa += (Number(g.v) || 0) * pct / 100;
+    }
+  }
+  return out;
+}
 async function ganhosDoMes(env, mesQ) {
   await prepararBanco(env);
   const agoraFoz = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 7);
@@ -310,16 +345,22 @@ async function ganhosDoMes(env, mesQ) {
     results.forEach((r) => { noDia[r.pedido_id] = r.v; });
   } catch {}
   const r2 = (v) => Math.round((Number(v) || 0) * 100) / 100;
+  const tx = await lerTaxas(env), liq = await liquidoDosPedidos(env, peds.map((p) => p.id), tx);
   const lista = peds.map((p) => {
     const pago = r2(p.pago + (noDia[p.id] || 0)), falta = r2(Math.max(0, p.total - pago));
+    const lq = liq[p.id] || { taxa: 0, semTaxa: false };
     const situacao = p.status === "cancelada" ? "cancelada" : !STATUS_VENDA.includes(p.status) && pago < 0.01 ? "nao_pagou" : falta < 0.01 ? "pago" : "falta";
     return { codigo: p.codigo, nome: p.nome, telefone: p.telefone, status: p.status, inicio: p.inicio, servicos: p.servicos, total: r2(p.total), pago, falta,
-      formas: [p.formas, noDia[p.id] ? "motorista" : ""].filter(Boolean).join(","), situacao };
+      formas: [p.formas, noDia[p.id] ? "motorista" : ""].filter(Boolean).join(","), situacao,
+      taxa: r2(lq.taxa), liquido: r2(p.total - lq.taxa), pagoLiquido: r2(pago - lq.taxa), semTaxa: lq.semTaxa };
   });
   const soma = (f, k) => r2(lista.filter(f).reduce((x, y) => x + y[k], 0));
   const venda = (x) => x.situacao === "pago" || x.situacao === "falta";
   const { results: ent } = await env.DB.prepare(`SELECT provedor, COALESCE(SUM(COALESCE(valor_pago, valor)), 0) AS v, COUNT(*) AS n FROM pagamentos
     WHERE status = 'pago' AND pago_em >= ? AND pago_em < ? GROUP BY provedor`).bind(ini, fim).all();
+  const { results: entPg } = await env.DB.prepare(`SELECT provedor, metodo, parcelas, COALESCE(valor_pago, valor) AS v FROM pagamentos WHERE status = 'pago' AND pago_em >= ? AND pago_em < ?`).bind(ini, fim).all();
+  let taxaEntrou = 0, entrouSemTaxa = false;
+  for (const g of entPg) { const pct = taxaDoPagamento(tx, g); if (pct == null) entrouSemTaxa = true; else taxaEntrou += (Number(g.v) || 0) * pct / 100; }
   let entDia = 0;
   try { entDia = (await env.DB.prepare("SELECT COALESCE(SUM(recebido_valor), 0) AS v FROM servicos WHERE recebido_valor > 0 AND inicio_utc >= ? AND inicio_utc < ?").bind(ini, fim).first()).v; } catch {}
   const porForma = Object.fromEntries(ent.map((e) => [e.provedor, r2(e.v)]));
@@ -328,9 +369,11 @@ async function ganhosDoMes(env, mesQ) {
   return json({ ok: true, mes, resumo: {
     vendido: soma(venda, "total"), viagens: lista.filter(venda).length,
     entrou: r2(Object.values(porForma).reduce((x, y) => x + y, 0)), porForma, taxas,
+    entrouLiquido: r2(Object.values(porForma).reduce((x, y) => x + y, 0) - taxaEntrou), entrouSemTaxa,
+    vendidoLiquido: soma(venda, "liquido"), faltaSemTaxa: lista.some((x) => venda(x) && x.semTaxa),
     falta: soma((x) => x.situacao === "falta", "falta"), nFalta: lista.filter((x) => x.situacao === "falta").length,
     naoPagou: soma((x) => x.situacao === "nao_pagou", "total"), nNaoPagou: lista.filter((x) => x.situacao === "nao_pagou").length,
-  }, lista });
+  }, lista, taxasConfig: tx });
 }
 
 /* ---------------- criar pedido ---------------- */
@@ -1184,6 +1227,16 @@ async function admin(req, env, url) {
     return erro("rota", 404);
   }
 
+  if (partes[0] === "ganhos" && partes[1] === "taxas" && req.method === "POST") {
+    let b; try { b = await lerJson(req, 4000); } catch { return erro("json_invalido"); }
+    const pct = (v) => (v === "" || v == null ? null : (Number.isFinite(+v) && +v >= 0 && +v <= 30 ? Math.round(+v * 100) / 100 : undefined));
+    const novo = { pix: pct(b.pix), debito: pct(b.debito), paypal: pct(b.paypal), manual: pct(b.manual) || 0, credito: {} };
+    for (let n = 1; n <= 12; n++) novo.credito[n] = pct(b.credito && b.credito[n]);
+    if ([novo.pix, novo.debito, novo.paypal, ...Object.values(novo.credito)].some((v) => v === undefined)) return erro("taxa_invalida");
+    await prepararBanco(env);
+    await env.DB.prepare("INSERT INTO config_admin (chave, valor, atualizado_em) VALUES ('taxas', ?, ?) ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor, atualizado_em = excluded.atualizado_em").bind(JSON.stringify(novo), agoraIso()).run();
+    return json({ ok: true, taxas: await lerTaxas(env) });
+  }
   if (partes[0] === "ganhos" && req.method === "GET") return ganhosDoMes(env, url.searchParams.get("mes"));
 
   if (partes[0] === "pedidos" && partes.length === 1 && req.method === "GET") {
@@ -1204,6 +1257,7 @@ async function admin(req, env, url) {
       FROM pedidos p ${where.length ? "WHERE " + where.join(" AND ") : ""}
       ORDER BY ${soProximos ? "primeiro_inicio ASC" : "p.criado_em DESC"} LIMIT 300`;
     const { results } = await env.DB.prepare(sql).bind(...args).all();
+    try { const lq = await liquidoDosPedidos(env, results.map((x) => x.id)); for (const x of results) { const l = lq[x.id]; x.liquido = Math.round(((Number(x.total) || 0) - (l ? l.taxa : 0)) * 100) / 100; x.semTaxa = !!(l && l.semTaxa); } } catch (e) { console.error("liquido", e && e.message); }
     const cont = await env.DB.prepare("SELECT status, COUNT(*) n FROM pedidos GROUP BY status").all();
     return json({ ok: true, pedidos: results, contagem: Object.fromEntries(cont.results.map((r) => [r.status, r.n])) });
   }
