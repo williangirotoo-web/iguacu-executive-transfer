@@ -1193,14 +1193,16 @@ async function admin(req, env, url) {
     if (st && STATUS.includes(st)) { where.push("p.status = ?"); args.push(st); }
     if (q) { where.push("(p.codigo LIKE ? OR p.nome LIKE ? OR p.email LIKE ? OR p.telefone LIKE ?)"); const l = "%" + q + "%"; args.push(l, l, l, l); }
     // buscando por nome/código/telefone: procura em todos os pedidos (viagens passadas também)
-    if (per === "proximos" && !q) { where.push("(SELECT MAX(inicio_utc) FROM itens i WHERE i.pedido_id = p.id) >= ?"); args.push(new Date(Date.now() - 12 * 3600e3).toISOString()); }
+    // "Próximas viagens" só filtra a lista geral: com uma situação escolhida (Concluída, Cancelada...) ou buscando, mostra todas as datas
+    const soProximos = per === "proximos" && !q && !(st && STATUS.includes(st));
+    if (soProximos) { where.push("(SELECT MAX(inicio_utc) FROM itens i WHERE i.pedido_id = p.id) >= ?"); args.push(new Date(Date.now() - 12 * 3600e3).toISOString()); }
     const sql = `SELECT p.id, p.codigo, p.status, p.criado_em, p.nome, p.telefone, p.email, p.total, p.valor_agora, p.idioma,
       (SELECT COALESCE(empresa, responsavel) FROM parceiros pa WHERE pa.id = p.parceiro_id) AS parceiro,
       (SELECT MIN(inicio_utc) FROM itens i WHERE i.pedido_id = p.id) AS primeiro_inicio,
       (SELECT COUNT(*) FROM itens i WHERE i.pedido_id = p.id) AS n_itens,
       (SELECT group_concat(servico_nome, ' + ') FROM itens i WHERE i.pedido_id = p.id) AS servicos
       FROM pedidos p ${where.length ? "WHERE " + where.join(" AND ") : ""}
-      ORDER BY ${per === "proximos" && !q ? "primeiro_inicio ASC" : "p.criado_em DESC"} LIMIT 300`;
+      ORDER BY ${soProximos ? "primeiro_inicio ASC" : "p.criado_em DESC"} LIMIT 300`;
     const { results } = await env.DB.prepare(sql).bind(...args).all();
     const cont = await env.DB.prepare("SELECT status, COUNT(*) n FROM pedidos GROUP BY status").all();
     return json({ ok: true, pedidos: results, contagem: Object.fromEntries(cont.results.map((r) => [r.status, r.n])) });

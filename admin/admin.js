@@ -35,7 +35,7 @@
       $("#chips").innerHTML = ['<button class="chip' + (filtro.status ? "" : " on") + '" data-st="">Todos<i>' + tot + "</i></button>"].concat(Object.keys(STATUS).map(function (k) {
         return '<button class="chip' + (filtro.status === k ? " on" : "") + '" data-st="' + k + '">' + esc(STATUS[k]) + "<i>" + (cont[k] || 0) + "</i></button>";
       })).join("");
-      if (!r.pedidos.length) { $("#rows").innerHTML = '<p class="empty">Nenhum pedido aqui.</p>'; return; }
+      if (!r.pedidos.length) { $("#rows").innerHTML = '<p class="empty">Nenhum pedido aqui.' + (filtro.periodo === "proximos" ? ' <a href="#" id="ver-todos" style="color:var(--gold)">Ver também as viagens passadas</a>' : "") + "</p>"; var vt = $("#ver-todos"); if (vt) vt.onclick = function (e) { e.preventDefault(); filtro.periodo = "todos"; $("#periodo").value = "todos"; carregar(); }; return; }
       $("#rows").innerHTML = r.pedidos.map(function (x) {
         return '<div class="row" data-cod="' + esc(x.codigo) + '"><div class="when"><b>' + esc(quando(x.primeiro_inicio)) + "</b><small>" + esc(x.codigo) + "</small></div>" +
           "<div><b>" + esc(x.nome) + '</b><div class="svc">' + (x.parceiro ? "Parceiro: " + esc(x.parceiro) + " · " : "") + esc(x.servicos) + "</div></div><div>" + esc(x.telefone) + "</div><div><b>" + brl(x.total) + "</b></div><div>" + badge(x.status) + "</div></div>";
