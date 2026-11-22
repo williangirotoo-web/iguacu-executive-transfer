@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Ganhos do mês | Painel Iguaçu Executive Transfer</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/ops.css?v=2">
+<style>
+.gn-nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.gn-nums div{padding:14px 16px;border-right:1px solid var(--o-line)}
+.gn-nums div:last-child{border-right:0}
+.gn-nums span{display:block;font-size:.72rem;color:var(--o-mut)}
+.gn-nums b{display:block;font-size:1.25rem;margin-top:2px;font-weight:600}
+.gn-nums i{font-style:normal;font-size:.72rem;color:var(--o-faint)}
+.gn-ok{color:var(--o-green)}.gn-fal{color:var(--o-amber)}.gn-no{color:var(--o-red)}
+.gn-mes{display:flex;gap:8px;align-items:center}
+.gn-mes input{background:transparent;color:inherit;border:1px solid var(--o-line2);border-radius:8px;padding:8px 10px;font:inherit}
+.gn-formas{padding:10px 16px;color:var(--o-mut);font-size:.8rem;border-top:1px solid var(--o-line)}
+.gn-sit{font-size:.75rem;font-weight:700;border-radius:20px;padding:2px 9px;white-space:nowrap}
+.gn-sit.pago{background:var(--o-green-bg);color:var(--o-green)}
+.gn-sit.falta{background:var(--o-amber-bg);color:var(--o-amber)}
+.gn-sit.nao_pagou{background:var(--o-red-bg);color:var(--o-red)}
+.gn-sit.cancelada{color:var(--o-faint);border:1px solid var(--o-line2)}
+td.num{text-align:right;white-space:nowrap}
+@media (max-width:860px){.gn-nums{grid-template-columns:1fr 1fr}.gn-nums div{border-bottom:1px solid var(--o-line)}}
+</style>
+</head>
+<body class="ops">
+<header class="o-top">
+  <a class="o-brand" href="/admin/"><b>IGUAÇU</b><span>Ganhos</span></a>
+  <nav class="o-chips" aria-label="Painel"><a class="o-btn" href="/admin/">Reservas</a><a class="o-btn" href="/admin/hoje.html">Hoje</a><a class="o-btn" href="/admin/calendario.html">Calendário</a></nav>
+</header>
+<main class="o-main"><div class="o-wrap">
+  <div class="o-head"><div><h1>Ganhos do mês</h1><p class="o-sub">Viagens do mês, o que já foi pago e o que falta receber.</p></div>
+    <div class="gn-mes"><button class="o-btn" type="button" id="ant" aria-label="Mês anterior">‹</button><input type="month" id="mes" aria-label="Mês"><button class="o-btn" type="button" id="prox" aria-label="Próximo mês">›</button></div></div>
+  <div id="resumo"><div class="o-card o-empty">Carregando…</div></div>
+  <div class="o-chips" role="group" aria-label="Filtrar" style="margin-top:18px">
+    <button class="o-chip" type="button" data-f="" aria-pressed="true">Todas</button>
+    <button class="o-chip" type="button" data-f="pago" aria-pressed="false">Pagas</button>
+    <button class="o-chip" type="button" data-f="falta" aria-pressed="false">Falta receber</button>
+    <button class="o-chip" type="button" data-f="nao_pagou" aria-pressed="false">Não pagou</button>
+    <button class="o-chip" type="button" data-f="cancelada" aria-pressed="false">Canceladas</button>
+  </div>
+  <div id="lista" style="margin-top:12px"></div>
+  <p class="o-note">"Entrou no mês" conta pela data do pagamento (site, PayPal, Pix/manual e o que o motorista recebeu no dia). As viagens contam pela data da viagem.</p>
+</div></main>
+<script src="/js/ops-ui.js?v=2"></script>
+<script>
+(function(){
+  var O=window.OPS, esc=O.esc, dados=null, filtro="";
+  var SIT={pago:"Pago",falta:"Falta receber",nao_pagou:"Não pagou",cancelada:"Cancelada"};
+  var FORMA={infinitepay:"InfinitePay",paypal:"PayPal",manual:"Pix/manual",motorista:"Recebido pelo motorista"};
+  var MS=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  var inp=document.getElementById("mes");
+  inp.value=new Date(Date.now()-3*3600e3).toISOString().slice(0,7);
+  function quando(iso){if(!iso)return"—";var d=new Date(Date.parse(iso)-3*3600e3).toISOString();return d.slice(8,10)+"/"+d.slice(5,7)+" "+d.slice(11,16)}
+  function carregar(){
+    document.getElementById("lista").innerHTML='<div class="o-card o-empty">Carregando…</div>';
+    O.api("/api/admin/ganhos?mes="+inp.value).then(function(r){
+      if(!r.ok){document.getElementById("resumo").innerHTML='<div class="o-card o-empty">'+esc(r.mensagem||"Não foi possível carregar.")+'</div>';return}
+      dados=r;desenhar();
+    });
+  }
+  function desenhar(){
+    var r=dados.resumo, m=+dados.mes.slice(5,7);
+    var formas=Object.keys(r.porForma).map(function(k){return esc(FORMA[k]||k)+": <b>"+O.brl(r.porForma[k])+"</b>"}).join(" · ");
+    document.getElementById("resumo").innerHTML='<div class="o-card"><div class="gn-nums">'+
+      '<div><span>Vendido em '+MS[m-1]+'</span><b>'+O.brl(r.vendido)+'</b><i>'+r.viagens+' viagem(ns) confirmada(s)</i></div>'+
+      '<div><span>Entrou no mês</span><b class="gn-ok">'+O.brl(r.entrou)+'</b><i>dinheiro recebido</i></div>'+
+      '<div><span>Falta receber</span><b class="gn-fal">'+O.brl(r.falta)+'</b><i>'+r.nFalta+' viagem(ns) com saldo</i></div>'+
+      '<div><span>Não pagou</span><b class="gn-no">'+O.brl(r.naoPagou)+'</b><i>'+r.nNaoPagou+' pedido(s) sem pagamento</i></div>'+
+      '</div><div class="gn-formas">'+(formas||"Nenhum pagamento recebido neste mês.")+(r.taxas?' · Taxa PayPal repassada: '+O.brl(r.taxas):'')+'</div></div>';
+    var l=dados.lista.filter(function(x){return !filtro||x.situacao===filtro});
+    document.getElementById("lista").innerHTML=l.length?'<div class="o-card o-tablewrap"><table class="o-table"><thead><tr><th>Viagem</th><th>Cliente</th><th>Serviço</th><th class="num">Total</th><th class="num">Pago</th><th class="num">Falta</th><th>Situação</th></tr></thead><tbody>'+
+      l.map(function(x){return '<tr data-c="'+esc(x.codigo)+'" style="cursor:pointer"><td><b>'+quando(x.inicio)+'</b><br><span class="mut">'+esc(x.codigo)+'</span></td><td>'+esc(x.nome)+'</td><td class="mut">'+esc(x.servicos||"")+'</td><td class="num">'+O.brl(x.total)+'</td><td class="num">'+O.brl(x.pago)+'</td><td class="num">'+(x.falta>0.009?O.brl(x.falta):"—")+'</td><td><span class="gn-sit '+x.situacao+'">'+SIT[x.situacao]+'</span></td></tr>'}).join("")+
+      '</tbody></table></div>':'<div class="o-card o-empty">Nenhuma viagem neste filtro.</div>';
+  }
+  function mudarMes(d){var p=inp.value.split("-").map(Number),dt=new Date(Date.UTC(p[0],p[1]-1+d,1));inp.value=dt.toISOString().slice(0,7);carregar()}
+  document.getElementById("ant").onclick=function(){mudarMes(-1)};
+  document.getElementById("prox").onclick=function(){mudarMes(1)};
+  inp.onchange=carregar;
+  document.addEventListener("click",function(e){
+    var c=e.target.closest("[data-f]");if(c){filtro=c.dataset.f;document.querySelectorAll("[data-f]").forEach(function(x){x.setAttribute("aria-pressed",x===c?"true":"false")});if(dados)desenhar();return}
+    var tr=e.target.closest("tr[data-c]");if(tr)location.href="/admin/#"+tr.dataset.c;
+  });
+  carregar();
+})();
+</script>
+</body>
+</html>

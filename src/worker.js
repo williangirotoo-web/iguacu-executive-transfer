@@ -286,6 +286,53 @@ async function prepararKm(env, it) {
   if (it.para) it.destino = (it.para.label || it.destino) + (it.idaVolta ? ` (ida e volta · volta ${dm(it.dataVolta)} às ${it.horaVolta})` : "");
 }
 
+/* ---------------- ganhos do mês (painel) ----------------
+   Viagens do mês (pela data da viagem, horário de Foz), quanto já foi pago de cada uma, o que falta
+   e quanto dinheiro entrou no mês (pela data do pagamento: site, PayPal, manual e o que o motorista recebeu no dia). */
+const STATUS_VENDA = ["aprovado", "aguardando_confirmacao", "confirmada", "concluida"];
+async function ganhosDoMes(env, mesQ) {
+  await prepararBanco(env);
+  const agoraFoz = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 7);
+  const mes = /^\d{4}-(0[1-9]|1[0-2])$/.test(mesQ || "") ? mesQ : agoraFoz;
+  const [a, m] = mes.split("-").map(Number);
+  const ini = new Date(Date.UTC(a, m - 1, 1, 3)).toISOString(), fim = new Date(Date.UTC(a, m, 1, 3)).toISOString();
+  const { results: peds } = await env.DB.prepare(`SELECT p.id, p.codigo, p.status, p.nome, p.telefone, p.total, p.taxa_pagamento,
+      (SELECT MIN(inicio_utc) FROM itens i WHERE i.pedido_id = p.id) AS inicio,
+      (SELECT group_concat(servico_nome, ' + ') FROM itens i WHERE i.pedido_id = p.id) AS servicos,
+      (SELECT COALESCE(SUM(COALESCE(g.valor_pago, g.valor)), 0) FROM pagamentos g WHERE g.pedido_id = p.id AND g.status = 'pago') AS pago,
+      (SELECT group_concat(DISTINCT g.provedor) FROM pagamentos g WHERE g.pedido_id = p.id AND g.status = 'pago') AS formas
+    FROM pedidos p WHERE (SELECT MIN(inicio_utc) FROM itens i WHERE i.pedido_id = p.id) >= ? AND (SELECT MIN(inicio_utc) FROM itens i WHERE i.pedido_id = p.id) < ?
+    ORDER BY inicio`).bind(ini, fim).all();
+  // o que o motorista recebeu em mãos no dia (tabela da operação; pode não existir ainda)
+  let noDia = {};
+  try {
+    const { results } = await env.DB.prepare("SELECT pedido_id, SUM(recebido_valor) v FROM servicos WHERE recebido_valor > 0 GROUP BY pedido_id").all();
+    results.forEach((r) => { noDia[r.pedido_id] = r.v; });
+  } catch {}
+  const r2 = (v) => Math.round((Number(v) || 0) * 100) / 100;
+  const lista = peds.map((p) => {
+    const pago = r2(p.pago + (noDia[p.id] || 0)), falta = r2(Math.max(0, p.total - pago));
+    const situacao = p.status === "cancelada" ? "cancelada" : !STATUS_VENDA.includes(p.status) && pago < 0.01 ? "nao_pagou" : falta < 0.01 ? "pago" : "falta";
+    return { codigo: p.codigo, nome: p.nome, telefone: p.telefone, status: p.status, inicio: p.inicio, servicos: p.servicos, total: r2(p.total), pago, falta,
+      formas: [p.formas, noDia[p.id] ? "motorista" : ""].filter(Boolean).join(","), situacao };
+  });
+  const soma = (f, k) => r2(lista.filter(f).reduce((x, y) => x + y[k], 0));
+  const venda = (x) => x.situacao === "pago" || x.situacao === "falta";
+  const { results: ent } = await env.DB.prepare(`SELECT provedor, COALESCE(SUM(COALESCE(valor_pago, valor)), 0) AS v, COUNT(*) AS n FROM pagamentos
+    WHERE status = 'pago' AND pago_em >= ? AND pago_em < ? GROUP BY provedor`).bind(ini, fim).all();
+  let entDia = 0;
+  try { entDia = (await env.DB.prepare("SELECT COALESCE(SUM(recebido_valor), 0) AS v FROM servicos WHERE recebido_valor > 0 AND inicio_utc >= ? AND inicio_utc < ?").bind(ini, fim).first()).v; } catch {}
+  const porForma = Object.fromEntries(ent.map((e) => [e.provedor, r2(e.v)]));
+  if (entDia) porForma.motorista = r2(entDia);
+  const taxas = r2(peds.filter((p) => STATUS_VENDA.includes(p.status)).reduce((x, p) => x + (p.taxa_pagamento || 0), 0));
+  return json({ ok: true, mes, resumo: {
+    vendido: soma(venda, "total"), viagens: lista.filter(venda).length,
+    entrou: r2(Object.values(porForma).reduce((x, y) => x + y, 0)), porForma, taxas,
+    falta: soma((x) => x.situacao === "falta", "falta"), nFalta: lista.filter((x) => x.situacao === "falta").length,
+    naoPagou: soma((x) => x.situacao === "nao_pagou", "total"), nNaoPagou: lista.filter((x) => x.situacao === "nao_pagou").length,
+  }, lista });
+}
+
 /* ---------------- criar pedido ---------------- */
 const ALT_ARGENTINA = { "igu-foz": "igu-pi", "igr-foz": "igr-pi" };
 export function ehArgentina(v) { return /puerto\s*iguaz|pto\.?\s*iguaz|argentin|lado argentino/i.test(String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")); }
@@ -1137,20 +1184,23 @@ async function admin(req, env, url) {
     return erro("rota", 404);
   }
 
+  if (partes[0] === "ganhos" && req.method === "GET") return ganhosDoMes(env, url.searchParams.get("mes"));
+
   if (partes[0] === "pedidos" && partes.length === 1 && req.method === "GET") {
     const st = url.searchParams.get("status"), q = (url.searchParams.get("q") || "").trim();
     const per = url.searchParams.get("periodo") || "proximos";
     let where = [], args = [];
     if (st && STATUS.includes(st)) { where.push("p.status = ?"); args.push(st); }
     if (q) { where.push("(p.codigo LIKE ? OR p.nome LIKE ? OR p.email LIKE ? OR p.telefone LIKE ?)"); const l = "%" + q + "%"; args.push(l, l, l, l); }
-    if (per === "proximos") { where.push("(SELECT MAX(inicio_utc) FROM itens i WHERE i.pedido_id = p.id) >= ?"); args.push(new Date(Date.now() - 12 * 3600e3).toISOString()); }
+    // buscando por nome/código/telefone: procura em todos os pedidos (viagens passadas também)
+    if (per === "proximos" && !q) { where.push("(SELECT MAX(inicio_utc) FROM itens i WHERE i.pedido_id = p.id) >= ?"); args.push(new Date(Date.now() - 12 * 3600e3).toISOString()); }
     const sql = `SELECT p.id, p.codigo, p.status, p.criado_em, p.nome, p.telefone, p.email, p.total, p.valor_agora, p.idioma,
       (SELECT COALESCE(empresa, responsavel) FROM parceiros pa WHERE pa.id = p.parceiro_id) AS parceiro,
       (SELECT MIN(inicio_utc) FROM itens i WHERE i.pedido_id = p.id) AS primeiro_inicio,
       (SELECT COUNT(*) FROM itens i WHERE i.pedido_id = p.id) AS n_itens,
       (SELECT group_concat(servico_nome, ' + ') FROM itens i WHERE i.pedido_id = p.id) AS servicos
       FROM pedidos p ${where.length ? "WHERE " + where.join(" AND ") : ""}
-      ORDER BY ${per === "proximos" ? "primeiro_inicio ASC" : "p.criado_em DESC"} LIMIT 300`;
+      ORDER BY ${per === "proximos" && !q ? "primeiro_inicio ASC" : "p.criado_em DESC"} LIMIT 300`;
     const { results } = await env.DB.prepare(sql).bind(...args).all();
     const cont = await env.DB.prepare("SELECT status, COUNT(*) n FROM pedidos GROUP BY status").all();
     return json({ ok: true, pedidos: results, contagem: Object.fromEntries(cont.results.map((r) => [r.status, r.n])) });
