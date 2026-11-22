@@ -6,4 +6,29 @@ Disallow: /parceiro/
 Disallow: /motorista/
 Disallow: /viagem/
 
+# Buscadores e assistentes de IA: podem ler e citar as páginas públicas
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: meta-externalagent
+User-agent: DuckAssistBot
+User-agent: MistralAI-User
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /parceiro/
+Disallow: /motorista/
+Disallow: /viagem/
+
+# Resumo da empresa, serviços e preços para assistentes de IA: https://iguacuexecutivetransfer.com.br/llms.txt
 Sitemap: https://iguacuexecutivetransfer.com.br/sitemap.xml
