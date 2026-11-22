@@ -36,9 +36,16 @@
         return '<button class="chip' + (filtro.status === k ? " on" : "") + '" data-st="' + k + '">' + esc(STATUS[k]) + "<i>" + (cont[k] || 0) + "</i></button>";
       })).join("");
       if (!r.pedidos.length) { $("#rows").innerHTML = '<p class="empty">Nenhum pedido aqui.' + (filtro.periodo === "proximos" ? ' <a href="#" id="ver-todos" style="color:var(--gold)">Ver também as viagens passadas</a>' : "") + "</p>"; var vt = $("#ver-todos"); if (vt) vt.onclick = function (e) { e.preventDefault(); filtro.periodo = "todos"; $("#periodo").value = "todos"; carregar(); }; return; }
-      $("#rows").innerHTML = r.pedidos.map(function (x) {
+      // soma da lista que está na tela (canceladas só entram quando o filtro é "Cancelada")
+      var somaLista = r.pedidos.reduce(function (a, x) { return a + (Number(x.total) || 0); }, 0);
+      var rotulo = filtro.status ? STATUS[filtro.status] : "Todos";
+      var periodoTxt = filtro.q ? "na busca" : filtro.periodo === "proximos" && !filtro.status ? "nas próximas viagens" : "em todas as datas";
+      $("#rows").innerHTML = '<div class="soma"><span>' + esc(rotulo) + " · " + r.pedidos.length + " pedido" + (r.pedidos.length === 1 ? "" : "s") + " " + periodoTxt + '</span><span>Total <b>' + brl(somaLista) + "</b></span></div>" + r.pedidos.map(function (x) {
+        // vários trechos: mostra o primeiro e quantos mais (o resumo completo fica no detalhe do pedido)
+        var partes = String(x.servicos || "").split(" + ").filter(Boolean), resumo = partes[0] || "";
+        if (partes.length > 1) resumo += " + " + (partes.length - 1) + " trecho" + (partes.length > 2 ? "s" : "");
         return '<div class="row" data-cod="' + esc(x.codigo) + '"><div class="when"><b>' + esc(quando(x.primeiro_inicio)) + "</b><small>" + esc(x.codigo) + "</small></div>" +
-          "<div><b>" + esc(x.nome) + '</b><div class="svc">' + (x.parceiro ? "Parceiro: " + esc(x.parceiro) + " · " : "") + esc(x.servicos) + "</div></div><div>" + esc(x.telefone) + "</div><div><b>" + brl(x.total) + "</b></div><div>" + badge(x.status) + "</div></div>";
+          "<div><b>" + esc(x.nome) + '</b><div class="svc" title="' + esc(x.servicos) + '">' + (x.parceiro ? "Parceiro: " + esc(x.parceiro) + " · " : "") + esc(resumo) + '</div></div><div class="tel">' + esc(x.telefone) + '</div><div class="val"><b>' + brl(x.total) + '</b></div><div class="stc">' + badge(x.status) + "</div></div>";
       }).join("");
     }).catch(function (e) { if (e.message === "401") semAcesso(); else $("#rows").innerHTML = '<p class="msg">Erro ao carregar. Tente de novo.</p>'; });
   }
