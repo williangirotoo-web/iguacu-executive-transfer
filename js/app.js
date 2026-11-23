@@ -54,6 +54,10 @@
         ls.forEach(function (l) { var u = alt(l); if (u) ops.push([l, u]); });
       }
       if (!ops.length) return;
+      /* primeira visita de estrangeiro: janela de boas-vindas com os idiomas (robôs de busca não veem) */
+      var bot = navigator.webdriver || /bot|crawl|spider|slurp|lighthouse|headless|google|bing|yandex|baidu|duckduck/i.test(navigator.userAgent || "");
+      var visto = false; try { visto = !!localStorage.getItem("iet_lang_vista"); } catch (e) {}
+      if (!bot && !visto) { boasVindas(base, ops, reservar, alt, NOMES); return; }
       var msg = base === "es" ? "Esta página está en portugués:" : base === "fr" ? "Cette page est en portugais :" : base === "it" ? "Questa pagina è in portoghese:" : base === "de" ? "Diese Seite ist auf Portugiesisch:" : "This page is in Portuguese:";
       var st = document.createElement("style");
       st.textContent = ".iet-lb{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:8px 40px 8px 12px;background:#141414;border-bottom:1px solid rgba(212,175,55,.35);color:#f0ede8;font:14px/1.3 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;position:fixed;top:0;left:0;right:0;z-index:10000}.iet-lb a{color:#000;background:#d4af37;border-radius:6px;padding:4px 11px;font-weight:700;text-decoration:none}.iet-lb a{min-height:32px;display:inline-flex;align-items:center}@media(max-width:480px){.iet-lb{font-size:12.5px;gap:6px}.iet-lb a{padding:4px 10px}}.iet-lb button{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:0;color:#f0ede8;font-size:22px;line-height:1;cursor:pointer;padding:10px 12px;min-width:44px;min-height:44px}";
@@ -82,6 +86,60 @@
         try { localStorage.setItem("iet_langbar", "1"); } catch (e) {}
       });
     } catch (e) {}
+  }
+  var BV = {
+    en: ["Welcome!", "This page is in Portuguese. Choose your language:"], es: ["¡Bienvenido!", "Esta página está en portugués. Elija su idioma:"],
+    fr: ["Bienvenue !", "Cette page est en portugais. Choisissez votre langue :"], de: ["Willkommen!", "Diese Seite ist auf Portugiesisch. Wählen Sie Ihre Sprache:"],
+    it: ["Benvenuto!", "Questa pagina è in portoghese. Scegli la tua lingua:"], nl: ["Welkom!", "Deze pagina is in het Portugees. Kies uw taal:"],
+    pl: ["Witamy!", "Ta strona jest po portugalsku. Wybierz język:"], ru: ["Добро пожаловать!", "Эта страница на португальском. Выберите язык:"],
+    ko: ["환영합니다!", "이 페이지는 포르투갈어로 되어 있습니다. 언어를 선택하세요:"], ja: ["ようこそ！", "このページはポルトガル語です。言語を選んでください："],
+    zh: ["欢迎！", "此页面为葡萄牙语。请选择您的语言："]
+  };
+  var BANDEIRA = { en: "🇬🇧", es: "🇪🇸", fr: "🇫🇷", de: "🇩🇪", it: "🇮🇹", nl: "🇳🇱", pl: "🇵🇱", ru: "🇷🇺", ja: "🇯🇵", ko: "🇰🇷", zh: "🇨🇳", pt: "🇧🇷" };
+  function boasVindas(base, ops, reservar, alt, NOMES) {
+    var t = BV[base] || BV.en;
+    function marcar(l) { try { localStorage.setItem("iet_lang_vista", "1"); if (l) localStorage.setItem("iet_idioma", l); if (l === "pt") localStorage.setItem("iet_langbar", "1"); } catch (e) {} }
+    // idiomas: o do visitante (se a página tiver), inglês e espanhol; a página inicial do idioma serve de reserva
+    var HOME = { en: "/en/index.html", es: "/es/index.html", fr: "/fr/index.html", ja: "/ja/index.html", zh: "/zh/index.html" };
+    var lista = ops.slice();
+    if (!reservar && base !== "en" && base !== "es" && !lista.some(function (o) { return o[0] === base; }) && HOME[base]) lista.unshift([base, HOME[base]]);
+    ["en", "es"].forEach(function (l) { if (!lista.some(function (o) { return o[0] === l; })) lista.push([l, reservar ? location.pathname + "?lang=" + l : (alt(l) || HOME[l])]); });
+    var st = document.createElement("style");
+    st.textContent = ".iet-bv{position:fixed;inset:0;z-index:10001;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:ietbv .25s ease}" +
+      "@keyframes ietbv{from{opacity:0}to{opacity:1}}" +
+      ".iet-bv-c{position:relative;width:100%;max-width:400px;background:#111214;border:1px solid rgba(212,175,55,.45);border-radius:18px;padding:28px 22px 20px;color:#f2efe9;font:15px/1.45 Montserrat,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;text-align:center;box-shadow:0 30px 80px -20px rgba(0,0,0,.8)}" +
+      ".iet-bv-c b.t{display:block;font:600 24px/1.2 'Cormorant Garamond',Georgia,serif;color:#f0d77b;margin:0 0 6px}" +
+      ".iet-bv-c p{margin:0 0 18px;color:rgba(242,239,233,.75);font-size:14px}" +
+      ".iet-bv-l{display:flex;flex-direction:column;gap:10px}" +
+      ".iet-bv-l a{display:flex;align-items:center;justify-content:center;gap:10px;min-height:48px;border-radius:12px;background:#d4af37;color:#111;font-weight:700;text-decoration:none;font-size:15px}" +
+      ".iet-bv-l a+a{background:transparent;color:#f2efe9;border:1px solid rgba(242,239,233,.22)}" +
+      ".iet-bv-l a span{font-size:20px;line-height:1}" +
+      ".iet-bv-pt{display:inline-block;margin-top:14px;background:none;border:0;color:rgba(242,239,233,.6);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer}" +
+      ".iet-bv-x{position:absolute;top:8px;right:10px;width:36px;height:36px;border:0;background:none;color:rgba(242,239,233,.6);font-size:24px;cursor:pointer}";
+    document.head.appendChild(st);
+    var bg = document.createElement("div"); bg.className = "iet-bv notranslate"; bg.setAttribute("translate", "no");
+    var c = document.createElement("div"); c.className = "iet-bv-c"; c.setAttribute("role", "dialog"); c.setAttribute("aria-modal", "true"); c.setAttribute("aria-label", "Language");
+    var tt = document.createElement("b"); tt.className = "t"; tt.textContent = t[0];
+    var pp = document.createElement("p"); pp.textContent = t[1];
+    var l = document.createElement("div"); l.className = "iet-bv-l";
+    lista.slice(0, 4).forEach(function (o) {
+      if (!o[1]) return;
+      var a = document.createElement("a"); a.href = o[1]; a.hreflang = o[0];
+      var f = document.createElement("span"); f.textContent = BANDEIRA[o[0]] || "🌐"; a.appendChild(f); a.appendChild(document.createTextNode(NOMES[o[0]]));
+      a.addEventListener("click", function () { marcar(o[0]); });
+      l.appendChild(a);
+    });
+    var pt = document.createElement("button"); pt.type = "button"; pt.className = "iet-bv-pt"; pt.textContent = BANDEIRA.pt + " Continuar em português";
+    var x = document.createElement("button"); x.type = "button"; x.className = "iet-bv-x"; x.setAttribute("aria-label", "Close"); x.textContent = "×";
+    function fechar(l2) { marcar(l2); bg.remove(); document.removeEventListener("keydown", esc); }
+    function esc(e) { if (e.key === "Escape") fechar(); }
+    pt.addEventListener("click", function () { fechar("pt"); });
+    x.addEventListener("click", function () { fechar(); });
+    bg.addEventListener("click", function (e) { if (e.target === bg) fechar(); });
+    document.addEventListener("keydown", esc);
+    c.appendChild(x); c.appendChild(tt); c.appendChild(pp); c.appendChild(l); c.appendChild(pt); bg.appendChild(c);
+    document.body.appendChild(bg);
+    var p1 = l.querySelector("a"); if (p1) try { p1.focus({ preventScroll: true }); } catch (e) {}
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", iniciar); else iniciar();
 })();
